@@ -426,7 +426,8 @@ Un colpo pesante (cannonata del carro, granata, ascia dall'alto del gendarme) fa
 - [x] [M] Nome della pagina, icona, etichetta "BETA" nel titolo, voci per "Aggiungi a schermata Home" su telefono
 - [x] [B] Schermo intero: niente errori dove non è disponibile (iPhone, pagine incorporate), pulsanti nascosti se non serve
 - [x] [M] Pacchetto per i tester: file del gioco + LEGGIMI (come si gioca, comandi, problemi noti, come segnalare)
-- [ ] [A] Pubblicare la beta su un indirizzo aperto a tutti, per i telefoni (es. GitHub Pages o Netlify)
+- [x] [A] Beta pubblicata su GitHub Pages: https://alessioaversano91-gif.github.io/soto-slug/ (repository alessioaversano91-gif/soto-slug)
 - [ ] [M] Prova su iPhone vero (Safari) e su un Android
+- [ ] [M] Provare il link da un browser senza accesso a Claude o GitHub, su PC e telefono
 - [ ] [B] Raccolta segnalazioni dei tester
 

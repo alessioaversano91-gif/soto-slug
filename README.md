@@ -4,7 +4,7 @@ Run and gun in stile arcade tra Genova, Lione, Mantova e Marsiglia.
 
 **Versione attuale:** 1.3.0.63 BETA (primo rilascio interno)
 
-- Si gioca da browser, su PC e telefono: apri il link di GitHub Pages del repository.
+- **Gioca qui:** https://alessioaversano91-gif.github.io/soto-slug/ (PC e telefono, nessun account richiesto)
 - Su PC si puo' anche scaricare `index.html` e aprirlo con un doppio clic: funziona senza internet.
 - Istruzioni, comandi e problemi noti: [LEGGIMI](LEGGIMI.md).
 
