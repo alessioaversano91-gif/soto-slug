@@ -1,0 +1,21 @@
+from playwright.sync_api import sync_playwright
+OUT='/tmp/claude-0/-home-claude/cd384b70-471e-5c72-87e8-917c6f304069/scratchpad/'
+with sync_playwright() as p:
+    b=p.chromium.launch(); pg=b.new_page(viewport={'width':480,'height':900}); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.goto('file:///mnt/user-data/outputs/soto_slug_tex_edition.html'); pg.wait_for_timeout(900)
+    pg.evaluate("()=>{document.getElementById('cab').style.cssText+=';position:relative;left:0;top:0;transform:none'}"); oy=pg.evaluate("()=>document.getElementById('cv').getBoundingClientRect().top")
+    pg.evaluate("()=>{PROG.tut=true;gTitle()}"); pg.click('#setBtn'); pg.wait_for_timeout(200)
+    for id in ('#cbBtn','#bigBtn','#aimBtn'): pg.click(id)
+    pg.screenshot(path=OUT+'set.png',clip={'x':0,'y':oy,'width':480,'height':640})
+    pg.click('#keysBtn'); pg.wait_for_timeout(200)
+    pg.click('button[data-act="j"][data-t="key"]'); pg.keyboard.press('k'); pg.click('button[data-act="b"][data-t="key"]'); pg.keyboard.press('v')
+    pg.screenshot(path=OUT+'keys.png',clip={'x':0,'y':oy,'width':480,'height':640})
+    print('map',pg.evaluate("()=>[JSON.stringify(SET.keys),JUMPKEYS.k,BOMBKEYS.v,KEYMAP.ArrowUp,JUMPKEYS.ArrowUp]"))
+    pg.click('#keysBack'); pg.click('#setBackBtn'); pg.keyboard.press('Enter'); pg.click('#cc0'); pg.click('#toStage'); pg.click('#lc0'); pg.click('#goBtn'); pg.evaluate("()=>mapStart()")
+    pg.wait_for_timeout(1200); print('subtitle',pg.evaluate("()=>[document.getElementById('sub').textContent,document.body.className]"))
+    while pg.evaluate("()=>PL.air"): pg.wait_for_timeout(50)
+    pg.wait_for_timeout(300); pg.keyboard.press('k'); pg.wait_for_timeout(100); print('jump with k',pg.evaluate("()=>PL.air"))
+    pg.wait_for_timeout(1200); b0=pg.evaluate("()=>ST.bombs"); pg.keyboard.press('v'); pg.wait_for_timeout(100); print('bomb with v',b0,pg.evaluate("()=>[ST.bombs,PL.bombT]"))
+    print('aim',pg.evaluate("()=>{spawnEnemy=()=>{};enemies=[];const s=S.bottle_s;enemies.push({type:2,key:'bottle_s',x:PL.x+200,y:GROUND-200,w:s.w,h:s.h,hp:9,max:9,dir:-1,vx:0,t:0,shootT:9999,flash:0,keep:0,hoverY:GROUND-200});shots=[];PL.shootCd=0;PL.dir=1;PL.aimA=undefined;doShoot();const b=shots.find(q=>q.k==='bul');return b?[Math.round(b.vx*10)/10,Math.round(b.vy*10)/10]:null}"))
+    pg.keyboard.press('p'); pg.wait_for_timeout(200); print('pause keys',pg.evaluate("()=>document.getElementById('pauseKeys').textContent"))
+    print('ERR',errs); b.close()
