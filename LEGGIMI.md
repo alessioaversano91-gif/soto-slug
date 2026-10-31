@@ -1,5 +1,5 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.64 - primo rilascio interno
+Beta 1.3.0.65 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".
@@ -23,6 +23,11 @@ DA SAPERE
 - Progressi, medaglie e classifica restano nel browser del dispositivo.
   Per portarli altrove: Impostazioni > Esporta salvataggi / Importa salvataggi.
 - Sul telefono il TESTO GRANDE è attivo: si cambia da Impostazioni.
+- Ogni città ha 3 obiettivi (li vedi sulla mappa prima di partire): ognuno vale una stella.
+  Tra questi ci sono 3 specialità nascoste in alto: serve un salto per prenderle.
+- In ogni partita può capitare un imprevisto (nebbia, notte, vento, pioggia di bottiglie).
+- Le bottiglie che brillano sono élite: blu corazzate, rosse kamikaze, viola si dividono in due.
+- Quando la bottiglia sul carro brilla, i colpi valgono doppio.
 - Le città vanno in ordine: Genova, Lione, Mantova, Marsiglia.
 
 PROBLEMI NOTI DELLA BETA

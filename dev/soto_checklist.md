@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.64 BETA
+Versione di riferimento: 1.3.0.65 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -439,4 +439,13 @@ Un colpo pesante (cannonata del carro, granata, ascia dall'alto del gendarme) fa
 - [x] [M] Il gioco ricalcola la sua dimensione quando la pagina si apre in un'app (WhatsApp, Telegram) o torna visibile
 - [x] [B] Correzione: TESTO GRANDE salvato non si applicava finché non si aprivano le Impostazioni
 - [ ] [A] Conferma dai tester su telefoni veri (modello, browser o app, screenshot)
+
+## Beta 1.3.0.65 — esperienza più varia
+- [x] [A] Imprevisti di città, uno per partita (Marsiglia: uno per parte): Genova pioggia di bottiglie o tramontana, Lione nebbia o pioggia di bottiglie, Mantova notte o nebbia padana, Marsiglia mistral o blackout; durano circa 25 s, +1500 a fine imprevisto, mai durante il carro
+- [x] [A] Bottiglie élite con bagliore colorato: corazzata (i proiettili la scalfiscono appena), kamikaze (corre ed esplode, ferisce anche le altre bottiglie), doppia (rotta si divide in due bottigliette); più frequenti nelle città avanzate, spiegate la prima volta che compaiono
+- [x] [M] Potenziamenti dei colpi per 12 s: triplo, perforante, esplosivo (Pinuccia: asce triple, perforante, esplosiva); da casse con la stella ed élite abbattute
+- [x] [M] Punto debole del carro: la bottiglia brilla, i colpi valgono doppio e abbastanza colpi lo fanno barcollare (si ferma qualche secondo)
+- [x] [A] Tre obiettivi per città, una stella ciascuno (+1000): sulla mappa prima di partire, nel riepilogo di fine tappa e nella scelta dello stage; 3 specialità nascoste in alto in ogni città (serve un salto)
+- [x] [B] Medaglia nuova: TRE STELLE OVUNQUE (tutte le 12 stelle)
+- [ ] [M] Bilanciare gli obiettivi dopo le prime partite dei tester (tempi del carro, danni a Lione)
 

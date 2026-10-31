@@ -26,7 +26,7 @@ BOT="""(arg)=>{ const [c,s,god]=arg;
     if(f-lastProg>3600&&!ST.bossIn&&!ST.partT){ notes.push('STUCK scroll='+Math.round(ST.scrollX)+' lock='+ST.lockCam+' wave='+!!ST.wave+' trev='+ST.trevFight+' en='+JSON.stringify(enemies.map(e=>[e.type,Math.round(e.x-ST.scrollX),e.hp,e.wave?1:0,e.st||'',Math.round(e.y),e.h]))+' obs='+JSON.stringify(obs.filter(o=>o.hp>0&&o.x>ST.scrollX-50&&o.x<ST.scrollX+W).map(o=>[o.type,Math.round(o.x-ST.scrollX),o.hp,o.h]))+' pl='+Math.round(PL.x-ST.scrollX)+' dir='+PL.dir+' shots='+shots.length+' melee='+PL.melee+' vx='+PL.vx+' K='+JSON.stringify(K)+' air='+PL.air+' stun='+PL.stunT+' hurt='+PL.hurtT+' chute='+PL.chute+' land='+PL.landT+' pick='+PL.pickT+' bomb='+PL.bombT); break; }
     if(ST.bossIn&&boss===undefined&&!ST.bossDead&&f-lastProg>6000){ notes.push('boss missing'); break; }
   }
-  return {c,s,mode:ST.mode,frames:f,secs:Math.round(f/60),parts,score:ST.score,kills:ST.kills,dmg:ST.dmgTaken,maxLockS:Math.round(maxLock/60),notes,ms:Math.round(performance.now()-t0)};
+  return {ev:ST.ev&&ST.ev.k,evDone:ST.ev&&ST.ev.done,gendK:ST.gendK,eliteK:ST.eliteK,bossTime:ST.bossTime&&Math.round(ST.bossTime),specs:ST.spec&&ST.spec.got.length,c,s,mode:ST.mode,frames:f,secs:Math.round(f/60),parts,score:ST.score,kills:ST.kills,dmg:ST.dmgTaken,maxLockS:Math.round(maxLock/60),notes,ms:Math.round(performance.now()-t0)};
 }"""
 god=(sys.argv[1]!='nogod') if len(sys.argv)>1 else True
 with sync_playwright() as p:

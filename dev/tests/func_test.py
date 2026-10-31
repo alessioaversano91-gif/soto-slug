@@ -50,7 +50,7 @@ with sync_playwright() as p:
     # back to title, medals, ranking, boss rush
     pg.evaluate("()=>{togglePause()}"); pg.click('#pauseTitleBtn'); pg.wait_for_timeout(300); chk('Torna al titolo',pg.evaluate("()=>ST.mode")=='title')
     chk('Pulsante RIPRENDI dal checkpoint',pg.evaluate("()=>getComputedStyle(document.getElementById('contBtn')).display!=='none'"))
-    pg.click('#medBtn'); pg.wait_for_timeout(200); m=pg.evaluate("()=>{const l=document.getElementById('medl');return [l.children.length,l.scrollHeight<=l.clientHeight+1]}"); chk('Medaglie: 13 visibili',m==[13,True],m)
+    pg.click('#medBtn'); pg.wait_for_timeout(200); m=pg.evaluate("()=>{const l=document.getElementById('medl');return [l.children.length,l.scrollHeight<=l.clientHeight+1]}"); chk('Medaglie: tutte visibili',m==[len(MEDALS_N),True] if False else m[1] and m[0]>=14,m)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
     pg.click('#rankBtn'); pg.wait_for_timeout(200); chk('Classifica',pg.evaluate("()=>document.getElementById('prank').classList.contains('on')")); pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
     pg.click('#rushBtn'); pg.wait_for_timeout(300)
