@@ -449,3 +449,39 @@ Un colpo pesante (cannonata del carro, granata, ascia dall'alto del gendarme) fa
 - [x] [B] Medaglia nuova: TRE STELLE OVUNQUE (tutte le 12 stelle)
 - [ ] [M] Bilanciare gli obiettivi dopo le prime partite dei tester (tempi del carro, danni a Lione)
 
+## Genova in tre livelli (progetto, da sviluppare dopo la beta)
+Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio più avanti.
+
+**Livello 1 - Porto Antico** (quello attuale)
+- [x] Livello esistente: porto, Lanterna, cane, carro
+- [ ] Decidere cosa cambia ora che è il primo di tre (vedi "Da decidere")
+
+**Livello 2 - Corso Italia**
+- Obiettivo: percorrere il lungomare fino a raggiungere Boccadasse
+- [ ] Sfondo panoramico di Corso Italia (lungomare, passeggiata, spiagge, mare)
+- [ ] Scena d'arrivo a Boccadasse (fine livello)
+- [ ] Ostacoli e oggetti di scena del lungomare (es. panchine, ombrelloni, scooter parcheggiati)
+- [ ] Nemici o varianti specifiche del livello, se previsti
+- [ ] Logica: arrivo a Boccadasse come traguardo del livello
+
+**Livello 3 - Centro storico**
+- Obiettivo: attraversare il centro storico e prendere il treno per fuggire dalla città
+- [ ] Sfondo panoramico del centro storico (caruggi, piazze, stazione)
+- [ ] Sprite del treno (fermo in stazione e in partenza)
+- [ ] Scena finale: salita sul treno e fuga da Genova
+- [ ] Ostacoli e oggetti di scena dei caruggi (es. bancarelle, motorini, panni stesi)
+- [ ] Logica: raggiungere il treno come traguardo (es. corsa finale prima che parta)
+
+**Da decidere prima di sviluppare**
+- [ ] Boss: uno per livello o solo alla fine di Genova (livello 3)? Che boss per i livelli 2 e 3?
+- [ ] Il cane di Genova: in quale livello (o in più livelli)?
+- [ ] Obiettivi e stelle: 3 per livello o 3 per tutta Genova?
+- [ ] Imprevisti di città: quali per Corso Italia e per il centro storico?
+- [ ] Mappa e numerazione: Genova 1-1 / 1-2 / 1-3 sulla mappa? Checkpoint e salvataggio tra un livello e l'altro
+- [ ] Specialità nascoste per livello (focaccia e altre specialità genovesi?)
+- [ ] Le altre città avranno anche loro più livelli?
+
+**Note tecniche**
+- Il motore gestisce già una città in più parti (Marsiglia ne ha 2): va esteso a 3 parti con sfondo, piano dei nemici e traguardo propri per ogni parte
+- Sfondi nello stesso formato degli attuali (panorama largo, circa 3168 x 1344), sprite su fondo uniforme; le scritte sui fogli vanno ignorate e la funzione si assegna dall'immagine
+
