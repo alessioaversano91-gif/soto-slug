@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.65 BETA
+Versione di riferimento: 1.3.0.66 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -458,7 +458,7 @@ Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio pi�
 
 **Livello 2 - Corso Italia**
 - Obiettivo: percorrere il lungomare fino a raggiungere Boccadasse
-- [ ] Sfondo panoramico di Corso Italia (lungomare, passeggiata, spiagge, mare)
+- [x] Sfondo panoramico di Corso Italia (1.3.0.66; versione più grande, 3168 x 1344, da fornire per più nitidezza)
 - [ ] Scena d'arrivo a Boccadasse (fine livello)
 - [ ] Ostacoli e oggetti di scena del lungomare (es. panchine, ombrelloni, scooter parcheggiati)
 - [ ] Nemici o varianti specifiche del livello, se previsti
@@ -466,11 +466,18 @@ Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio pi�
 
 **Livello 3 - Centro storico**
 - Obiettivo: attraversare il centro storico e prendere il treno per fuggire dalla città
-- [ ] Sfondo panoramico del centro storico (caruggi, piazze, stazione)
+- [x] Sfondo panoramico del centro storico con la stazione di Piazza Principe (1.3.0.66)
 - [ ] Sprite del treno (fermo in stazione e in partenza)
 - [ ] Scena finale: salita sul treno e fuga da Genova
 - [ ] Ostacoli e oggetti di scena dei caruggi (es. bancarelle, motorini, panni stesi)
 - [ ] Logica: raggiungere il treno come traguardo (es. corsa finale prima che parta)
+
+**Primo passo fatto (1.3.0.66)**
+- [x] Genova ha tre livelli giocabili (1-1 Porto Antico, 1-2 Corso Italia, 1-3 Stazione Principe), per ora con dinamiche, nemici, cane e carro del primo livello
+- [x] Ogni livello finisce col suo carro e il suo riepilogo, poi si passa direttamente al livello dopo (senza mappa); dopo l'1-3 si va a Lione
+- [x] Obiettivi di Genova valutati alla fine dell'1-3: una focaccia nascosta per livello, nessuna bomba in tutta Genova, ultimo carro in meno di 60 s
+- [x] Scelta dello stage: pulsante per partire da uno dei tre livelli di Genova; "Continua il viaggio" riprende dal livello giusto
+- [ ] Traguardi veri dei livelli 2 e 3 (arrivo a Boccadasse, corsa al treno) al posto del carro
 
 **Da decidere prima di sviluppare**
 - [ ] Boss: uno per livello o solo alla fine di Genova (livello 3)? Che boss per i livelli 2 e 3?

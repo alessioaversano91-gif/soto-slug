@@ -761,7 +761,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.65', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.66', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -1019,7 +1019,8 @@ function drawStageBG(sx,t){
   // stages with a painted concept backdrop: far layer, bottom edge on GROUND, slow pan
   const BD={1:{key:'lyon_bd',plumes:[[330,110,1],[720,160,.9],[1180,210,.7]]},2:{key:'genova_bd',plumes:[[300,150,.8],[1180,170,.9],[1290,200,.7]]},3:{key:'marseille_bd',plumes:[[250,170,.8],[640,190,.7],[1180,230,.6]]},
     4:{key:'mantova_bd',plumes:[[140,150,.7],[560,120,.8],[900,190,.6]]},
-    '3b':{key:'marseille2_bd',plumes:[[300,110,.7],[760,170,.8],[1330,150,.6]]}}[(st===3&&ST.part===2)?'3b':st];
+    '3b':{key:'marseille2_bd',plumes:[[300,110,.7],[760,170,.8],[1330,150,.6]]},
+    '2b':{key:'genova2_bd',plumes:[[820,120,.6],[1180,150,.5]]},'2c':{key:'genova3_bd',plumes:[[300,140,.7],[1250,160,.6]]}}[(st===3&&ST.part===2)?'3b':(st===2&&ST.part===2)?'2b':(st===2&&ST.part===3)?'2c':st];
   if(BD&&S[BD.key]){
     const bd=S[BD.key], pan=Math.round((bd.width-W)*clamp(sx/Math.max(1,ST.maxScroll),0,1)), top=GROUND-bd.height;
     G.drawImage(bd,-pan,top);
@@ -2159,7 +2160,7 @@ const CITY={1:{name:'LIONE',country:'FRANCIA',lon:4.84,lat:45.76,boss:'CARRO CHA
             4:{name:'MANTOVA',country:'ITALIA',lon:10.79,lat:45.16,boss:'CARRO CHARTREUSE',note:'TRA LE MURA DEI GONZAGA'}};
 const BOSS_BY_POS=[{hp:260,wait:70},{hp:300,wait:62},{hp:340,wait:55},{hp:370,wait:45}];   // tuned with the bot: the last tank also has the longest second phase   // tougher as the journey goes on
 const stagePos=c=>ORDER.indexOf(c)+1;
-const stageTag=()=>stagePos(ST.stage)+(ST.stage===3?'-'+ST.part:'');
+const stageTag=()=>stagePos(ST.stage)+(PARTS[ST.stage]?'-'+ST.part:'');
 const MAPX=(lon)=>(lon-3.0)*25.5, MAPY=(lat)=>(47.1-lat)*35.8;           // half-res map, 240 x 165
 const SX=(lon)=>Math.round(MAPX(lon)*2), SY=(lat)=>Math.round(60+MAPY(lat)*2);
 let MAP=null, MAPBG=null;
@@ -2277,7 +2278,7 @@ const MAP_TRAVEL=110, MAP_WAIT=34;   // wait: the stamp lands on the city just f
 function mapArrived(){ return MAP.from===null||MAP.to==='tour'||MAP.t>=MAP_WAIT+MAP_TRAVEL; }
 function mapStart(){                         // leave the map and start the stage (or a new tour)
   if(MAP.to==='tour'){ startFinale(); return; }
-  const part=MAP.from===null&&MAP.to===3&&ST.startPart===2?2:1; ST.startPart=1;
+  const part=MAP.from===null&&PARTS[MAP.to]&&ST.startPart>1?Math.min(ST.startPart,PARTS[MAP.to]):1; ST.startPart=1;
   ST.stage=MAP.to; selStage=MAP.to; document.getElementById('hud').style.visibility=''; resetRun(part);
 }
 function mapContinue(){ if(!mapArrived()) MAP.t=MAP_WAIT+MAP_TRAVEL; else mapStart(); }
@@ -2377,6 +2378,9 @@ function drawMap(){
 }
 // difficulty grows along the journey (0 = first city ... 3 = last); Marseille part 2 counts as the hardest
 const DIFF_NAMES=['FACILE','NORMALE','DIFFICILE'], skill=()=>PROG.skill===undefined?1:PROG.skill;   // player-chosen difficulty, saved
+const PARTS={2:3,3:2};                               // Genova: three levels (1.3.0.66), Marseille: two parts
+const GEN_LEVELS={1:'PORTO ANTICO',2:'CORSO ITALIA',3:'STAZIONE PRINCIPE'};
+const multiLevel=()=>ST.stage===2;                    // Genova levels each end with their own tank and summary
 const fin2=()=>ST.stage===3&&ST.part===2;   // Marsiglia, second part: the finale pushes harder (1.3.0.61)
 const diff=()=>clamp(stagePos(ST.stage)-1+(ST.part===2?1:0)+(skill()-1),0,3);
 function spawnEnemy(side){
@@ -2981,12 +2985,12 @@ function initVariety(part){
   ST.wind=0; ST.mod=null; AMB.streaks=[];
   const pool=EVENTS[ST.stage]||[];
   if(ST.rush||!pool.length){ ST.ev=null; }
-  else { let k=pool[ri(0,pool.length-1)]; if(part===2&&ST.evPrev&&pool.length>1&&k===ST.evPrev) k=pool.find(x=>x!==k);   /* Marseille part 2: the other one */
+  else { let k=pool[ri(0,pool.length-1)]; if(part>1&&ST.evPrev&&pool.length>1&&k===ST.evPrev) k=pool.find(x=>x!==k);   /* later parts/levels: the other one */
     ST.ev={k,at:rnd(.22,.5),t:0,on:false,done:false,amt:0,dir:Math.random()<.5?-1:1}; ST.evPrev=k; }
   // hidden specialties (objective): 3 per city, Marseille splits them 2 + 1 between the parts
-  const keep=ST.spec&&ST.spec.stage===ST.stage&&(part===2||ST.cp||ST.cpResume);
+  const keep=ST.spec&&ST.spec.stage===ST.stage&&(part>1||ST.cp||ST.cpResume);
   if(!keep) ST.spec={stage:ST.stage,got:[]};
-  ST.specs=[]; if(!ST.rush){ const n=ST.stage===3?(part===2?1:2):3, fr=n===1?[.55]:n===2?[.3,.72]:[.2,.5,.8];
+  ST.specs=[]; if(!ST.rush){ const n=ST.stage===2?1:ST.stage===3?(part===2?1:2):3, fr=n===1?[.55]:n===2?[.3,.72]:[.2,.5,.8];
     fr.forEach((f,i)=>{ const id=part+'-'+i; ST.specs.push({id,x:Math.round((f+rnd(-.04,.04))*ST.maxScroll)+W*.6,y:GROUND-150-ri(0,14),got:ST.spec.got.includes(id),t:ri(0,60)}); }); }
 }
 function updateVariety(){
@@ -3136,7 +3140,7 @@ function drawWeak(e,key){
   if(e.weakT>0&&Math.floor(e.t/10)%2===0){ G.font='16px "Press Start 2P",monospace'; G.textAlign='center'; G.lineWidth=5; G.strokeStyle='#000'; G.strokeText('!',bx,by-56); G.fillStyle='#ffe066'; G.fillText('!',bx,by-56); G.textAlign='left'; }
 }
 // ── 6. THREE OBJECTIVES PER CITY, ONE STAR EACH ──
-const OBJ={2:[['spec','TROVA 3 FOCACCE NASCOSTE'],['nobomb','FINISCI SENZA USARE BOMBE'],['tank:60','ABBATTI IL CARRO IN MENO DI 60 S']],
+const OBJ={2:[['spec','TROVA 3 FOCACCE (UNA PER LIVELLO)'],['nobomb','FINISCI GENOVA SENZA BOMBE'],['tank:60','ULTIMO CARRO IN MENO DI 60 S']],
   1:[['spec','TROVA 3 CROISSANT NASCOSTI'],['gend:3','ABBATTI 3 GENDARMI'],['dmg:20','SUBISCI MENO DI 20 DANNI']],
   4:[['spec','TROVA 3 SBRISOLONE NASCOSTE'],['elite:3','ABBATTI 3 BOTTIGLIE ELITE'],['tank:75','ABBATTI IL CARRO IN MENO DI 75 S']],
   3:[['spec','TROVA 3 BAGUETTE NASCOSTE'],['elite:10','ABBATTI 10 BOTTIGLIE ELITE'],['combo:10','FAI UNA COMBO DA 10']]};
@@ -3263,7 +3267,7 @@ function render(){
     const a=ST.frame<140?1:1-(ST.frame-140)/30;
     G.globalAlpha=a;G.textAlign='center';
     G.font='16px "Press Start 2P",monospace';
-    const t1='STAGE '+stageTag()+' - '+getBG(ST.stage).label;
+    const t1='STAGE '+stageTag()+' - '+(multiLevel()?GEN_LEVELS[ST.part]:getBG(ST.stage).label);
     G.lineWidth=6;G.strokeStyle='#000';G.strokeText(t1,W/2,230);G.fillStyle='#ffcc00';G.fillText(t1,W/2,230);
     G.font='10px "Press Start 2P",monospace';G.lineWidth=4;G.strokeText('MISSION START!',W/2,258);G.fillStyle='#ff8a1a';G.fillText('MISSION START!',W/2,258);
     G.textAlign='left';G.globalAlpha=1;
@@ -3329,7 +3333,7 @@ function buildMenus(){
   document.getElementById('rankBack').addEventListener('click',gTitle);
   document.getElementById('recGoBtn').addEventListener('click',()=>saveRecord('Go'));
   document.getElementById('recWinBtn').addEventListener('click',()=>saveRecord('Win'));
-  document.getElementById('partBtn').addEventListener('click',()=>{sfx('select');ST.startPart=ST.startPart===2?1:2;document.getElementById('partBtn').textContent='MARSIGLIA: PARTE '+ST.startPart;});
+  document.getElementById('partBtn').addEventListener('click',()=>{sfx('select');const n=PARTS[selStage]||1; ST.startPart=(ST.startPart||1)%n+1; partLabel();});
   document.getElementById('godBtn').addEventListener('click',()=>{setGod(!ST.god);sfx('select');});
   document.getElementById('pauseGodBtn').addEventListener('click',()=>{setGod(!ST.god);sfx('select');});
   document.getElementById('resumeBtn').addEventListener('click',togglePause);
@@ -3383,8 +3387,8 @@ function togglePause(){
   else if(ST.mode==='paused'){ ST.mode='playing'; document.getElementById('scr').classList.add('off'); sfx('pause'); }
 }
 function updContBtn(){ const b=document.getElementById('contBtn'), r=PROG.resume, sv=PROG.save; if(!b) return;
-  if(sv&&CHARS[sv.char]){ b.style.display=''; b.textContent='RIPRENDI: '+CHARS[sv.char].name+' A '+BG_NAME(sv.stage)+(sv.stage===3?' '+sv.part:'')+' (CHECKPOINT)'; return; }
-  if(r&&CHARS[r.char]){ b.style.display=''; b.textContent='CONTINUA IL VIAGGIO: '+CHARS[r.char].name+' > '+BG_NAME(r.next); } else b.style.display='none'; }
+  if(sv&&CHARS[sv.char]){ b.style.display=''; b.textContent='RIPRENDI: '+CHARS[sv.char].name+' A '+BG_NAME(sv.stage)+(PARTS[sv.stage]?' '+sv.part:'')+' (CHECKPOINT)'; return; }
+  if(r&&CHARS[r.char]){ b.style.display=''; b.textContent='CONTINUA IL VIAGGIO: '+CHARS[r.char].name+' > '+BG_NAME(r.next)+(r.part?' '+r.part:''); } else b.style.display='none'; }
 const BG_NAME=c=>({1:'LIONE',2:'GENOVA',3:'MARSIGLIA',4:'MANTOVA'})[c]||'';
 function resumeSave(){
   const sv=PROG.save; if(!sv) return false; ST.rush=null; selChar=ST.char=sv.char; ST.stage=selStage=sv.stage; ST.part=sv.part; ST.cp=sv.cp; ST.stageScore=sv.stageScore||0;
@@ -3392,14 +3396,18 @@ function resumeSave(){
 }
 function continueJourney(){
   if(resumeSave()) return;
-  const r=PROG.resume; if(!r) return; ST.rush=null; selChar=ST.char=r.char; ST.score=r.score||0; ST.lives=START_LIVES; ST.stageScore=ST.score; selStage=r.next; showMap(r.from,r.next);
+  const r=PROG.resume; if(!r) return; ST.rush=null; selChar=ST.char=r.char; ST.score=r.score||0; ST.lives=START_LIVES; ST.stageScore=ST.score; selStage=r.next;
+  if(r.part){ ST.startPart=r.part; ST.cityStart=r.cityStart||0; ST.cityDeaths=r.cityDeaths||0; if(r.obj) Object.assign(ST,r.obj); }   // halfway through Genova
+  showMap(r.from,r.next);
 }
 function gTitle(){hideDialog();updContBtn();ST.rush=null;ST.rushPending=false;ST.mode='title';ST.setOpen=false;parts=[];document.getElementById('hud').style.visibility='';showPanel('pt');document.getElementById('bossbar').classList.remove('on');G.clearRect(0,0,W,H);}
 function gCS(){ST.mode='charselect';showPanel('pcs');}
 function updDiffBtn(){ const b=document.getElementById('diffBtn'); if(b) b.textContent='DIFFICOLTA\': '+DIFF_NAMES[skill()]; }
 function gLS(){if(selChar<0)return; if(ST.rushPending){ startRush(); return; } updDiffBtn();ST.mode='levelselect';refreshStageRecords();showPanel('pls');}
 function pick(i){sfx('select');selChar=i;CHARS.forEach((_,j)=>document.getElementById('cc'+j).classList.toggle('sel',j===i));document.getElementById('toStage').classList.add('rdy');}
-function pickStage(s){sfx('select');selStage=s;{const pb=document.getElementById('partBtn'); if(pb){ pb.style.display=s===3?'':'none'; if(s!==3) ST.startPart=1; pb.textContent='MARSIGLIA: PARTE '+(ST.startPart||1);}}[0,1,2,3].forEach(i=>document.getElementById('lc'+i).classList.toggle('sel',i===s-1));document.getElementById('goBtn').classList.add('rdy');}
+function partLabel(){ const pb=document.getElementById('partBtn'); if(!pb) return; const n=PARTS[selStage]; pb.style.display=n?'':'none'; if(!n){ ST.startPart=1; return; }
+  const k=Math.min(ST.startPart||1,n); pb.textContent=selStage===2?'GENOVA: LIVELLO '+k+' - '+GEN_LEVELS[k]:'MARSIGLIA: PARTE '+k; }
+function pickStage(s){sfx('select');if(selStage!==s) ST.startPart=1; selStage=s; partLabel();[0,1,2,3].forEach(i=>document.getElementById('lc'+i).classList.toggle('sel',i===s-1));document.getElementById('goBtn').classList.add('rdy');}
 function resetRun(part){
   setSG(false); ST.streak=0; ST.powT=0; ST.marks=[]; ST.salvo=null;
   ST.part=part||1; ST.partT=0; ST.fadeIn=0;
@@ -3408,7 +3416,8 @@ function resetRun(part){
   Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
   jumpQ=false; PL.hp=PL_MAXHP; PL.dead=false; PL.deadT=0; PL.inv=60; ST.stageScore=ST.score;
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
-  if(ST.part!==2){ ST.cityDeaths=0; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; ST.bossTime=undefined; } updBombs();
+  const lvl=ST.part===1||multiLevel(), city=ST.part===1;
+  if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
   ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part);
   ST.carPlan=ST.stage===1?[{at:.28,side:-1},{at:.60,side:-1}]:[];   // Lyon only: both cars come from behind and overtake (Marseille: Vespa + Trevor, sprites to come)
   ST.wavePlan=wavePlanFor(); ST.salvoPlan=salvoPlanFor(); ST.wave=null; BUB.length=0; hideDialog();
@@ -3445,6 +3454,7 @@ function rushWin(){
 }
 function startGame(){ if(selChar<0) return; ST.rush=null; PROG.save=null; saveProg(); ST.char=selChar; ST.stage=selStage; ST.score=0; ST.lives=START_LIVES; showMap(null,selStage); }
 function nextStage(){ if(ST.rush){ selChar=ST.char; startRush(); return; }
+  if(multiLevel()&&ST.part<PARTS[ST.stage]){ clearTimeout(flash._t); document.getElementById('flash').classList.remove('on'); resetRun(ST.part+1); ST.fadeIn=40; return; }   // next Genova level, no map in between
   const p=stagePos(ST.stage);
   if(p>=4){ award('tour'); PROG.tourBy[ST.char]=1; saveProg(); if(Object.keys(PROG.tourBy).length>=CHARS.length) award('tourAll'); } showMap(ST.stage, p>=4?'tour':ORDER[p]); }
 function stageSummary(){
@@ -3464,6 +3474,10 @@ function doWin(){
   if(ST.dmgTaken===0) award('nodmg'); PROG.st.stages++; PROG.save=null;
   {const f=document.getElementById('recWin'); if(f) f.classList.remove('on');}
   ST.mode='win';sfx('win');stageSummary();updPortrait();
+  if(multiLevel()&&ST.part<PARTS[ST.stage]){                 // Genova level 1 or 2 done: the city goes on
+    const nx=ST.part+1; document.getElementById('winstats').insertAdjacentHTML('beforeend',`<div class="obj"><span>LIVELLO ${ST.part}/${PARTS[ST.stage]} DI GENOVA - FOCACCE ${(ST.spec&&ST.spec.got.length)||0}/3</span><span></span><b></b></div>`);
+    PROG.resume={char:ST.char,from:null,next:ST.stage,part:nx,score:ST.score,cityStart:ST.cityStart,cityDeaths:ST.cityDeaths,obj:{spec:ST.spec,bombsUsed:ST.bombsUsed||0,eliteK:ST.eliteK||0,gendK:ST.gendK||0,bestCombo:ST.bestCombo||0}}; saveProg();
+    document.getElementById('nextBtn').textContent='LIVELLO '+nx+': '+GEN_LEVELS[nx]; document.getElementById('winsc').textContent=String(ST.score).padStart(6,'0'); showPanel('pwn'); return; }
   { const r=evalObjectives(), L=OBJ[ST.stage]; if(r){ const n=r.filter(Boolean).length; if(n) addScore(n*1000);   /* objectives: a star (and 1000) each */
     document.getElementById('winstats').insertAdjacentHTML('beforeend',L.map((o,i)=>`<div class="obj"><span>${STAR_SVG(r[i])} ${o[1]}</span><span></span><b>${r[i]?'+1000':''}</b></div>`).join('')); } }
   ST.cityScore=ST.cityScore||{}; ST.cityScore[ST.stage]=ST.score-(ST.cityStart||0);

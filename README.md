@@ -2,7 +2,7 @@
 
 Run and gun in stile arcade tra Genova, Lione, Mantova e Marsiglia.
 
-**Versione attuale:** 1.3.0.65 BETA
+**Versione attuale:** 1.3.0.66 BETA
 
 - **Gioca qui:** https://alessioaversano91-gif.github.io/soto-slug/ (PC e telefono, nessun account richiesto)
 - Su PC si puo' anche scaricare `index.html` e aprirlo con un doppio clic: funziona senza internet.

@@ -40,7 +40,7 @@ with sync_playwright() as p:
     pg.evaluate("()=>{ for(const e of enemies) e.hp=0; ST.bossDead=true; doWin(); }"); pg.wait_for_timeout(500)
     chk('Vittoria stage',pg.evaluate("()=>ST.mode")=='win',pg.evaluate("()=>ST.mode"))
     if pg.is_visible('#nextBtn'):
-        pg.click('#nextBtn'); pg.wait_for_timeout(500); chk('Prossima citta: mappa',pg.evaluate("()=>[ST.mode,MAP.to]")==['map',1],pg.evaluate("()=>[ST.mode,MAP.to]"))
+        pg.click('#nextBtn'); pg.wait_for_timeout(500); chk('Genova: livello 2 dopo il primo',pg.evaluate("()=>[ST.mode,ST.stage,ST.part]")==['playing',2,2],pg.evaluate("()=>[ST.mode,ST.stage,ST.part]"))
     else: chk('Pulsante prossima citta',False,'nextBtn non visibile')
     # game over -> retry
     pg.evaluate("()=>{ mapStart(); }"); pg.wait_for_timeout(600)
