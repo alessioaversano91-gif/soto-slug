@@ -1,10 +1,10 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.63 - primo rilascio interno
+Beta 1.3.0.64 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".
   Si apre nel browser (Chrome, Edge, Firefox o Safari) e funziona anche senza internet.
-- Telefono: apri il link che ti è stato mandato. Su Android e iPhone puoi usare
+- Telefono: apri il link che ti è stato mandato e tieni il telefono in verticale. Su Android e iPhone puoi usare
   "Aggiungi a schermata Home" per averlo come un'app a schermo pieno.
   Il file .html aperto direttamente dal telefono di solito non funziona: usa il link.
 
@@ -22,6 +22,7 @@ DA SAPERE
   tasto G, oppure "MODALITA'" nella scelta dello stage.
 - Progressi, medaglie e classifica restano nel browser del dispositivo.
   Per portarli altrove: Impostazioni > Esporta salvataggi / Importa salvataggi.
+- Sul telefono il TESTO GRANDE è attivo: si cambia da Impostazioni.
 - Le città vanno in ordine: Genova, Lione, Mantova, Marsiglia.
 
 PROBLEMI NOTI DELLA BETA

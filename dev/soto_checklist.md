@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.63 BETA
+Versione di riferimento: 1.3.0.64 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -430,4 +430,13 @@ Un colpo pesante (cannonata del carro, granata, ascia dall'alto del gendarme) fa
 - [ ] [M] Prova su iPhone vero (Safari) e su un Android
 - [ ] [M] Provare il link da un browser senza accesso a Claude o GitHub, su PC e telefono
 - [ ] [B] Raccolta segnalazioni dei tester
+
+## Beta 1.3.0.64 — telefoni
+- [x] [M] Prova del link GitHub dal browser integrato: PC e telefono (verticale e orizzontale), nessun errore
+- [x] [A] Telefoni: TESTO GRANDE attivo in automatico la prima volta (si può spegnere), testi del gioco e dei comandi più grandi
+- [x] [M] Telefono in orizzontale: avviso "GIRA IL TELEFONO IN VERTICALE" con pausa, oppure "GIOCA LO STESSO"
+- [x] [M] Telefono in verticale: lo spazio libero rende più alti i tasti della croce
+- [x] [M] Il gioco ricalcola la sua dimensione quando la pagina si apre in un'app (WhatsApp, Telegram) o torna visibile
+- [x] [B] Correzione: TESTO GRANDE salvato non si applicava finché non si aprivano le Impostazioni
+- [ ] [A] Conferma dai tester su telefoni veri (modello, browser o app, screenshot)
 
