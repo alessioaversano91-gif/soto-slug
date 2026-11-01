@@ -28,7 +28,8 @@ def frame(a,bg,y0,y1,x0,x1,title):
         if st[i,4]>=18: keep[lab==i]=1
     pink=(np.minimum(c[...,0],c[...,2])-c[...,1])>28; g=c.mean(2,keepdims=True).repeat(3,2)*.85; c=np.where(pink[...,None],g,c)   # magenta cast -> grey
     ys,xs=np.where(keep); c=c[ys.min():ys.max()+1,xs.min():xs.max()+1]; keep=keep[ys.min():ys.max()+1,xs.min():xs.max()+1]
-    colh=keep.sum(0); body=np.where(colh>=colh.max()*.55)[0]; bl,br=int(body.min()),int(body.max())
+    lo=keep[int(keep.shape[0]*.55):]                    # lower part only: sound waves, '!' and roof lights don't count as body
+    colh=lo.sum(0); body=np.where(colh>=colh.max()*.5)[0]; bl,br=int(body.min()),int(body.max())
     gy=int(np.where(keep[:,bl:br+1].any(1))[0].max())
     return np.dstack([np.clip(c,0,255),keep*255]).astype(np.uint8),bl,br,gy
 A={};M={};INFO={}
@@ -38,10 +39,13 @@ for vid,cfg in V.items():
     cut={}
     for rn,(y0,y1,slots,title) in cfg['rows'].items():
         for i,(x0,x1) in enumerate(slots): cut[f'{rn}:{i}']=frame(a,bg,y0,y1,x0,x1,title)
-    _,bl,br,_=cut['r1:0']; k=cfg['target']/(br-bl); INFO[vid]={'hp':cfg['hp']}
+    # each row of the sheet may be drawn at its own size: scale every row on a clean car of that row (1.3.0.69)
+    REF={'r1':'r1:0','r2':'r2:0','r3':'r3:0','r4':'r4:1'}
+    KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items()}; INFO[vid]={'hp':cfg['hp']}
+    print(vid,'row scales',{r:round(v,3) for r,v in KR.items()})
     for kind,frames in cfg['use'].items():
         for i,fr in enumerate(frames):
-            rgba,bl,br,gy=cut[fr]; im=Image.fromarray(rgba,'RGBA')
+            rgba,bl,br,gy=cut[fr]; im=Image.fromarray(rgba,'RGBA'); k=KR[fr.split(':')[0]]
             im=im.resize((max(1,round(im.width*k)),max(1,round(im.height*k))),Image.LANCZOS if k<1 else Image.NEAREST)
             x=np.array(im); x[...,3]=np.where(x[...,3]>127,255,0); im=Image.fromarray(x,'RGBA')
             key=f'civ{vid}_{kind}'+(str(i) if len(frames)>1 else '')

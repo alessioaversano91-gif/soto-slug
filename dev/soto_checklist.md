@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.68 BETA
+Versione di riferimento: 1.3.0.69 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -513,6 +513,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Genova: 3 vetture per livello scelte a caso tra utilitaria bianca, verde, furgone e Carabinieri (al massimo una dei Carabinieri per livello)
 - [x] Furgone più resistente (16), Carabinieri 14, utilitarie 12; i Carabinieri suonano la sirena invece dell'allarme
 - [x] Genova: tolte le vecchie auto-ostacolo bruciate (restano per ora nelle altre città)
+
+**Correzioni e traffico (1.3.0.69)**
+- [x] L'utilitaria bianca c'è sempre in ogni livello di Genova (più altre 2 vetture a caso)
+- [x] Traffico di passaggio: ogni 6-12 s una vettura attraversa la corsia di sfondo, in un senso o nell'altro; non si può colpire e non fa danni
+- [x] Carabinieri: allarme e sgommata alla stessa grandezza dell'auto ferma (nel foglio le righe hanno scale diverse; ora ogni riga è riportata alla stessa misura)
+- [ ] Traffico anche sulla corsia del giocatore, come pericolo da saltare (da decidere)
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

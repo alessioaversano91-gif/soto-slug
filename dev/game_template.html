@@ -762,7 +762,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.68', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.69', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -3182,7 +3182,8 @@ function civPlanFor(){
   if(ST.stage!==2||ST.rush) return [];
   const slots=[.12,.3,.47,.64,.82].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b);
   const pool=['w','g','v','c']; let last='', carab=0;
-  return slots.map(f=>{ let col; do{ col=pool[ri(0,pool.length-1)]; }while(col===last||(col==='c'&&carab)); last=col; if(col==='c') carab++; return {x:Math.round(f*ST.maxScroll)+W,col}; });
+  const w=ri(0,slots.length-1);                            // the white car is always there (1.3.0.69)
+  return slots.map((f,i)=>{ let col; if(i===w) col='w'; else do{ col=pool[ri(0,pool.length-1)]; }while(col==='w'||col===last||(col==='c'&&carab)); last=col; if(col==='c') carab++; return {x:Math.round(f*ST.maxScroll)+W,col}; });
 }
 function initCivs(){ civs=civPlanFor().map(p=>({col:p.col,x:p.x,st:'park',hp:CIV_HPS[p.col]||CIV_HP,max:CIV_HPS[p.col]||CIV_HP,t:ri(0,60),stT:0,calm:0,flash:0,vx:0,hurt:false,fx:0})); }
 const civKey=(c,k)=>'civ'+c.col+'_'+k;
@@ -3255,6 +3256,31 @@ function updateCivs(){
   }
   civs=civs.filter(c=>c.st!=='gone');
 }
+// ── PASSING TRAFFIC (1.3.0.69): vehicles crossing on the far lane, both ways; scenery only, they can't be hit ──
+let traffic=[];
+function updateTraffic(){
+  if(ST.stage!==2||ST.rush){ traffic=[]; return; }
+  if(!ST.bossIn&&!ST.partT&&--ST.trafT<=0){
+    ST.trafT=ri(360,720);
+    const col=['w','g','v','c'][ri(0,3)], dir=Math.random()<.5?1:-1, sp=rnd(3.2,5.5);
+    traffic.push({col,dir,v:sp*dir,x:dir>0?ST.scrollX-320:ST.scrollX+W+80,t:0});
+    if(col==='c'&&Math.random()<.5) sfx('siren'); else if(Math.random()<.5) sfx('engine');
+  }
+  for(const v of traffic){ v.t++; v.x+=v.v; }
+  traffic=traffic.filter(v=>v.dir>0?v.x<ST.scrollX+W+340:v.x>ST.scrollX-420);
+}
+function drawTraffic(){                      // far lane: a bit smaller and darker, drawn behind cover, cars and fighters
+  for(const v of traffic){
+    const D=civN(v.col,'drive'), k=CVM['civ'+v.col+'_drive0']?'civ'+v.col+'_drive'+(Math.floor(v.t/3)%D):'civ'+v.col+'_idle', s=S[k], m=CVM[k]; if(!s||!m) continue;
+    const sc=.78, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=GROUND-16;
+    G.save(); G.translate(Math.round(v.x),lane); G.scale(sc,sc);
+    G.fillStyle='rgba(0,0,0,.28)'; G.beginPath(); G.ellipse(m.bw/2,2,m.bw*.5,5,0,0,Math.PI*2); G.fill();
+    if(v.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);
+    G.restore();
+    if(v.t%4===0) P({t:'smoke',x:v.dir>0?v.x+4:v.x+bw-4,y:lane-6,vx:-v.dir*.6,vy:-.3,life:22,size:rnd(3,5)});
+  }
+}
+
 function drawCivs(){
   for(const c of civs){
     if(c.x>ST.scrollX+W+60||c.x+260<ST.scrollX-60) continue;
@@ -3303,7 +3329,7 @@ function update(){
       else spawnBoss();
     }
   }
-  updateDialog(); updateTut(); updateEnemies(); updateCars(); updateCivs(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
+  updateDialog(); updateTut(); updateEnemies(); updateCars(); updateCivs(); updateTraffic(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
   for(const o of obs) if(o.flash>0) o.flash--;     /* hit flash ticks with the game, not with the screen refresh */
   for(const c of corpses){ c.life--; if(c.vx){ c.x+=c.vx; c.vx*=.86; if(Math.abs(c.vx)<.2) c.vx=0; } } corpses=corpses.filter(c=>c.life>0);
   const boss=enemies.find(e=>e.type===5&&e.hp>0);
@@ -3354,7 +3380,7 @@ function render(){
   G.save();G.translate(Math.round(ox),Math.round(oy));
   drawStageBG(ST.scrollX,ST.frame); drawBirds();
   G.save();G.translate(-Math.round(ST.scrollX),0);
-  drawProps();drawCorpses();drawObs();drawCivs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
+  drawTraffic();drawProps();drawCorpses();drawObs();drawCivs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
   for(const e of enemies) if(e.type!==2) drawEnemy(e);
   drawPlayer();
   for(const e of enemies) if(e.type===2) drawEnemy(e);
@@ -3524,7 +3550,7 @@ function resetRun(part){
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
   const lvl=ST.part===1||multiLevel(), city=ST.part===1;
   if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
-  ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part); initCivs();
+  ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part); initCivs(); traffic=[]; ST.trafT=ri(120,300);
   ST.carPlan=ST.stage===1?[{at:.28,side:-1},{at:.60,side:-1}]:[];   // Lyon only: both cars come from behind and overtake (Marseille: Vespa + Trevor, sprites to come)
   ST.wavePlan=wavePlanFor(); ST.salvoPlan=salvoPlanFor(); ST.wave=null; BUB.length=0; hideDialog();
   ST.tut=!PROG.tut&&!ST.rush&&ST.part===1&&part!==2&&!ST.cpResume?{step:0,t:0}:null; ST.trevPlan=trevPlanFor(); TRV=null; ST.trevFight=false; ST.trevGends=null;
