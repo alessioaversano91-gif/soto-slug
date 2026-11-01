@@ -492,3 +492,30 @@ Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio pi�
 - Il motore gestisce già una città in più parti (Marsiglia ne ha 2): va esteso a 3 parti con sfondo, piano dei nemici e traguardo propri per ogni parte
 - Sfondi nello stesso formato degli attuali (panorama largo, circa 3168 x 1344), sprite su fondo uniforme; le scritte sui fogli vanno ignorate e la funzione si assegna dall'immagine
 
+## Elementi di scena per livello: vetture (prima tranche)
+Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per livello.
+
+**Comportamenti previsti**
+- [ ] Auto parcheggiata: fa da copertura, i colpi la danneggiano a vista e alla fine esplode (danno ad area a nemici e giocatore), lasciando la carcassa
+- [ ] Allarme: al primo colpo lampeggiano le frecce e suona l'allarme (attira i nemici vicini)
+- [ ] Fuga: auto con conducente che, quando inizia lo scontro, sgomma e scappa fuori schermo
+- [ ] Traffico di passaggio: vetture che attraversano la mappa; sulla corsia di sfondo sono decorative, su quella del giocatore sono un pericolo da saltare, con avviso "!" prima
+
+**Vetture per livello (proposta)**
+- [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto
+- [ ] 1-2 Corso Italia: utilitaria, cabrio, scooter, autobus
+- [ ] 1-3 Stazione Principe: taxi, autobus, auto in sosta nei caruggi
+- [ ] Altre città: da definire
+
+**Fotogrammi per ogni vettura** (vista laterale, muso a destra: per l'altro verso la specchio io)
+- [ ] Ferma, integra
+- [ ] Marcia: 4 fotogrammi (ruote che girano)
+- [ ] Ammaccata: vetri rotti e carrozzeria danneggiata
+- [ ] Carcassa bruciata (dopo l'esplosione)
+- [ ] Facoltativi: frecce o fari accesi (altrimenti li disegno io), partenza sgommata (2 fotogrammi), conducente visibile
+
+**Formato**
+- Fondo uniforme come per gli altri fogli; le scritte sul foglio vengono ignorate
+- Scala simile all'auto della gendarmeria: in gioco un'utilitaria è larga circa 200 px e alta circa 110 px; scooter e autobus in proporzione
+- Fiamme, fumo ed esplosione li aggiungo io con gli effetti già nel gioco
+
