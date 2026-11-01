@@ -1,0 +1,425 @@
+{
+"white_idle0": {
+"src": "civ1_white.jpg",
+"box": [
+33,
+48,
+203,
+137
+]
+},
+"white_idle1": {
+"src": "civ1_white.jpg",
+"box": [
+237,
+49,
+407,
+137
+]
+},
+"white_idle2": {
+"src": "civ1_white.jpg",
+"box": [
+433,
+48,
+603,
+137
+]
+},
+"white_idle3": {
+"src": "civ1_white.jpg",
+"box": [
+613,
+48,
+796,
+137
+]
+},
+"white_idle4": {
+"src": "civ1_white.jpg",
+"box": [
+821,
+49,
+992,
+137
+]
+},
+"white_boom0": {
+"src": "civ1_white.jpg",
+"box": [
+33,
+189,
+200,
+278
+]
+},
+"white_boom1": {
+"src": "civ1_white.jpg",
+"box": [
+248,
+179,
+417,
+278
+]
+},
+"white_boom2": {
+"src": "civ1_white.jpg",
+"box": [
+467,
+149,
+789,
+280
+]
+},
+"white_boom3": {
+"src": "civ1_white.jpg",
+"box": [
+827,
+197,
+992,
+278
+]
+},
+"white_alarm0": {
+"src": "civ1_white.jpg",
+"box": [
+22,
+341,
+184,
+424
+]
+},
+"white_alarm1": {
+"src": "civ1_white.jpg",
+"box": [
+188,
+312,
+351,
+424
+]
+},
+"white_alarm2": {
+"src": "civ1_white.jpg",
+"box": [
+354,
+311,
+519,
+424
+]
+},
+"white_alarm3": {
+"src": "civ1_white.jpg",
+"box": [
+522,
+293,
+683,
+424
+]
+},
+"white_alarm4": {
+"src": "civ1_white.jpg",
+"box": [
+686,
+293,
+848,
+424
+]
+},
+"white_alarm5": {
+"src": "civ1_white.jpg",
+"box": [
+852,
+293,
+1014,
+424
+]
+},
+"white_flee0": {
+"src": "civ1_white.jpg",
+"box": [
+38,
+479,
+198,
+563
+]
+},
+"white_flee1": {
+"src": "civ1_white.jpg",
+"box": [
+199,
+481,
+352,
+563
+]
+},
+"white_flee2": {
+"src": "civ1_white.jpg",
+"box": [
+353,
+445,
+512,
+563
+]
+},
+"green_idle0": {
+"src": "civ1_green.jpg",
+"box": [
+33,
+49,
+202,
+137
+]
+},
+"green_idle1": {
+"src": "civ1_green.jpg",
+"box": [
+237,
+49,
+406,
+137
+]
+},
+"green_idle2": {
+"src": "civ1_green.jpg",
+"box": [
+434,
+48,
+603,
+137
+]
+},
+"green_idle3": {
+"src": "civ1_green.jpg",
+"box": [
+612,
+49,
+809,
+137
+]
+},
+"green_idle4": {
+"src": "civ1_green.jpg",
+"box": [
+822,
+49,
+992,
+137
+]
+},
+"green_boom0": {
+"src": "civ1_green.jpg",
+"box": [
+33,
+190,
+200,
+278
+]
+},
+"green_boom1": {
+"src": "civ1_green.jpg",
+"box": [
+248,
+181,
+417,
+278
+]
+},
+"green_boom2": {
+"src": "civ1_green.jpg",
+"box": [
+476,
+152,
+788,
+280
+]
+},
+"green_boom3": {
+"src": "civ1_green.jpg",
+"box": [
+827,
+197,
+991,
+278
+]
+},
+"green_alarm0": {
+"src": "civ1_green.jpg",
+"box": [
+22,
+341,
+184,
+424
+]
+},
+"green_alarm1": {
+"src": "civ1_green.jpg",
+"box": [
+188,
+313,
+351,
+424
+]
+},
+"green_alarm2": {
+"src": "civ1_green.jpg",
+"box": [
+354,
+312,
+519,
+424
+]
+},
+"green_alarm3": {
+"src": "civ1_green.jpg",
+"box": [
+522,
+293,
+683,
+424
+]
+},
+"green_alarm4": {
+"src": "civ1_green.jpg",
+"box": [
+686,
+293,
+848,
+424
+]
+},
+"green_alarm5": {
+"src": "civ1_green.jpg",
+"box": [
+852,
+293,
+1014,
+424
+]
+},
+"green_flee0": {
+"src": "civ1_green.jpg",
+"box": [
+38,
+479,
+198,
+563
+]
+},
+"green_flee1": {
+"src": "civ1_green.jpg",
+"box": [
+199,
+481,
+352,
+562
+]
+},
+"green_flee2": {
+"src": "civ1_green.jpg",
+"box": [
+353,
+444,
+512,
+563
+]
+},
+"wx_soto0": {
+"src": "civ1_white_extra.jpg",
+"box": [
+30,
+74,
+275,
+206
+]
+},
+"wx_soto1": {
+"src": "civ1_white_extra.jpg",
+"box": [
+307,
+75,
+552,
+206
+]
+},
+"wx_soto2": {
+"src": "civ1_white_extra.jpg",
+"box": [
+571,
+75,
+806,
+206
+]
+},
+"wx_alarm0": {
+"src": "civ1_white_extra.jpg",
+"box": [
+26,
+304,
+268,
+434
+]
+},
+"wx_alarm1": {
+"src": "civ1_white_extra.jpg",
+"box": [
+272,
+266,
+522,
+434
+]
+},
+"wx_alarm2": {
+"src": "civ1_white_extra.jpg",
+"box": [
+524,
+266,
+770,
+434
+]
+},
+"wx_alarm3": {
+"src": "civ1_white_extra.jpg",
+"box": [
+772,
+266,
+1014,
+434
+]
+},
+"wx_peel0": {
+"src": "civ1_white_extra.jpg",
+"box": [
+42,
+541,
+282,
+658
+]
+},
+"wx_peel1": {
+"src": "civ1_white_extra.jpg",
+"box": [
+283,
+515,
+532,
+658
+]
+},
+"wx_peel2": {
+"src": "civ1_white_extra.jpg",
+"box": [
+533,
+517,
+774,
+658
+]
+},
+"wx_peel3": {
+"src": "civ1_white_extra.jpg",
+"box": [
+775,
+528,
+1020,
+658
+]
+}
+}

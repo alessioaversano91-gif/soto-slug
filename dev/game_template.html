@@ -450,6 +450,7 @@ const SFX={
   screech:()=>noise(.7,.14,'bandpass',2600,2100,9),
   engine:()=>tone('sawtooth',70,160,.9,.10),
   alarm:()=>{for(let i=0;i<6;i++)tone('square',i%2?440:660,i%2?440:660,.14,.08,i*.16);},
+  caralarm:()=>{for(let i=0;i<8;i++)tone('square',i%2?1350:950,i%2?1350:950,.09,.05,i*.1);},
   stamp:()=>{noise(.1,.4,'lowpass',420,120);tone('sine',120,55,.14,.3);},
   travel:()=>tone('triangle',300,760,.5,.05),
   arrive:()=>notes([784,988,1175],.09,'triangle',.08),
@@ -761,7 +762,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.66', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.67', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -1720,7 +1721,7 @@ const LEG=12;
 //  can be switched off. Today hurtPlayer() only plays the hit reaction.
 // ═══════════════════════════════════════════════════════════════
 const ENEMY_DMG={drop:1,foam:1,big:2,lob:2,tankshot:3,twister:2,ram:3,  // bottles & tanks
-                 gaxe:4,gdown:5,gleap:4,ggren:3,kami:3,                    // Gendarmerie: heavier than bottles
+                 gaxe:4,gdown:5,gleap:4,ggren:3,kami:3,civram:2,civboom:3,                    // Gendarmerie: heavier than bottles
                  dogbite:1};                                        // Genova dog: barely scratches
 const PL_MAXHP=20, START_LIVES=3;
 const BOMB_MAX=30;
@@ -2818,6 +2819,7 @@ function explodeShot(p,r){
   boom(p.x,p.y,r);
   for(const e of enemies){ if(e.hp<=0) continue; const d=Math.hypot(e.x+e.w/2-p.x,e.y+e.h/2-p.y); if(d<r+e.w/2){ e.hp-=p.dmg; e.flash=8; if(e.hp<=0) killEnemy(e);} }
   for(const o of obs){ if(o.hp<=0) continue; const d=Math.abs(o.x+o.w/2-p.x); if(d<r+o.w/2&&p.y>GROUND-o.h-r){ damageOb(o,p.dmg); } }
+  for(const c of civs){ if(civHittable(c)&&Math.abs(c.x+civW(c)/2-p.x)<r+civW(c)/2&&p.y>GROUND-120-r) civHit(c,p.dmg,p.x,GROUND-60); }
 }
 function damageOb(o,dmg){
   o.hp-=dmg;o.flash=6;
@@ -2881,6 +2883,8 @@ function updateShots(){
         hitCar(c,p.dmg,p.x,p.y); p.life=0; break;
       }
     }
+    if(p.life<=0) continue;
+    for(const c of civs){ if(!civHittable(c)) continue; const hb=civBox(c); if(hitRect(p,hb.x,hb.y,hb.w,hb.h)){ if(explosive){p.life=0;explodeShot(p,60);break;} if(p.k==='axe'){ const cs=p.civSet||(p.civSet=new Set()); if(!cs.has(c)){ cs.add(c); civHit(c,p.dmg,p.x,p.y); axeImpact(p.x,p.y); } continue; } civHit(c,p.k==='sg'?4:p.dmg,p.x,p.y); P({t:'ping',x:p.x,y:p.y,life:6}); if(p.xb) modBlast(p); if(!(p.pk&&p.pierce-->0)) p.life=0; break; } }
     if(p.life<=0) continue;
     for(const o of obs){
       if(o.hp<=0) continue;
@@ -3165,6 +3169,105 @@ function drawStarC(x,y,r,on){ G.beginPath(); for(let i=0;i<10;i++){ const a=-Mat
   if(on){ G.fillStyle='#ffcc00'; G.fill(); } G.strokeStyle=on?'#7a5200':'#9d9a82'; G.lineWidth=1; G.stroke(); }
 
 // ═══════════════════════════════════════════════════════════════
+//  CIVILIAN CAR 1 (1.3.0.67) — Genova levels only. Parked along the street:
+//  shoot it a few times and the alarm goes off, then it peels out to the right;
+//  keep shooting and it catches fire and explodes (hurts enemies, other cars, you).
+// ═══════════════════════════════════════════════════════════════
+const CVM=__CIVMETA__;
+let civs=[];
+const CIV_HP=12, CIV_CALM=75;
+function civPlanFor(){
+  if(ST.stage!==2||ST.rush) return [];
+  const slots=[.12,.3,.47,.64,.82].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b);
+  return slots.map((f,i)=>({x:Math.round(f*ST.maxScroll)+W,col:(i+ST.part)%2?'g':'w'}));
+}
+function initCivs(){ civs=civPlanFor().map(p=>({col:p.col,x:p.x,st:'park',hp:CIV_HP,t:ri(0,60),stT:0,calm:0,flash:0,vx:0,hurt:false,fx:0})); }
+const civKey=(c,k)=>'civ'+c.col+'_'+k;
+function civFrame(c){
+  const A=c.col==='w'?4:6, P=c.col==='w'?4:2;
+  switch(c.st){
+    case 'park': return civKey(c,'idle');
+    case 'alarm': return c.hp<=CIV_HP*.5?civKey(c,'dmg'):civKey(c,'alarm'+(1+Math.floor(c.t/6)%(A-1)));
+    case 'peel': return civKey(c,'peel'+Math.min(P-1,Math.floor(c.stT/(36/P))));
+    case 'drive': return c.stT<22&&Math.floor(c.stT/4)%2===0?civKey(c,'warn'):civKey(c,'drive'+(Math.floor(c.t/3)%4));
+    case 'burn': return civKey(c,'burn');
+    case 'boom': return civKey(c,'boom');
+    case 'wreck': return civKey(c,'wreck');
+  }
+  return civKey(c,'idle');
+}
+const civW=c=>(CVM[civKey(c,'idle')]||{bw:190}).bw;
+function civBox(c){ const w=civW(c); return {x:c.x+8,y:GROUND-104,w:w-16,h:100}; }
+const civHittable=c=>c.st==='park'||c.st==='alarm'||c.st==='burn';
+function civHit(c,dmg,x,y){
+  if(!civHittable(c)) return;
+  c.hp-=dmg; c.flash=5; c.calm=CIV_CALM;
+  for(let i=0;i<4;i++) P({t:'spark',x,y,vx:rnd(-3,3),vy:rnd(-3,0),g:.25,life:12,col:i%2?'#ffffff':'#ffd23a'});
+  if(c.st==='park'){ c.st='alarm'; c.stT=0; sfx('caralarm'); popText(c.x+civW(c)/2,GROUND-130,'ALLARME!'); }
+  if(c.hp<=0&&c.st!=='burn'){ c.st='burn'; c.stT=0; c.fuse=24; }
+  else if(c.st==='alarm'&&c.hp<=CIV_HP*.4){ c.st='burn'; c.stT=0; c.fuse=80; flash('L\'AUTO STA PER ESPLODERE!'); }
+}
+function civBoom(c){
+  const cx=c.x+civW(c)/2, cy=GROUND-60;
+  c.st='boom'; c.stT=0; boom(cx,cy,70); boom(cx-40,cy+10,40); boom(cx+40,cy+10,40); light(cx,cy,180,'255,150,60',16);
+  ST.shake=Math.max(ST.shake,7); ST.hitStop=Math.max(ST.hitStop||0,4); sfx('boom');
+  addScore(1000); popText(cx,GROUND-150,'+1000'); ST.civBoomN=(ST.civBoomN||0)+1;
+  for(let i=0;i<16;i++) P({t:'debris',x:cx+rnd(-60,60),y:GROUND-rnd(20,90),vx:rnd(-6,6),vy:rnd(-9,-3),g:.4,life:ri(50,90),size:ri(3,6),col:i%3?'#3a3c40':'#d8d4c8',bounce:.4,vr:rnd(-.4,.4)});
+  for(const e of enemies){ if(e.hp<=0||e.dying) continue; if(Math.abs(e.x+e.w/2-cx)<120){ e.hp-=e.type===5?20:12; e.flash=8; if(e.type===5) e.hitT=9; if(e.hp<=0) killEnemy(e); } }
+  for(const o of civs) if(o!==c&&civHittable(o)&&Math.abs(o.x+civW(o)/2-cx)<160) civHit(o,8,o.x+civW(o)/2,GROUND-60);
+  for(const o of obs) if(o.hp>0&&Math.abs(o.x+o.w/2-cx)<110) damageOb(o,10);
+  if(!PL.dead&&Math.abs(PL.x-cx)<95&&PL.jy>-90) hurtPlayer('civboom',cx,cy);
+}
+function updateCivs(){
+  for(const c of civs){
+    c.t++; c.stT++; if(c.flash>0) c.flash--;
+    const cx=c.x+civW(c)/2;
+    switch(c.st){
+      case 'alarm':
+        if(c.stT%55===0) sfx('caralarm');
+        if(ST.frame%3===0){ const blue=Math.floor(c.t/6)%2===0; light(cx+(blue?-20:20),GROUND-110,40,blue?'80,140,255':'255,60,60',2,.28); }
+        if(--c.calm<=0){ c.st='peel'; c.stT=0; sfx('screech'); sfx('engine'); decals.push({x:c.x+20,dir:1,life:900}); popText(cx,GROUND-130,'SCAPPA!'); }
+        break;
+      case 'peel':
+        if(c.stT%2===0) P({t:'smoke',x:c.x+10+rnd(-6,6),y:GROUND-8,vx:-rnd(.6,2),vy:-rnd(.2,1),life:ri(30,50),size:rnd(7,12)});
+        c.x+=c.stT>18?1.2:0;
+        if(c.stT>=36){ c.st='drive'; c.stT=0; c.vx=2.5; }
+        break;
+      case 'drive':
+        c.vx=Math.min(c.vx+.35,11); c.x+=c.vx;
+        if(c.stT%3===0) P({t:'smoke',x:c.x+6,y:GROUND-8,vx:-1,vy:-.4,life:24,size:rnd(4,7)});
+        if(!c.hurt&&!PL.dead&&PL.x>c.x+10&&PL.x<c.x+civW(c)-10&&PL.jy>-60){ c.hurt=true; hurtPlayer('civram',PL.x,GROUND-50); ST.shake=Math.max(ST.shake,4); }
+        for(const e of enemies){ if(e.hp<=0||e.type===5||e.type===2||e.civHit===c) continue; const ex=e.x+e.w/2; if(ex>c.x&&ex<c.x+civW(c)){ e.civHit=c; e.hp-=8; e.flash=8; e.x+=24; if(e.hp<=0) killEnemy(e); } }
+        if(c.x>ST.scrollX+W+320) c.st='gone';
+        break;
+      case 'burn':
+        if(c.stT%3===0) P({t:'fire',x:c.x+rnd(20,civW(c)-20),y:GROUND-rnd(50,100),vx:rnd(-.3,.3),vy:rnd(-1.6,-.6),life:20,size:rnd(4,8)});
+        if(c.stT%5===0) P({t:'smoke',x:c.x+rnd(30,civW(c)-30),y:GROUND-100,vx:rnd(-.4,.4),vy:-rnd(.8,1.6),life:50,size:rnd(6,11)});
+        if(c.stT%20===0) sfx('hit');
+        if(--c.fuse<=0) civBoom(c);
+        break;
+      case 'boom': if(c.stT>=24){ c.st='wreck'; c.stT=0; } break;
+      case 'wreck': if(c.t%14===0&&c.stT<900) P({t:'smoke',x:c.x+rnd(30,civW(c)-30),y:GROUND-60,vx:rnd(-.3,.3),vy:-rnd(.5,1.1),life:60,size:rnd(6,10)}); break;
+    }
+  }
+  civs=civs.filter(c=>c.st!=='gone');
+}
+function drawCivs(){
+  for(const c of civs){
+    if(c.x>ST.scrollX+W+60||c.x+260<ST.scrollX-60) continue;
+    const k=civFrame(c), s=S[k], m=CVM[k]; if(!s||!m) continue;
+    let x0, y0=GROUND+3-m.gy;
+    if(c.st==='boom') x0=Math.round(c.x+civW(c)/2-m.w/2);                    // the fireball is centred on the car
+    else x0=Math.round(c.x-m.ax);
+    if(c.st!=='boom'){ G.fillStyle='rgba(0,0,0,.35)';G.beginPath();G.ellipse(c.x+civW(c)/2,GROUND+3,civW(c)*.5,6,0,0,Math.PI*2);G.fill(); }
+    if(c.st==='boom'){ G.drawImage(S[civKey(c,'wreck')].n,Math.round(c.x-CVM[civKey(c,'wreck')].ax),GROUND+3-CVM[civKey(c,'wreck')].gy); G.globalAlpha=Math.max(0,1-c.stT/24); }
+    const jx=c.st==='burn'||c.flash>0?ri(-1,1):0;
+    G.drawImage(s.n,x0+jx,y0); G.globalAlpha=1;
+    if(c.flash>0&&s.wn){ G.globalAlpha=.4; G.drawImage(s.wn,x0+jx,y0); G.globalAlpha=1; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  MAIN UPDATE / RENDER
 // ═══════════════════════════════════════════════════════════════
 function update(){
@@ -3197,7 +3300,7 @@ function update(){
       else spawnBoss();
     }
   }
-  updateDialog(); updateTut(); updateEnemies(); updateCars(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
+  updateDialog(); updateTut(); updateEnemies(); updateCars(); updateCivs(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
   for(const o of obs) if(o.flash>0) o.flash--;     /* hit flash ticks with the game, not with the screen refresh */
   for(const c of corpses){ c.life--; if(c.vx){ c.x+=c.vx; c.vx*=.86; if(Math.abs(c.vx)<.2) c.vx=0; } } corpses=corpses.filter(c=>c.life>0);
   const boss=enemies.find(e=>e.type===5&&e.hp>0);
@@ -3248,7 +3351,7 @@ function render(){
   G.save();G.translate(Math.round(ox),Math.round(oy));
   drawStageBG(ST.scrollX,ST.frame); drawBirds();
   G.save();G.translate(-Math.round(ST.scrollX),0);
-  drawProps();drawCorpses();drawObs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
+  drawProps();drawCorpses();drawObs();drawCivs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
   for(const e of enemies) if(e.type!==2) drawEnemy(e);
   drawPlayer();
   for(const e of enemies) if(e.type===2) drawEnemy(e);
@@ -3418,7 +3521,7 @@ function resetRun(part){
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
   const lvl=ST.part===1||multiLevel(), city=ST.part===1;
   if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
-  ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part);
+  ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part); initCivs();
   ST.carPlan=ST.stage===1?[{at:.28,side:-1},{at:.60,side:-1}]:[];   // Lyon only: both cars come from behind and overtake (Marseille: Vespa + Trevor, sprites to come)
   ST.wavePlan=wavePlanFor(); ST.salvoPlan=salvoPlanFor(); ST.wave=null; BUB.length=0; hideDialog();
   ST.tut=!PROG.tut&&!ST.rush&&ST.part===1&&part!==2&&!ST.cpResume?{step:0,t:0}:null; ST.trevPlan=trevPlanFor(); TRV=null; ST.trevFight=false; ST.trevGends=null;

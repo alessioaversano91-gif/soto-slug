@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.66 BETA
+Versione di riferimento: 1.3.0.67 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -500,6 +500,13 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [ ] Allarme: al primo colpo lampeggiano le frecce e suona l'allarme (attira i nemici vicini)
 - [ ] Fuga: auto con conducente che, quando inizia lo scontro, sgomma e scappa fuori schermo
 - [ ] Traffico di passaggio: vetture che attraversano la mappa; sulla corsia di sfondo sono decorative, su quella del giocatore sono un pericolo da saltare, con avviso "!" prima
+
+**Auto civile 1 (1.3.0.67)**
+- [x] Sprite integrati: versione bianca e verde (ferma, marcia, allarme, ammaccata, in fiamme, esplosione, carcassa, sgommata, conducente)
+- [x] Solo nei livelli di Genova: 3 auto per livello in punti diversi a ogni partita, bianche e verdi alternate
+- [x] Pochi colpi: parte l'allarme, se smetti di sparare l'auto sgomma e scappa verso destra (investe chi trova, anche te: salta!)
+- [x] Tanti colpi (o una bomba): prende fuoco ed esplode (+1000), colpisce bottiglie, carri, altre auto e te se sei vicino; resta la carcassa
+- [ ] Taratura dopo le prime partite (colpi necessari, tempo prima della fuga)
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto
