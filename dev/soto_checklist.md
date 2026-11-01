@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.70 BETA
+Versione di riferimento: 1.3.0.71 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -527,6 +527,7 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] SUV azzurro (Lione e Marsiglia, entrambe le parti): 3 per livello, stesse dinamiche delle vetture di Genova (allarme, fuga, fuoco, esplosione, carcassa), resistenza 14; passa anche nel traffico
 - [x] Lione e Marsiglia: tolte le vecchie auto-ostacolo bruciate (restano solo a Mantova); le auto della gendarmeria restano com'erano
 - [ ] Altri modelli per la Francia (Alessio fornirà nuovi fogli)
+- [x] 1.3.0.71: il traffico in basso torna alla grandezza delle vetture parcheggiate e passa davanti ai personaggi (corsia in primo piano)
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

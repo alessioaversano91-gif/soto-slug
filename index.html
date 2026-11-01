@@ -762,7 +762,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.70', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.71', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -3271,10 +3271,10 @@ function updateTraffic(){
   for(const v of traffic){ v.t++; v.x+=v.v; }
   traffic=traffic.filter(v=>v.dir>0?v.x<ST.scrollX+W+340:v.x>ST.scrollX-420);
 }
-function drawTraffic(){                      // traffic lane along the bottom edge of the street, smaller than the parked cars (1.3.0.70)
+function drawTraffic(){                      // traffic lane along the bottom edge of the street, same size as the parked cars (1.3.0.71)
   for(const v of traffic){
     const D=civN(v.col,'drive'), k=CVM['civ'+v.col+'_drive0']?'civ'+v.col+'_drive'+(Math.floor(v.t/3)%D):'civ'+v.col+'_idle', s=S[k], m=CVM[k]; if(!s||!m) continue;
-    const sc=.6, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-5;
+    const sc=1, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-5;
     G.save(); G.translate(Math.round(v.x),lane); G.scale(sc,sc);
     G.fillStyle='rgba(0,0,0,.28)'; G.beginPath(); G.ellipse(m.bw/2,2,m.bw*.5,5,0,0,Math.PI*2); G.fill();
     if(v.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);
@@ -3389,10 +3389,11 @@ function render(){
   G.save();G.translate(Math.round(ox),Math.round(oy));
   drawStageBG(ST.scrollX,ST.frame); drawBirds();
   G.save();G.translate(-Math.round(ST.scrollX),0);
-  drawTraffic();drawProps();drawCorpses();drawObs();drawCivs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
+  drawProps();drawCorpses();drawObs();drawCivs();drawCars();drawTrevor();drawMarks();drawItems();drawSpecs();drawFalls();
   for(const e of enemies) if(e.type!==2) drawEnemy(e);
   drawPlayer();
   for(const e of enemies) if(e.type===2) drawEnemy(e);
+  drawTraffic();                               // near lane at the bottom edge: in front of the fighters (1.3.0.71)
   drawShots();drawParts();drawBubbles();
   G.restore();
   drawRain(); drawWind();
