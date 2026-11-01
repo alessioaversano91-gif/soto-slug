@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.69 BETA
+Versione di riferimento: 1.3.0.70 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -474,13 +474,13 @@ Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio pi�
 
 **Primo passo fatto (1.3.0.66)**
 - [x] Genova ha tre livelli giocabili (1-1 Porto Antico, 1-2 Corso Italia, 1-3 Stazione Principe), per ora con dinamiche, nemici, cane e carro del primo livello
-- [x] Ogni livello finisce col suo carro e il suo riepilogo, poi si passa direttamente al livello dopo (senza mappa); dopo l'1-3 si va a Lione
+- [x] Ogni livello finisce col suo riepilogo (dalla 1.3.0.70 il carro c'è solo all'1-3), poi si passa direttamente al livello dopo (senza mappa); dopo l'1-3 si va a Lione
 - [x] Obiettivi di Genova valutati alla fine dell'1-3: una focaccia nascosta per livello, nessuna bomba in tutta Genova, ultimo carro in meno di 60 s
 - [x] Scelta dello stage: pulsante per partire da uno dei tre livelli di Genova; "Continua il viaggio" riprende dal livello giusto
 - [ ] Traguardi veri dei livelli 2 e 3 (arrivo a Boccadasse, corsa al treno) al posto del carro
 
 **Da decidere prima di sviluppare**
-- [ ] Boss: uno per livello o solo alla fine di Genova (livello 3)? Che boss per i livelli 2 e 3?
+- [x] Boss: per ora solo alla fine di Genova (livello 3); i livelli 1 e 2 finiscono senza carro (1.3.0.70)
 - [ ] Il cane di Genova: in quale livello (o in più livelli)?
 - [ ] Obiettivi e stelle: 3 per livello o 3 per tutta Genova?
 - [ ] Imprevisti di città: quali per Corso Italia e per il centro storico?
@@ -520,6 +520,14 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Carabinieri: allarme e sgommata alla stessa grandezza dell'auto ferma (nel foglio le righe hanno scale diverse; ora ogni riga è riportata alla stessa misura)
 - [ ] Traffico anche sulla corsia del giocatore, come pericolo da saltare (da decidere)
 
+**Traffico in basso, Genova senza carri intermedi, SUV in Francia (1.3.0.70)**
+- [x] Il traffico di passaggio corre lungo il bordo basso della strada, più piccolo delle vetture parcheggiate (60% invece del 78%)
+- [x] Genova 1-1 e 1-2: a fine percorso compare "LIVELLO COMPLETATO!", i nemici rimasti si ritirano, riepilogo e livello successivo; il carro resta solo all'1-3
+- [x] Barra di avanzamento: alla fine dei livelli 1 e 2 di Genova mostra il numero del livello successivo invece della B del boss
+- [x] SUV azzurro (Lione e Marsiglia, entrambe le parti): 3 per livello, stesse dinamiche delle vetture di Genova (allarme, fuga, fuoco, esplosione, carcassa), resistenza 14; passa anche nel traffico
+- [x] Lione e Marsiglia: tolte le vecchie auto-ostacolo bruciate (restano solo a Mantova); le auto della gendarmeria restano com'erano
+- [ ] Altri modelli per la Francia (Alessio fornirà nuovi fogli)
+
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto
 - [ ] 1-2 Corso Italia: utilitaria, cabrio, scooter, autobus
@@ -538,3 +546,33 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - Scala simile all'auto della gendarmeria: in gioco un'utilitaria è larga circa 200 px e alta circa 110 px; scooter e autobus in proporzione
 - Fiamme, fumo ed esplosione li aggiungo io con gli effetti già nel gioco
 
+
+## Cose da sistemare o migliorare (dopo la 1.3.0.70)
+Elenco aperto, in ordine di priorità indicativa. [A] alta, [M] media, [B] bassa.
+
+**Da sistemare**
+- [ ] [A] Genova 1-1 e 1-2 ora durano circa un minuto e finiscono senza un momento forte: serve un traguardo vero (arrivo a Boccadasse, corsa al treno) o un mini-evento finale al posto del carro
+- [ ] [A] Prova su iPhone/Safari reale: finora i test mobili sono simulati (dimensioni, tocchi, schermo intero, audio dopo il primo tocco)
+- [ ] [M] Seba e Lollo a mani nude: pugni e calci non danneggiano le vetture (solo colpi ed esplosioni); decidere se devono farlo
+- [ ] [M] L'allarme delle vetture non attira ancora i nemici vicini (previsto in checklist, non fatto)
+- [ ] [M] Mantova ha ancora le vecchie auto-ostacolo bruciate: sostituirle quando arrivano le vetture di Mantova
+- [ ] [M] Lione: le auto della gendarmeria che entrano in scena possono sovrapporsi a un SUV parcheggiato; valutare di tenerle distanti
+- [ ] [M] Sfondo di Corso Italia a bassa risoluzione: serve la versione grande (3168 x 1344)
+- [ ] [B] Il fotogramma dell'esplosione delle vetture è uno solo: con 2-3 fotogrammi l'esplosione sarebbe più viva
+- [ ] [B] File unico da circa 7,5 MB: sul telefono con rete lenta il primo caricamento è lento; valutare immagini più leggere o una schermata di caricamento con barra
+
+**Da tarare dopo le prime partite**
+- [ ] [M] Vetture: colpi necessari (12-16), tempo prima della fuga, danno dell'esplosione al giocatore
+- [ ] [M] Frequenza del traffico (ora ogni 6-12 s) e velocità
+- [ ] [M] Obiettivi e stelle di Genova ora che i carri intermedi non ci sono più (es. "ultimo carro in meno di 60 s" resta valido solo per l'1-3)
+- [ ] [B] Punteggio: con meno carri Genova vale meno punti delle altre città; eventualmente un bonus di fine livello
+
+**Si potrebbe migliorare**
+- [ ] [M] Traffico anche sulla corsia del giocatore, con "!" di avviso, come pericolo da saltare
+- [ ] [M] Vetture diverse per ogni livello di Genova (vedi proposta sopra) e per Marsiglia (es. taxi, scooter)
+- [ ] [M] Altri elementi di scena dopo le vetture: chioschi, bancarelle, motorini, panchine
+- [ ] [B] Traffico più vario: colore casuale, clacson, qualche vettura che si ferma
+- [ ] [B] Sprite mancanti già in lista: Pinuccia, nemici e boss di Mantova, boss diversi per città
+- [ ] [B] Pose a mani nude di Albi e Alecio (checklist sopra)
+- [ ] [B] Versione in inglese dei testi
+- [ ] [B] Modalità a 2 giocatori sullo stesso schermo

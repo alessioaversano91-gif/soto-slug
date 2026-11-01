@@ -10,6 +10,13 @@ V={
    'r4':(586,762,[[90,560],[590,880]],(636,420))},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'dmg':['r2:0'],'burn':['r2:1'],'boom':['r2:2'],'wreck':['r2:3'],
           'alarm':['r3:0','r3:1','r3:2','r3:3'],'peel':['r4:0'],'warn':['r4:1']}},
+ 'f':{'src':'suv.jpg','target':230,'hp':14,'same':{'r4':'r1'},'rows':{   # France SUV (Lione / Marsiglia) 1.3.0.70
+   'r1':(112,362,[[70,655],[755,1340],[1355,1940],[1958,2545]],None),
+   'r2':(373,722,[[20,658],[715,1300],[1330,1945],[1960,2560]],(458,570)),
+   'r3':(728,1092,[[20,662],[705,1318],[1338,1965]],(803,430)),
+   'r4':(1096,1430,[[90,1285],[1410,2060]],(1186,790))},
+   'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'dmg':['r2:0'],'burn':['r2:1'],'boom':['r2:2'],'wreck':['r2:3'],
+          'alarm':['r3:0','r3:1','r3:2'],'peel':['r4:0'],'warn':['r4:1']}},
  'c':{'src':'carab.jpg','target':250,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
@@ -41,7 +48,9 @@ for vid,cfg in V.items():
         for i,(x0,x1) in enumerate(slots): cut[f'{rn}:{i}']=frame(a,bg,y0,y1,x0,x1,title)
     # each row of the sheet may be drawn at its own size: scale every row on a clean car of that row (1.3.0.69)
     REF={'r1':'r1:0','r2':'r2:0','r3':'r3:0','r4':'r4:1'}
-    KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items()}; INFO[vid]={'hp':cfg['hp']}
+    KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items()}
+    for rn,src in cfg.get('same',{}).items(): KR[rn]=KR[src]   # motion-blurred reference: borrow another row's scale
+    INFO[vid]={'hp':cfg['hp']}
     print(vid,'row scales',{r:round(v,3) for r,v in KR.items()})
     for kind,frames in cfg['use'].items():
         for i,fr in enumerate(frames):
@@ -53,7 +62,7 @@ for vid,cfg in V.items():
             if kind in ('peel','warn'): M[key]={'w':im.width,'h':im.height,'ax':round(br*k)-cfg['target'],'gy':round(gy*k),'bw':cfg['target']}   # smoke trails behind: anchor on the front bumper
             else: M[key]={'w':im.width,'h':im.height,'ax':round(bl*k),'gy':round(gy*k),'bw':round((br-bl)*k)}
 json.dump(A,open('veh_assets.json','w')); json.dump(M,open('veh_meta.json','w')); json.dump(INFO,open('veh_info.json','w'))
-print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civv_idle','civc_idle','civv_boom','civc_peel']]
+print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civv_idle','civc_idle','civf_idle','civf_boom','civf_peel','civf_warn']]
 # preview
 ks=list(A); cols=6; cw=330; ch=230
 o=Image.new('RGB',(cols*cw,((len(ks)+cols-1)//cols)*ch),(90,96,104))

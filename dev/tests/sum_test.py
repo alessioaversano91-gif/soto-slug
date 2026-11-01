@@ -6,7 +6,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':480,'height':900}); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto('file:///mnt/user-data/outputs/soto_slug_tex_edition.html'); pg.wait_for_timeout(900)
     pg.evaluate("()=>{document.getElementById('cab').style.cssText+=';position:relative;left:0;top:0;transform:none'}"); oy=pg.evaluate("()=>document.getElementById('cv').getBoundingClientRect().top")
-    pg.evaluate("()=>{PROG.tut=true;gTitle()}"); pg.keyboard.press('Enter'); pg.click('#cc3'); pg.click('#toStage'); pg.click('#lc1'); pg.click('#goBtn'); pg.evaluate("()=>mapStart()")
+    pg.evaluate("()=>{PROG.tut=true;gTitle()}"); pg.keyboard.press('Enter'); pg.click('#cc3'); pg.click('#toStage'); pg.click('#lc1'); pg.click('#goBtn'); pg.evaluate("()=>{ST.startPart=3;mapStart()}")   # Genova: the tank is only at level 3 (1.3.0.70)
     pg.wait_for_timeout(2000)
     pg.keyboard.down('ArrowRight'); pg.keyboard.down('z'); pg.wait_for_timeout(6000); pg.keyboard.up('ArrowRight'); pg.keyboard.up('z')
     pg.evaluate("()=>{ST.scrollX=ST.maxScroll;PL.x=ST.scrollX+250;ST.wave=null;ST.lockCam=false}"); pg.wait_for_timeout(4200)

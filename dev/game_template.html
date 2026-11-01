@@ -762,7 +762,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.69', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.70', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -1184,7 +1184,7 @@ const OB_DEF={sandbag:{w:72,h:40,hp:10},crate:{w:52,h:50,hp:8},car:{w:100,h:52,h
 function generateLevel(stage){
   obs=[];props=[];
   let x=560;
-  const types=stage===2?['sandbag','crate','barrel','barrel','sandbag','crate']:['sandbag','crate','car','barrel','barrel','sandbag','crate'];   // Genova: the vehicles replace the old car cover (1.3.0.68)
+  const types=stage!==4?['sandbag','crate','barrel','barrel','sandbag','crate']:['sandbag','crate','car','barrel','barrel','sandbag','crate'];   // Genova and France: the vehicles replace the old car cover (1.3.0.68/1.3.0.70); Mantova keeps it for now
   while(x<ST.maxScroll+W-420){
     const t=types[ri(0,types.length-1)], d=OB_DEF[t];
     obs.push({type:t,x,w:d.w,h:d.h,hp:d.hp,max:d.hp,flash:0,bonus:t==='crate'&&Math.random()<.7});
@@ -3176,10 +3176,12 @@ function drawStarC(x,y,r,on){ G.beginPath(); for(let i=0;i<10;i++){ const a=-Mat
 // ═══════════════════════════════════════════════════════════════
 const CVM=__CIVMETA__;
 let civs=[];
-const CIV_HP=12, CIV_CALM=75, CIV_HPS={w:12,g:12,v:16,c:14};   // w/g utilitaria bianca/verde, v furgone, c Carabinieri (1.3.0.68)
+const CIV_HP=12, CIV_CALM=75, CIV_HPS={w:12,g:12,v:16,c:14,f:14};   // f SUV francese (Lione, Marsiglia) 1.3.0.70
+const civPool=()=>ST.stage===2?['w','g','v','c']:ST.stage===1||ST.stage===3?['f']:[];   // w/g utilitaria bianca/verde, v furgone, c Carabinieri (1.3.0.68)
 const civN=(col,kind)=>{ let n=0; while(CVM['civ'+col+'_'+kind+n]) n++; return n||1; };
 function civPlanFor(){
-  if(ST.stage!==2||ST.rush) return [];
+  if(!civPool().length||ST.rush) return [];
+  if(ST.stage!==2) return [.15,.33,.5,.68,.85].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b).map(f=>({x:Math.round(f*ST.maxScroll)+W,col:'f'}));   // France: one model for now
   const slots=[.12,.3,.47,.64,.82].sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b);
   const pool=['w','g','v','c']; let last='', carab=0;
   const w=ri(0,slots.length-1);                            // the white car is always there (1.3.0.69)
@@ -3259,20 +3261,20 @@ function updateCivs(){
 // ── PASSING TRAFFIC (1.3.0.69): vehicles crossing on the far lane, both ways; scenery only, they can't be hit ──
 let traffic=[];
 function updateTraffic(){
-  if(ST.stage!==2||ST.rush){ traffic=[]; return; }
+  const pool=civPool(); if(!pool.length||ST.rush){ traffic=[]; return; }
   if(!ST.bossIn&&!ST.partT&&--ST.trafT<=0){
     ST.trafT=ri(360,720);
-    const col=['w','g','v','c'][ri(0,3)], dir=Math.random()<.5?1:-1, sp=rnd(3.2,5.5);
+    const col=pool[ri(0,pool.length-1)], dir=Math.random()<.5?1:-1, sp=rnd(3.2,5.5);
     traffic.push({col,dir,v:sp*dir,x:dir>0?ST.scrollX-320:ST.scrollX+W+80,t:0});
     if(col==='c'&&Math.random()<.5) sfx('siren'); else if(Math.random()<.5) sfx('engine');
   }
   for(const v of traffic){ v.t++; v.x+=v.v; }
   traffic=traffic.filter(v=>v.dir>0?v.x<ST.scrollX+W+340:v.x>ST.scrollX-420);
 }
-function drawTraffic(){                      // far lane: a bit smaller and darker, drawn behind cover, cars and fighters
+function drawTraffic(){                      // traffic lane along the bottom edge of the street, smaller than the parked cars (1.3.0.70)
   for(const v of traffic){
     const D=civN(v.col,'drive'), k=CVM['civ'+v.col+'_drive0']?'civ'+v.col+'_drive'+(Math.floor(v.t/3)%D):'civ'+v.col+'_idle', s=S[k], m=CVM[k]; if(!s||!m) continue;
-    const sc=.78, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=GROUND-16;
+    const sc=.6, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-5;
     G.save(); G.translate(Math.round(v.x),lane); G.scale(sc,sc);
     G.fillStyle='rgba(0,0,0,.28)'; G.beginPath(); G.ellipse(m.bw/2,2,m.bw*.5,5,0,0,Math.PI*2); G.fill();
     if(v.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);
@@ -3317,7 +3319,7 @@ function update(){
     if(!ST.rush){ PROG.save={char:ST.char,stage:ST.stage,part:ST.part,cp:ST.cp,stageScore:ST.stageScore,hasUzi:!!PL.hasUzi,t:Date.now()}; saveProg(); }   /* survives closing the page */
     for(let i=0;i<14;i++) P({t:'spark',x:PL.x,y:GROUND-60,vx:rnd(-3,3),vy:rnd(-4,-1),g:.15,life:24,col:i%2?'#56ff8e':'#fff6c0'});
   }
-  if(!ST.bossIn&&!ST.partT){
+  if(!ST.bossIn&&!ST.partT&&!ST.lvlEnd){
     if(--spawnT<=0){ if(!ST.trevFight&&!ST.wave) spawnEnemy(); const d=diff(); spawnT=Math.round(ri(80-12*d,140-16*d)*(fin2()?.85:1)); }
     if(ST.wavePlan&&ST.wavePlan.length&&!ST.wave&&!ST.trevFight&&!TRV&&ST.scrollX>=ST.wavePlan[0]*ST.maxScroll){ ST.wavePlan.shift(); startWave(); }
     updateWave(); updateSalvo();
@@ -3326,6 +3328,7 @@ function update(){
     if(ST.dogPlan.length&&ST.scrollX>=ST.dogPlan[0].at*ST.maxScroll) spawnDog(ST.dogPlan.shift().side);
     if(ST.scrollX>=ST.maxScroll-2){
       if(ST.stage===3&&ST.part===1){ if(!ST.partT){ ST.partT=100; ST.lockCam=true; flash('MARSIGLIA - PARTE 2'); } }
+      else if(multiLevel()&&ST.part<PARTS[ST.stage]) levelEnd();   // Genova 1 and 2: no boss, the tank waits at level 3 (1.3.0.70)
       else spawnBoss();
     }
   }
@@ -3341,13 +3344,19 @@ function update(){
   }
   if(ST.winT>0&&--ST.winT===0) doWin();
 }
+function levelEnd(){                         // end of a boss-less level: the survivors run off, summary, next level
+  ST.lvlEnd=true; ST.lockCam=true; PL.inv=Math.max(PL.inv,200); eshots=[];
+  for(const e of enemies) if(e.hp>0&&!e.dying&&e.type!==5){ for(let i=0;i<6;i++) P({t:'smoke',x:e.x+e.w/2+rnd(-12,12),y:e.y+e.h*.6,vx:rnd(-1,1),vy:rnd(-1.4,-.4),life:28,size:rnd(5,9)}); e.hp=0; e.gone=true; }
+  enemies=enemies.filter(e=>!e.gone);
+  flash('LIVELLO COMPLETATO!'); sfx('select'); announce('Livello completato!'); ST.winT=110;
+}
 function drawProgress(){
-  if(ST.bossIn||ST.partT||ST.mode==='win') return;
+  if(ST.bossIn||ST.partT||ST.lvlEnd||ST.mode==='win') return;
   const k=clamp(ST.scrollX/Math.max(1,ST.maxScroll),0,1), bw=170, bx=Math.round(W/2-bw/2), by=HUD_T+8;
   G.fillStyle='rgba(0,0,0,.55)';G.fillRect(bx-3,by-3,bw+6,10);
   G.fillStyle='#3a3020';G.fillRect(bx,by,bw,4);
   G.fillStyle='#ffcc00';G.fillRect(bx,by,Math.round(bw*k),4);
-  const end=ST.stage===3&&ST.part===1?'2':'B';                 // part 2 door or the boss
+  const end=ST.stage===3&&ST.part===1?'2':multiLevel()&&ST.part<PARTS[ST.stage]?String(ST.part+1):'B';   // next part/level door or the boss
   G.fillStyle=end==='B'?'#ff5a3a':'#56ff8e';G.fillRect(bx+bw+5,by-3,10,10);
   G.font=FS(7)+'px "Press Start 2P",monospace';G.textAlign='center';G.fillStyle='#000';G.fillText(end,bx+bw+10,by+5);
   const hx=bx+Math.round(bw*k); G.fillStyle='#000';G.fillRect(hx-4,by-5,8,14);G.fillStyle='#fff';G.fillRect(hx-3,by-4,6,12);
@@ -3542,7 +3551,7 @@ function partLabel(){ const pb=document.getElementById('partBtn'); if(!pb) retur
 function pickStage(s){sfx('select');if(selStage!==s) ST.startPart=1; selStage=s; partLabel();[0,1,2,3].forEach(i=>document.getElementById('lc'+i).classList.toggle('sel',i===s-1));document.getElementById('goBtn').classList.add('rdy');}
 function resetRun(part){
   setSG(false); ST.streak=0; ST.powT=0; ST.marks=[]; ST.salvo=null;
-  ST.part=part||1; ST.partT=0; ST.fadeIn=0;
+  ST.part=part||1; ST.partT=0; ST.fadeIn=0; ST.lvlEnd=false;
   ST.hitStop=0;ST.slowT=0;ST.scrollX=0;ST.frame=0;ST.bossIn=false;ST.bossDead=false;ST.bossT=0;ST.winT=0;ST.shake=0;ST.lockCam=false;
   ST.maxScroll=7200+ST.stage*1100;
   Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
