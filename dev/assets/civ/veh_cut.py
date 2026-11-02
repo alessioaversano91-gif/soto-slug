@@ -17,6 +17,9 @@ V={
    'r4':(1096,1430,[[90,1285],[1410,2060]],(1186,790))},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'dmg':['r2:0'],'burn':['r2:1'],'boom':['r2:2'],'wreck':['r2:3'],
           'alarm':['r3:0','r3:1','r3:2'],'peel':['r4:0'],'warn':['r4:1']}},
+ 'b':{'src':'bus.jpg','target':360,'hp':0,'perframe':True,'rows':{   # AMT bus (Genova): traffic only, no alarm/explosion (1.3.0.72)
+   'r1':(108,345,[[20,760],[798,1449],[1449,2085],[2085,2728]],None)},
+   'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
  'c':{'src':'carab.jpg','target':250,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
@@ -48,13 +51,13 @@ for vid,cfg in V.items():
         for i,(x0,x1) in enumerate(slots): cut[f'{rn}:{i}']=frame(a,bg,y0,y1,x0,x1,title)
     # each row of the sheet may be drawn at its own size: scale every row on a clean car of that row (1.3.0.69)
     REF={'r1':'r1:0','r2':'r2:0','r3':'r3:0','r4':'r4:1'}
-    KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items()}
+    KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items() if f in cut}
     for rn,src in cfg.get('same',{}).items(): KR[rn]=KR[src]   # motion-blurred reference: borrow another row's scale
     INFO[vid]={'hp':cfg['hp']}
     print(vid,'row scales',{r:round(v,3) for r,v in KR.items()})
     for kind,frames in cfg['use'].items():
         for i,fr in enumerate(frames):
-            rgba,bl,br,gy=cut[fr]; im=Image.fromarray(rgba,'RGBA'); k=KR[fr.split(':')[0]]
+            rgba,bl,br,gy=cut[fr]; im=Image.fromarray(rgba,'RGBA'); k=cfg['target']/(br-bl) if cfg.get('perframe') else KR[fr.split(':')[0]]   # frames drawn at different sizes in the same row
             im=im.resize((max(1,round(im.width*k)),max(1,round(im.height*k))),Image.LANCZOS if k<1 else Image.NEAREST)
             x=np.array(im); x[...,3]=np.where(x[...,3]>127,255,0); im=Image.fromarray(x,'RGBA')
             key=f'civ{vid}_{kind}'+(str(i) if len(frames)>1 else '')
@@ -62,7 +65,7 @@ for vid,cfg in V.items():
             if kind in ('peel','warn'): M[key]={'w':im.width,'h':im.height,'ax':round(br*k)-cfg['target'],'gy':round(gy*k),'bw':cfg['target']}   # smoke trails behind: anchor on the front bumper
             else: M[key]={'w':im.width,'h':im.height,'ax':round(bl*k),'gy':round(gy*k),'bw':round((br-bl)*k)}
 json.dump(A,open('veh_assets.json','w')); json.dump(M,open('veh_meta.json','w')); json.dump(INFO,open('veh_info.json','w'))
-print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civv_idle','civc_idle','civf_idle','civf_boom','civf_peel','civf_warn']]
+print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civb_idle','civb_drive0','civb_drive1','civb_drive2','civf_idle','civv_idle']]
 # preview
 ks=list(A); cols=6; cw=330; ch=230
 o=Image.new('RGB',(cols*cw,((len(ks)+cols-1)//cols)*ch),(90,96,104))

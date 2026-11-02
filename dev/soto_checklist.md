@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.71 BETA
+Versione di riferimento: 1.3.0.72 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -528,6 +528,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Lione e Marsiglia: tolte le vecchie auto-ostacolo bruciate (restano solo a Mantova); le auto della gendarmeria restano com'erano
 - [ ] Altri modelli per la Francia (Alessio fornirà nuovi fogli)
 - [x] 1.3.0.71: il traffico in basso torna alla grandezza delle vetture parcheggiate e passa davanti ai personaggi (corsia in primo piano)
+
+**Autobus AMT (1.3.0.72)**
+- [x] Autobus nel traffico dei tre livelli di Genova, nei due sensi, più lento delle auto (circa 1 passaggio su 5)
+- [x] Solo traffico: non si parcheggia, non si colpisce, niente allarme né esplosione
+- [x] Lungo circa 360 px in gioco; i fotogrammi del foglio, disegnati a misure diverse, sono riportati tutti alla stessa lunghezza
+- [ ] Facoltativo: autobus snodato (riga 3 del foglio) come variante rara del traffico
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto
