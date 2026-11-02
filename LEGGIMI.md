@@ -1,5 +1,5 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.72 - primo rilascio interno
+Beta 1.3.0.73 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".

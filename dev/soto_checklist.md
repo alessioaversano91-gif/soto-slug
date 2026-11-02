@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.72 BETA
+Versione di riferimento: 1.3.0.73 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -534,6 +534,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Solo traffico: non si parcheggia, non si colpisce, niente allarme né esplosione
 - [x] Lungo circa 360 px in gioco; i fotogrammi del foglio, disegnati a misure diverse, sono riportati tutti alla stessa lunghezza
 - [ ] Facoltativo: autobus snodato (riga 3 del foglio) come variante rara del traffico
+
+**Tram di Lione (1.3.0.73)**
+- [x] Tram snodato nel traffico di Lione, nei due sensi, il più lento e il più lungo (circa 500 px)
+- [x] Solo traffico: non si parcheggia, non si colpisce, niente allarme né esplosione
+- [x] Campanella del tram (doppio "din-din") quando entra nell'inquadratura
+- [ ] Facoltativo: 2-3 fotogrammi di marcia (ruote che girano) per il tram; ora è un fotogramma solo
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

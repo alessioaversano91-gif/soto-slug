@@ -20,6 +20,9 @@ V={
  'b':{'src':'bus.jpg','target':360,'hp':0,'perframe':True,'rows':{   # AMT bus (Genova): traffic only, no alarm/explosion (1.3.0.72)
    'r1':(108,345,[[20,760],[798,1449],[1449,2085],[2085,2728]],None)},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
+ 't':{'src':'tram.png','target':500,'hp':0,'perframe':True,'rows':{   # Lione tram (articulated, with poles): traffic only (1.3.0.73)
+   'r1':(11,150,[[292,766]],(45,350))},
+   'use':{'idle':['r1:0']}},
  'c':{'src':'carab.jpg','target':250,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
@@ -65,7 +68,7 @@ for vid,cfg in V.items():
             if kind in ('peel','warn'): M[key]={'w':im.width,'h':im.height,'ax':round(br*k)-cfg['target'],'gy':round(gy*k),'bw':cfg['target']}   # smoke trails behind: anchor on the front bumper
             else: M[key]={'w':im.width,'h':im.height,'ax':round(bl*k),'gy':round(gy*k),'bw':round((br-bl)*k)}
 json.dump(A,open('veh_assets.json','w')); json.dump(M,open('veh_meta.json','w')); json.dump(INFO,open('veh_info.json','w'))
-print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civb_idle','civb_drive0','civb_drive1','civb_drive2','civf_idle','civv_idle']]
+print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civt_idle','civb_idle']]
 # preview
 ks=list(A); cols=6; cw=330; ch=230
 o=Image.new('RGB',(cols*cw,((len(ks)+cols-1)//cols)*ch),(90,96,104))
