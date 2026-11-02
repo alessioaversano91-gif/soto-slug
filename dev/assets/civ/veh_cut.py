@@ -3,27 +3,27 @@
 import numpy as np, json, base64, io, cv2
 from PIL import Image
 V={
- 'v':{'src':'van.jpg','target':280,'hp':16,'rows':{
+ 'v':{'src':'van.jpg','target':310,'hp':16,'rows':{
    'r1':(82,196,[[27,262],[279,516],[530,766],[776,1013]],None),
    'r2':(205,386,[[20,272],[276,520],[522,770],[776,1014]],(250,270)),
    'r3':(390,575,[[12,270],[270,520],[520,772],[772,1020]],(434,215)),
    'r4':(586,762,[[90,560],[590,880]],(636,420))},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'dmg':['r2:0'],'burn':['r2:1'],'boom':['r2:2'],'wreck':['r2:3'],
           'alarm':['r3:0','r3:1','r3:2','r3:3'],'peel':['r4:0'],'warn':['r4:1']}},
- 'f':{'src':'suv.jpg','target':230,'hp':14,'same':{'r4':'r1'},'rows':{   # France SUV (Lione / Marsiglia) 1.3.0.70
+ 'f':{'src':'suv.jpg','target':255,'hp':14,'same':{'r4':'r1'},'rows':{   # France SUV (Lione / Marsiglia) 1.3.0.70
    'r1':(112,362,[[70,655],[755,1340],[1355,1940],[1958,2545]],None),
    'r2':(373,722,[[20,658],[715,1300],[1330,1945],[1960,2560]],(458,570)),
    'r3':(728,1092,[[20,662],[705,1318],[1338,1965]],(803,430)),
    'r4':(1096,1430,[[90,1285],[1410,2060]],(1186,790))},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'dmg':['r2:0'],'burn':['r2:1'],'boom':['r2:2'],'wreck':['r2:3'],
           'alarm':['r3:0','r3:1','r3:2'],'peel':['r4:0'],'warn':['r4:1']}},
- 'b':{'src':'bus.jpg','target':360,'hp':0,'perframe':True,'rows':{   # AMT bus (Genova): traffic only, no alarm/explosion (1.3.0.72)
+ 'b':{'src':'bus.jpg','target':430,'hp':0,'perframe':True,'rows':{   # AMT bus (Genova): traffic only, no alarm/explosion (1.3.0.72)
    'r1':(108,345,[[20,760],[798,1449],[1449,2085],[2085,2728]],None)},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
- 't':{'src':'tram.png','target':500,'hp':0,'perframe':True,'rows':{   # Lione tram (articulated, with poles): traffic only (1.3.0.73)
+ 't':{'src':'tram.png','target':600,'hp':0,'perframe':True,'rows':{   # Lione tram (articulated, with poles): traffic only (1.3.0.73)
    'r1':(11,150,[[292,766]],(45,350))},
    'use':{'idle':['r1:0']}},
- 'c':{'src':'carab.jpg','target':250,'hp':14,'rows':{
+ 'c':{'src':'carab.jpg','target':275,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
    'r3':(885,1322,[[22,790],[800,1580]],(1000,520)),

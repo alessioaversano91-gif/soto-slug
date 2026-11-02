@@ -763,7 +763,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.73', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.74', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -773,7 +773,7 @@ document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']
 const CV=document.getElementById('cv'), G=CV.getContext('2d');
 G.imageSmoothingEnabled=false;
 const W=480,H=640,HUD_T=38,HUD_B=38;
-const GROUND=H-HUD_B-108;            // 456 — feet line for player, enemies, obstacles
+const GROUND=H-HUD_B-128;            // 474 — feet line for player, enemies, obstacles (1.3.0.74: was -108, raised 20 px to make room for the traffic lane)
 const PLAY_TOP=HUD_T, PLAY_H=GROUND-PLAY_TOP, STREET_H=H-GROUND, BG_W=1600;
 const GRAV=0.5;
 const rnd=(a,b)=>a+Math.random()*(b-a), ri=(a,b)=>Math.floor(rnd(a,b+1)), clamp=(v,a,b)=>v<a?a:v>b?b:v;
@@ -3261,22 +3261,23 @@ function updateCivs(){
 }
 // ── PASSING TRAFFIC (1.3.0.69): vehicles crossing on the far lane, both ways; scenery only, they can't be hit ──
 let traffic=[];
+const trafW=col=>{ const m=CVM['civ'+col+'_drive0']||CVM['civ'+col+'_idle']; return m?m.w:300; };
 function updateTraffic(){
   const pool=civPool().concat(ST.stage===2?['b']:ST.stage===1?['t']:[]);   // t: tram, Lione traffic only (1.3.0.73)
    if(!pool.length||ST.rush){ traffic=[]; return; }   // b: AMT bus, Genova traffic only (1.3.0.72)
   if(!ST.bossIn&&!ST.partT&&--ST.trafT<=0){
     ST.trafT=ri(360,720);
     const col=pool[ri(0,pool.length-1)], dir=Math.random()<.5?1:-1, sp=col==='b'?rnd(2.6,3.6):col==='t'?rnd(2.4,3.2):rnd(3.2,5.5);
-    traffic.push({col,dir,v:sp*dir,x:dir>0?ST.scrollX-560:ST.scrollX+W+80,t:0});
+    const tw=trafW(col); traffic.push({col,dir,v:sp*dir,x:dir>0?ST.scrollX-tw-20:ST.scrollX+W+20,t:0});
     if(col==='t'){} else if(col==='c'&&Math.random()<.5) sfx('siren'); else if(Math.random()<.5) sfx('engine');
   }
-  for(const v of traffic){ v.t++; v.x+=v.v; if(v.col==='t'&&!v.rung&&v.x+250>ST.scrollX+40&&v.x+250<ST.scrollX+W-40){ v.rung=1; sfx('trambell'); } }   // the bell rings as the tram comes into view
-  traffic=traffic.filter(v=>v.dir>0?v.x<ST.scrollX+W+340:v.x>ST.scrollX-580);
+  for(const v of traffic){ v.t++; v.x+=v.v; if(v.col==='t'&&!v.rung&&v.x+trafW(v.col)/2>ST.scrollX+40&&v.x+trafW(v.col)/2<ST.scrollX+W-40){ v.rung=1; sfx('trambell'); } }   // the bell rings as the tram comes into view
+  traffic=traffic.filter(v=>v.dir>0?v.x<ST.scrollX+W+40:v.x+trafW(v.col)>ST.scrollX-40);
 }
 function drawTraffic(){                      // traffic lane along the bottom edge of the street, same size as the parked cars (1.3.0.71)
   for(const v of traffic){
     const D=civN(v.col,'drive'), k=CVM['civ'+v.col+'_drive0']?'civ'+v.col+'_drive'+(Math.floor(v.t/3)%D):'civ'+v.col+'_idle', s=S[k], m=CVM[k]; if(!s||!m) continue;
-    const sc=1, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-5;
+    const sc=1, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-3;
     G.save(); G.translate(Math.round(v.x),lane); G.scale(sc,sc);
     G.fillStyle='rgba(0,0,0,.28)'; G.beginPath(); G.ellipse(m.bw/2,2,m.bw*.5,5,0,0,Math.PI*2); G.fill();
     if(v.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);

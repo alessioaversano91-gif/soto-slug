@@ -2,7 +2,7 @@
 import numpy as np, json, base64, io, cv2
 from PIL import Image
 J=json.load(open('civ_cut.json'))
-TARGET_W=200
+TARGET_W=220   # 1.3.0.74: +10%
 USE={  # engine key : (sheet frame, ...)
  'w':{'idle':['white_idle0'],'drive':['white_idle1','white_idle2','white_idle3','white_idle4'],'alarm':['wx_alarm0','wx_alarm1','wx_alarm2','wx_alarm3'],
       'dmg':['white_boom0'],'burn':['white_boom1'],'boom':['white_boom2'],'wreck':['white_boom3'],'peel':['wx_peel0','wx_peel1','wx_peel2','wx_peel3'],'warn':['white_flee2'],'driver':['white_flee0']},

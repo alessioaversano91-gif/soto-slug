@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.73 BETA
+Versione di riferimento: 1.3.0.74 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -540,6 +540,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Solo traffico: non si parcheggia, non si colpisce, niente allarme né esplosione
 - [x] Campanella del tram (doppio "din-din") quando entra nell'inquadratura
 - [ ] Facoltativo: 2-3 fotogrammi di marcia (ruote che girano) per il tram; ora è un fotogramma solo
+
+**Vetture più proporzionate (1.3.0.74)**
+- [x] Tutte le vetture più grandi del 10% circa (utilitarie ~210 px, SUV 255, Carabinieri 275, furgone 310), ritagliate di nuovo dai fogli originali
+- [x] Autobus 430 px (era 360) e tram 600 px (era 500)
+- [x] Base del livello alzata di 20 px (la strada passa da 108 a 128 px) per fare spazio alla corsia del traffico; sfondi, salti, nemici e carri seguono la nuova linea
+- [x] Il traffico entra e esce sempre completamente fuori schermo, anche i mezzi più lunghi
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto
