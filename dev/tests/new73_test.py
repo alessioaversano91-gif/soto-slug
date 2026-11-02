@@ -14,5 +14,5 @@ with sync_playwright() as p:
     r=pg.evaluate("""()=>{ civs=[]; obs=[]; cars=[]; traffic=[{col:'t',dir:-1,v:-3,x:PL.x+40,t:0}]; shots=[]; PL.shootCd=0; PL.dir=1; doShoot(); const s=shots[0]; for(let i=0;i<6;i++) updateShots(); return shots.includes(s); }"""); print('bullets pass through',r)
     pg.evaluate("()=>{ traffic=[{col:'t',dir:1,v:3,x:ST.scrollX+20,t:7}]; PL.x=ST.scrollX+120; render(); }")
     pg.screenshot(path=SP+'tram73.png',clip={'x':0,'y':300,'width':480,'height':500})
-    print('bell',pg.evaluate("()=>{ const got=[]; const o=window.sfx; window.sfx=n=>got.push(n); try{ sfx=window.sfx; }catch(e){} traffic=[{col:'t',dir:-1,v:-3,x:ST.scrollX+W+10,t:0}]; for(let i=0;i<120;i++) updateTraffic(); return got; }"))
+    print('bell',pg.evaluate("()=>{ const got=[]; const o=window.sfx; window.sfx=n=>got.push(n); try{ sfx=window.sfx; }catch(e){} traffic=[{col:'t',dir:-1,v:-3,x:ST.scrollX+W+10,t:0}]; for(let i=0;i<260;i++) updateTraffic(); return got.filter(n=>n==='trambell'); }"))
     print('ERR',errs); b.close()

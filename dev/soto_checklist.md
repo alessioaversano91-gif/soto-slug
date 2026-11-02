@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.74 BETA
+Versione di riferimento: 1.3.0.75 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -546,6 +546,8 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Autobus 430 px (era 360) e tram 600 px (era 500)
 - [x] Base del livello alzata di 20 px (la strada passa da 108 a 128 px) per fare spazio alla corsia del traffico; sfondi, salti, nemici e carri seguono la nuova linea
 - [x] Il traffico entra e esce sempre completamente fuori schermo, anche i mezzi più lunghi
+- [x] 1.3.0.75: tram di Lione 800 px (la cassa ora è alta come quella dell'autobus) e un po' più veloce, così attraversa lo schermo in circa 6 s
+- [x] Da ogni release: anteprima delle città (`dev/preview.py`) allegata alle note di rilascio
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

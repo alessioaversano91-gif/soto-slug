@@ -20,7 +20,7 @@ V={
  'b':{'src':'bus.jpg','target':430,'hp':0,'perframe':True,'rows':{   # AMT bus (Genova): traffic only, no alarm/explosion (1.3.0.72)
    'r1':(108,345,[[20,760],[798,1449],[1449,2085],[2085,2728]],None)},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
- 't':{'src':'tram.png','target':600,'hp':0,'perframe':True,'rows':{   # Lione tram (articulated, with poles): traffic only (1.3.0.73)
+ 't':{'src':'tram.png','target':800,'hp':0,'perframe':True,'rows':{   # Lione tram (articulated, with poles): traffic only (1.3.0.73)
    'r1':(11,150,[[292,766]],(45,350))},
    'use':{'idle':['r1:0']}},
  'c':{'src':'carab.jpg','target':275,'hp':14,'rows':{
