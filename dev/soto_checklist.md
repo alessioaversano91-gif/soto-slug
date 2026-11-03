@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.76 BETA
+Versione di riferimento: 1.3.0.77 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -552,6 +552,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 **Fiat 500 bianca (1.3.0.76)**
 - [x] Nel traffico in basso di Genova (tre livelli) e Lione, nei due sensi, con ruote che girano (3 fotogrammi di marcia); lunga circa 210 px come le utilitarie
 - [x] Solo traffico: non si parcheggia, non si colpisce; le righe di esplosione, allarme e fuga del foglio restano pronte se un giorno la si vuole anche parcheggiata
+
+**Motorino di Marsiglia (1.3.0.77)**
+- [x] Nel traffico in basso di Marsiglia (entrambe le parti), nei due sensi, insieme al SUV
+- [x] Impennata a livello di gioco: due volte per livello passa sulla strada accanto al personaggio in impennata e il conducente sfotte ("TROP LENT!", "CIAO PAPY!", "ALLEZ, COURS!"...); non si colpisce e non fa danni
+- [x] Suono del motorino a due tempi all'arrivo e quando ti passa accanto
+- [ ] Facoltativo: usare la sgommata (riga 4) come partenza dell'impennata e le righe di esplosione/allarme se un giorno lo si vuole colpibile
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

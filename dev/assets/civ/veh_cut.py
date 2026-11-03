@@ -26,6 +26,10 @@ V={
  'p':{'src':'c500.jpg','target':210,'hp':0,'perframe':True,'rows':{   # Fiat 500 bianca: traffic only, Genova and Lione (1.3.0.76)
    'r1':(100,395,[[85,705],[805,1425],[1448,2070],[2095,2715]],None)},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
+ 's':{'src':'scooter.jpg','target':170,'hp':0,'same':{'r4':'r1'},'rows':{   # Marseille scooter: traffic + wheelie stunt at street level (1.3.0.77)
+   'r1':(40,148,[[30,245],[290,510],[535,757],[778,998]],None),
+   'r4':(438,572,[[545,772],[780,1003]],(474,580))},
+   'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'wheelie':['r4:0']}},
  'c':{'src':'carab.jpg','target':275,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
@@ -71,7 +75,7 @@ for vid,cfg in V.items():
             if kind in ('peel','warn'): M[key]={'w':im.width,'h':im.height,'ax':round(br*k)-cfg['target'],'gy':round(gy*k),'bw':cfg['target']}   # smoke trails behind: anchor on the front bumper
             else: M[key]={'w':im.width,'h':im.height,'ax':round(bl*k),'gy':round(gy*k),'bw':round((br-bl)*k)}
 json.dump(A,open('veh_assets.json','w')); json.dump(M,open('veh_meta.json','w')); json.dump(INFO,open('veh_info.json','w'))
-print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civp_idle','civp_drive0','civp_drive2','civw_idle' if False else 'civf_idle']]
+print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civs_idle','civs_wheelie']]
 # preview
 ks=list(A); cols=6; cw=330; ch=230
 o=Image.new('RGB',(cols*cw,((len(ks)+cols-1)//cols)*ch),(90,96,104))
