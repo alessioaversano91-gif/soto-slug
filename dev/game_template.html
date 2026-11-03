@@ -764,7 +764,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.77', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.78', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -3264,7 +3264,7 @@ function updateCivs(){
 let traffic=[];
 const trafW=col=>{ const m=CVM['civ'+col+'_drive0']||CVM['civ'+col+'_idle']; return m?m.w:300; };
 function updateTraffic(){
-  const pool=civPool().concat(ST.stage===2?['b','p']:ST.stage===1?['t','p']:ST.stage===3?['s']:[]);   // s: scooter, Marsiglia (1.3.0.77)   // p: Fiat 500, traffic only in Genova and Lione (1.3.0.76)   // t: tram, Lione traffic only (1.3.0.73)
+  const pool=civPool().concat(ST.stage===2?['b','p']:ST.stage===1?['t','p']:ST.stage===3?['s','m']:[]);   // s: scooter, m: city bus, Marsiglia (1.3.0.77/78)   // p: Fiat 500, traffic only in Genova and Lione (1.3.0.76)   // t: tram, Lione traffic only (1.3.0.73)
    if(!pool.length||ST.rush){ traffic=[]; return; }   // b: AMT bus, Genova traffic only (1.3.0.72)
   if(!ST.bossIn&&!ST.partT&&--ST.trafT<=0){
     ST.trafT=ri(360,720);
@@ -3293,23 +3293,26 @@ function drawTraffic(){                      // traffic lane along the bottom ed
 // ═══════════════════════════════════════════════════════════════
 let stunt=null;
 const STUNT_TXT=['TROP LENT!','CIAO PAPY!','ALLEZ, COURS!','À PLUS!','HAHA, NUL!','BYE BYE!'];
-function initStunt(){ stunt=null; ST.stuntPlan=ST.stage===3&&!ST.rush?[rnd(.18,.4),rnd(.55,.82)]:[]; }
+// taxi cameo (1.3.0.78): also twice per Marseille level, a white taxi dashes along the street at full speed — no stopping, no harm
+function initStunt(){ stunt=null; ST.stuntPlan=ST.stage===3&&!ST.rush?[{at:rnd(.12,.3),k:'s'},{at:rnd(.32,.5),k:'x'},{at:rnd(.55,.75),k:'s'},{at:rnd(.78,.92),k:'x'}]:[]; }
+const STUNT_KEY={s:'civs_wheelie',x:'civx_warn'};
 function updateStunt(){
-  const m=CVM.civs_wheelie; if(!m) return;
   if(!stunt){
-    if(ST.stuntPlan&&ST.stuntPlan.length&&!ST.bossIn&&!ST.partT&&!ST.lvlEnd&&ST.scrollX>=ST.stuntPlan[0]*ST.maxScroll){
-      ST.stuntPlan.shift(); const dir=Math.random()<.5?1:-1;
-      stunt={dir,x:dir>0?ST.scrollX-m.w-20:ST.scrollX+W+20,v:dir*rnd(5.2,6.2),t:0,say:0,txt:STUNT_TXT[ri(0,STUNT_TXT.length-1)]}; sfx('scooter'); }
+    if(ST.stuntPlan&&ST.stuntPlan.length&&!ST.bossIn&&!ST.partT&&!ST.lvlEnd&&ST.scrollX>=ST.stuntPlan[0].at*ST.maxScroll){
+      const k=ST.stuntPlan.shift().k, m=CVM[STUNT_KEY[k]]; if(!m) return; const dir=Math.random()<.5?1:-1;
+      stunt={k,dir,x:dir>0?ST.scrollX-m.w-20:ST.scrollX+W+20,v:dir*(k==='x'?rnd(11,13):rnd(5.2,6.2)),t:0,say:0,said:k==='x',txt:STUNT_TXT[ri(0,STUNT_TXT.length-1)]};
+      if(k==='x'){ sfx('engine'); sfx('screech'); } else sfx('scooter'); }
     return; }
+  const m=CVM[STUNT_KEY[stunt.k]];
   stunt.t++; stunt.x+=stunt.v; if(stunt.say>0) stunt.say--;
   const cx=stunt.x+m.bw/2;
   if(!stunt.said&&Math.abs(cx-PL.x)<110){ stunt.said=true; stunt.say=80; sfx('scooter'); }
-  if(stunt.t%3===0) P({t:'smoke',x:stunt.dir>0?stunt.x:stunt.x+m.bw,y:GROUND-8,vx:-stunt.dir*.8,vy:-.4,life:24,size:rnd(4,7)});
+  if(stunt.t%(stunt.k==='x'?2:3)===0) P({t:'smoke',x:stunt.dir>0?stunt.x:stunt.x+m.bw,y:GROUND-8,vx:-stunt.dir*.8,vy:-.4,life:24,size:rnd(4,7)});
   if(stunt.dir>0?stunt.x>ST.scrollX+W+40:stunt.x+m.w<ST.scrollX-40) stunt=null;
 }
 function drawStunt(){
-  if(!stunt) return; const s=S.civs_wheelie, m=CVM.civs_wheelie; if(!s||!m) return;
-  const a=(Math.sin(stunt.t*.18)*.04-.03)*stunt.dir, x=Math.round(stunt.x);   // wheelie wobble, pivot on the rear wheel
+  if(!stunt) return; const key=STUNT_KEY[stunt.k], s=S[key], m=CVM[key]; if(!s||!m) return;
+  const a=stunt.k==='s'?(Math.sin(stunt.t*.18)*.04-.03)*stunt.dir:0, x=Math.round(stunt.x);   // wheelie wobble, pivot on the rear wheel
   G.fillStyle='rgba(0,0,0,.3)'; G.beginPath(); G.ellipse(x+m.bw/2,GROUND+2,m.bw*.45,5,0,0,Math.PI*2); G.fill();
   G.save(); G.translate(stunt.dir>0?x+20:x+m.bw-20,GROUND); G.rotate(a); G.translate(stunt.dir>0?-20:-(m.bw-20),0);
   if(stunt.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);

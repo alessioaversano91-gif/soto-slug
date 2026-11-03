@@ -10,9 +10,9 @@ with sync_playwright() as p:
     for st,pt,nm in [(3,1,'Marsiglia 1'),(3,2,'Marsiglia 2'),(1,1,'Lione'),(2,1,'Genova')]:
         print(nm,pg.evaluate(START,[0,st,pt]),pg.evaluate(RUN))
     pg.evaluate(START,[0,3,1])
-    r=pg.evaluate("""()=>{ ST.stuntPlan=[0]; for(let i=0;i<3;i++) updateStunt(); stunt.x=PL.x-20; civs=[]; obs=[]; enemies=[]; cars=[]; shots=[]; PL.shootCd=0; PL.dir=stunt.dir<0?1:-1; const hp=PL.hp; doShoot(); const sh=shots[0]; for(let i=0;i<6;i++){ updateShots(); updateStunt(); } return {bulletAlive:shots.includes(sh),hpSame:PL.hp===hp}; }""")
+    r=pg.evaluate("""()=>{ ST.stuntPlan=[{at:0,k:'s'}]; for(let i=0;i<3;i++) updateStunt(); stunt.x=PL.x-20; civs=[]; obs=[]; enemies=[]; cars=[]; shots=[]; PL.shootCd=0; PL.dir=stunt.dir<0?1:-1; const hp=PL.hp; doShoot(); const sh=shots[0]; for(let i=0;i<6;i++){ updateShots(); updateStunt(); } return {bulletAlive:shots.includes(sh),hpSame:PL.hp===hp}; }""")
     print('not hittable',r)
     oy=pg.evaluate("()=>{document.getElementById('cab').style.cssText+=';position:relative;left:0;top:0;transform:none'; return document.getElementById('cv').getBoundingClientRect().top}")
-    pg.evaluate("()=>{ stunt={dir:1,x:ST.scrollX+170,v:0,t:20,say:60,said:true,txt:'TROP LENT!'}; traffic=[{col:'s',dir:-1,v:-3,x:ST.scrollX+200,t:5}]; PL.x=ST.scrollX+100; render(); }")
+    pg.evaluate("()=>{ stunt={k:'s',dir:1,x:ST.scrollX+170,v:0,t:20,say:60,said:true,txt:'TROP LENT!'}; traffic=[{col:'s',dir:-1,v:-3,x:ST.scrollX+200,t:5}]; PL.x=ST.scrollX+100; render(); }")
     pg.screenshot(path=SP+'scooter77.png',clip={'x':0,'y':oy+250,'width':480,'height':390})
     print('ERR',errs); b.close()

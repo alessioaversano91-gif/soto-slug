@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.77 BETA
+Versione di riferimento: 1.3.0.78 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -558,6 +558,12 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 - [x] Impennata a livello di gioco: due volte per livello passa sulla strada accanto al personaggio in impennata e il conducente sfotte ("TROP LENT!", "CIAO PAPY!", "ALLEZ, COURS!"...); non si colpisce e non fa danni
 - [x] Suono del motorino a due tempi all'arrivo e quando ti passa accanto
 - [ ] Facoltativo: usare la sgommata (riga 4) come partenza dell'impennata e le righe di esplosione/allarme se un giorno lo si vuole colpibile
+
+**Autobus e taxi di Marsiglia (1.3.0.78)**
+- [x] Autobus cittadino nel traffico in basso di Marsiglia (entrambe le parti), nei due sensi, lungo circa 430 px come quello di Genova
+- [x] Taxi bianco come cammeo: due volte per livello sfreccia lungo la strada del personaggio a tutta velocità (circa il doppio del motorino), con "!" e scia; non si colpisce e non fa danni
+- [x] Ordine dei passaggi a Marsiglia: motorino, taxi, motorino, taxi (punti diversi a ogni partita)
+- [ ] Facoltativo: le righe di esplosione, allarme e fuga di autobus e taxi restano pronte se un giorno li si vuole colpibili
 
 **Vetture per livello (proposta)**
 - [ ] 1-1 Porto Antico: furgone, Ape car, muletto o camion del porto

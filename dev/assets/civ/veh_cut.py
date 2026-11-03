@@ -30,6 +30,13 @@ V={
    'r1':(40,148,[[30,245],[290,510],[535,757],[778,998]],None),
    'r4':(438,572,[[545,772],[780,1003]],(474,580))},
    'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'wheelie':['r4:0']}},
+ 'm':{'src':'busm.jpg','target':430,'hp':0,'perframe':True,'rows':{   # Marseille city bus: traffic only (1.3.0.78)
+   'r1':(140,405,[[40,697],[768,1420],[1422,2070],[2072,2722]],None)},
+   'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3']}},
+ 'x':{'src':'taxi.jpg','target':290,'hp':0,'kr':{'r4':290/826},'rows':{   # Marseille taxi cameo: dashes along the street twice per level (1.3.0.78)
+   'r1':(100,372,[[50,730],[750,1418],[1418,2079],[2079,2740]],None),
+   'r4':(1110,1522,[[1690,2650]],None)},
+   'use':{'idle':['r1:0'],'drive':['r1:1','r1:2','r1:3'],'warn':['r4:0']}},
  'c':{'src':'carab.jpg','target':275,'hp':14,'rows':{
    'r1':(165,392,[[45,625],[665,1215],[1222,1772],[1780,2330]],None),
    'r2':(450,850,[[25,645],[648,1240],[1240,1792],[1792,2344]],(592,660)),
@@ -62,7 +69,8 @@ for vid,cfg in V.items():
     # each row of the sheet may be drawn at its own size: scale every row on a clean car of that row (1.3.0.69)
     REF={'r1':'r1:0','r2':'r2:0','r3':'r3:0','r4':'r4:1'}
     KR={rn:cfg['target']/(cut[f][2]-cut[f][1]) for rn,f in REF.items() if f in cut}
-    for rn,src in cfg.get('same',{}).items(): KR[rn]=KR[src]   # motion-blurred reference: borrow another row's scale
+    for rn,src in cfg.get('same',{}).items(): KR[rn]=KR[src]
+    KR.update(cfg.get('kr',{}))   # explicit row scale when the reference frame can't be measured   # motion-blurred reference: borrow another row's scale
     INFO[vid]={'hp':cfg['hp']}
     print(vid,'row scales',{r:round(v,3) for r,v in KR.items()})
     for kind,frames in cfg['use'].items():
@@ -75,7 +83,7 @@ for vid,cfg in V.items():
             if kind in ('peel','warn'): M[key]={'w':im.width,'h':im.height,'ax':round(br*k)-cfg['target'],'gy':round(gy*k),'bw':cfg['target']}   # smoke trails behind: anchor on the front bumper
             else: M[key]={'w':im.width,'h':im.height,'ax':round(bl*k),'gy':round(gy*k),'bw':round((br-bl)*k)}
 json.dump(A,open('veh_assets.json','w')); json.dump(M,open('veh_meta.json','w')); json.dump(INFO,open('veh_info.json','w'))
-print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civs_idle','civs_wheelie']]
+print(len(A),'frames',sum(len(v) for v in A.values())//1024,'KB'); [print(k,M[k]) for k in ['civm_idle','civm_drive0','civx_idle','civx_warn']]
 # preview
 ks=list(A); cols=6; cw=330; ch=230
 o=Image.new('RGB',(cols*cw,((len(ks)+cols-1)//cols)*ch),(90,96,104))
