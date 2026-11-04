@@ -2,7 +2,7 @@
 from playwright.sync_api import sync_playwright
 SP='/tmp/claude-0/-home-claude/cd384b70-471e-5c72-87e8-917c6f304069/scratchpad/ui/'
 U='file:///mnt/user-data/outputs/soto_slug_tex_edition.html'
-WIN="()=>{ ST.wavePlan=[]; ST.dogPlan=[]; ST.ev=null; enemies=[]; PL.chute=false; PL.air=false; PL.jy=0; ST.scrollX=ST.maxScroll; PL.x=ST.scrollX+250; for(let i=0;i<300;i++) update(); const t=enemies.find(e=>e.type===5); if(t){ t.hp=0; killEnemy(t); } for(let i=0;i<400&&ST.mode==='playing';i++) update(); return [ST.mode,ST.stage,ST.part,document.getElementById('nextBtn').textContent]; }"
+WIN="()=>{ ST.wavePlan=[]; ST.dogPlan=[]; ST.ev=null; enemies=[]; PL.chute=false; PL.air=false; PL.jy=0; ST.scrollX=ST.maxScroll; PL.x=ST.scrollX+250; for(let i=0;i<300;i++) update(); const t=enemies.find(e=>e.type===5); if(t){ t.hp=0; killEnemy(t); } for(let i=0;i<1600&&ST.mode==='playing';i++){ update(); for(const e of enemies) if(e.type!==5&&e.t>40) e.hp=0; } for(let i=0;i<400&&ST.mode==='playing';i++) update(); return [ST.mode,ST.stage,ST.part,document.getElementById('nextBtn').textContent]; }"
 with sync_playwright() as p:
     b=p.chromium.launch(); ctx=b.new_context(viewport={'width':480,'height':900}); pg=ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto(U); pg.wait_for_timeout(1200)

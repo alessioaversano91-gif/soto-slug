@@ -1,5 +1,5 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.79 - primo rilascio interno
+Beta 1.3.0.80 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".
@@ -18,8 +18,8 @@ COMANDI DA TASTIERA
   Si gioca anche col gamepad. I tasti si cambiano da Impostazioni > Comandi.
 
 DA SAPERE
-- La partita parte in modalità GOD (non si muore). Per giocare con le vite:
-  tasto G, oppure "MODALITA'" nella scelta dello stage.
+- La partita parte in modalità LIFE (3 vite, si perde energia). Per essere invincibili
+  (modalità GOD): tasto G, oppure "MODALITA'" nella scelta dello stage.
 - Progressi, medaglie e classifica restano nel browser del dispositivo.
   Per portarli altrove: Impostazioni > Esporta salvataggi / Importa salvataggi.
 - Sul telefono il TESTO GRANDE è attivo: si cambia da Impostazioni.
@@ -29,7 +29,7 @@ DA SAPERE
 - Le bottiglie che brillano sono élite: blu corazzate, rosse kamikaze, viola si dividono in due.
 - Quando la bottiglia sul carro brilla, i colpi valgono doppio.
 - Le città vanno in ordine: Genova, Lione, Mantova, Marsiglia.
-- Genova ha tre livelli: Porto Antico, Corso Italia e Stazione Principe. Il carro armato arriva solo alla fine del terzo.
+- Genova ha tre livelli: Porto Antico, Corso Italia e Stazione Principe. Il carro armato arriva solo alla fine del terzo; i primi due finiscono con un ultimo sbarramento.
 - A Genova, Lione e Marsiglia ci sono vetture parcheggiate: pochi colpi e scappano (attento, investono!), tanti colpi ed esplodono. Quelle che passano in basso, in primo piano, sono solo traffico.
 
 PROBLEMI NOTI DELLA BETA

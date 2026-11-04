@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.79 BETA
+Versione di riferimento: 1.3.0.80 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -623,10 +623,11 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Scritte lunghe al centro (es. "ATTENZIONE: CARRO ... ALLE SPALLE!") ora vanno a capo invece di toccare i bordi
 
 **Da decidere / migliorare**
-- [ ] [A] Modalità GOD (invincibile) attiva di default: chi prova la beta non sente mai la difficoltà e non perde mai vite. Proposta: LIFE di default, GOD come opzione
-- [ ] [A] Curva di difficoltà non crescente: Lione (2a tappa) è la più dura (1-4 morti a partita col bot), Mantova e Marsiglia più facili; Genova 1-1 quasi senza danni
-- [ ] [A] Durate sbilanciate: Genova 1-1 e 1-2 ~1 minuto, Marsiglia 3-4,5 minuti (2 parti, 120-175 nemici)
-- [ ] [M] Boss di Mantova lungo: fino a 100 s col bot (gli altri 30-60 s)
+- [x] [A] Modalità LIFE di default, GOD come scelta (1.3.0.80)
+- [x] [A] Curva di difficoltà (1.3.0.80): quasi tutto il danno veniva dai carri. Carro di Lione con una raffica in meno e pause più lunghe (danno medio col bot 73 → 45); ordine ora Genova < Lione ≈ Mantova < Marsiglia
+- [x] [A] Durate (1.3.0.80): Genova 1-1 e 1-2 finiscono con un "ultimo sbarramento" (ondata finale a camera ferma) prima del riepilogo; Marsiglia parte 1 accorciata di un quinto (Marsiglia intera ~3,5 minuti col bot)
+- [x] [M] Carro di Mantova con il 18% di energia in meno (durata media col bot ~64 → ~41 s) (1.3.0.80)
+- [x] Boss rush: a Genova partiva dal livello 1 e saltava il carro; ora parte dal livello 3 (1.3.0.80)
 - [ ] [M] Peso: 8 MB (5,9 MB scaricati da GitHub); su rete mobile lenta 20-30 s senza indicatore di caricamento. Le animazioni di Seba e Lollo da sole valgono 1,7 MB
 - [ ] [M] Nebbia (evento casuale) a Lione copre quasi tutto lo schermo: valutare di renderla meno fitta
 - [ ] [B] Effetti sonoro di armi non usati (mg, rifle, smg, uzi) e passo sul bagnato: da collegare o togliere

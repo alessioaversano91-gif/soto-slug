@@ -764,7 +764,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.79', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.80', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -2412,18 +2412,18 @@ const TK=__TANKMETA__;
 const TANK_W=150, TANK_H=198;
 // each city's tank has its own temper; under half energy it enters a second, angrier phase
 const TANK_VAR={1:{pre:'tank_', hp:260,wait:70,name:'CARRO CHARTREUSE',style:'volley',
-                   p1:['cannon','cannon','lob'],p2:['volley','lob','cannon','volley','charge'],rage:'IL CARRO CHARTREUSE CARICA A RAFFICA!'},
+                   p1:['cannon','cannon','lob'],p2:['volley','lob','cannon','lob','charge'],rage:'IL CARRO CHARTREUSE CARICA A RAFFICA!',waitAdd:10},   // 1.3.0.80: Lione was the hardest tank, one volley less and a longer pause
                 4:{pre:'tank_', hp:300,wait:65,name:'CARRO CHARTREUSE',style:'ram',      // Mantova: base enemies, base boss
-                   p1:['cannon','lob','cannon'],p2:['ram','cannon','lob','ram','charge'],rage:'IL CARRO PERDE LA PAZIENZA: SPERONA!'},
+                   p1:['cannon','lob','cannon'],p2:['ram','cannon','lob','ram','charge'],rage:'IL CARRO PERDE LA PAZIENZA: SPERONA!',hpK:.82},   // 1.3.0.80: Mantova's tank lasted up to 100 s
                 2:{pre:'tankY_',hp:330,wait:55,name:'CARRO CHARTREUSE GIALLA',style:'mortar',
                    p1:['lob','lob','cannon'],p2:['spread','cannon','spread','lob','charge'],rage:'LA GIALLA SPARA A VENTAGLIO!'},
                 3:{pre:'tankE_',hp:400,wait:45,name:'CARRO ELIXIR',style:'barrage',
                    p1:['cannon','lob','charge'],p2:['barrage','charge','cannon','barrage','lob'],rage:'L\'ELIXIR CHIAMA LA PIOGGIA DI BOTTIGLIE!'}};
 function spawnTank(){
   const V=TANK_VAR[ST.stage]||TANK_VAR[1], D=BOSS_BY_POS[stagePos(ST.stage)-1]||BOSS_BY_POS[0];
-  enemies.push({type:5,key:'tank',pre:V.pre,V,waitBase:D.wait,x:ST.scrollX-190,y:GROUND-TANK_H,w:TANK_W,h:TANK_H,hp:V.hp,max:V.hp,dir:1,vx:0,t:0,
+  enemies.push({type:5,key:'tank',pre:V.pre,V,waitBase:D.wait+(V.waitAdd||0),x:ST.scrollX-190,y:GROUND-TANK_H,w:TANK_W,h:TANK_H,hp:V.hp,max:V.hp,dir:1,vx:0,t:0,
     st:'enter',stT:0,atk:0,flash:0,hitT:0,dying:false,dieT:0});
-  {const e=enemies[enemies.length-1]; e.hp=e.max=Math.round(D.hp*[.8,1,1.2][skill()]);}
+  {const e=enemies[enemies.length-1]; e.hp=e.max=Math.round(D.hp*(V.hpK||1)*[.8,1,1.2][skill()]);}
   setTimeout(()=>announce('Warning! Boss approaching'),200);
   ST.bossIn=true; ST.bossF=ST.frame; ST.bossHit=false; ST.lockCam=true; ST.wave=null; ST.wavePlan=[]; ST.salvo=null; ST.salvoPlan=[]; sfx('alarm'); bossLine();
   document.getElementById('bbl').textContent=V.name;
@@ -3366,7 +3366,9 @@ function update(){
     if(ST.dogPlan.length&&ST.scrollX>=ST.dogPlan[0].at*ST.maxScroll) spawnDog(ST.dogPlan.shift().side);
     if(ST.scrollX>=ST.maxScroll-2){
       if(ST.stage===3&&ST.part===1){ if(!ST.partT){ ST.partT=100; ST.lockCam=true; flash('MARSIGLIA - PARTE 2'); } }
-      else if(multiLevel()&&ST.part<PARTS[ST.stage]) levelEnd();   // Genova 1 and 2: no boss, the tank waits at level 3 (1.3.0.70)
+      else if(multiLevel()&&ST.part<PARTS[ST.stage]){   // Genova 1 and 2: no boss (the tank waits at level 3) but a last barrage before the summary (1.3.0.80)
+        if(!ST.finalW){ ST.finalW=true; startWave(); ST.wave.q+=2; ST.wave.final=true; flash(ST.part===1?'ULTIMO SBARRAMENTO AL PORTO!':'ULTIMO SBARRAMENTO IN CORSO ITALIA!'); }
+        else if(!ST.wave) levelEnd(); }
       else spawnBoss();
     }
   }
@@ -3545,8 +3547,8 @@ function buildMenus(){
   const pb=document.getElementById('pauseBtn'), mb=document.getElementById('muteBtn');
   pb.addEventListener('pointerdown',e=>{e.preventDefault();auInit();togglePause();});
   mb.addEventListener('pointerdown',e=>{e.preventDefault();auInit();setMute(!AU.muted);});
-  PL.hp=PL_MAXHP; ST.lives=START_LIVES; setMute(AU.muted); setGod(true);
-  let bl=true; try{bl=localStorage.getItem('sotoBlood')!=='0';}catch(e){} setBlood(bl); setMusic(MU.on); makeItemSprites(); makeGunSprite(); useMitraIcon();   // GOD is the default mode
+  PL.hp=PL_MAXHP; ST.lives=START_LIVES; setMute(AU.muted); setGod(false);   // 1.3.0.80: LIFE is the default, GOD stays a choice
+  let bl=true; try{bl=localStorage.getItem('sotoBlood')!=='0';}catch(e){} setBlood(bl); setMusic(MU.on); makeItemSprites(); makeGunSprite(); useMitraIcon();   // LIFE is the default mode (1.3.0.80)
 }
 function drawCharCards(){
   MF++;
@@ -3590,9 +3592,9 @@ function partLabel(){ const pb=document.getElementById('partBtn'); if(!pb) retur
 function pickStage(s){sfx('select');if(selStage!==s) ST.startPart=1; selStage=s; partLabel();[0,1,2,3].forEach(i=>document.getElementById('lc'+i).classList.toggle('sel',i===s-1));document.getElementById('goBtn').classList.add('rdy');}
 function resetRun(part){
   setSG(false); ST.streak=0; ST.powT=0; ST.marks=[]; ST.salvo=null;
-  ST.part=part||1; ST.partT=0; ST.fadeIn=0; ST.lvlEnd=false;
+  ST.part=part||1; ST.partT=0; ST.fadeIn=0; ST.lvlEnd=false; ST.finalW=false;
   ST.hitStop=0;ST.slowT=0;ST.scrollX=0;ST.frame=0;ST.bossIn=false;ST.bossDead=false;ST.bossT=0;ST.winT=0;ST.shake=0;ST.lockCam=false;
-  ST.maxScroll=7200+ST.stage*1100;
+  ST.maxScroll=7200+ST.stage*1100; if(ST.stage===3&&ST.part===1) ST.maxScroll=Math.round(ST.maxScroll*.8);   // 1.3.0.80: Marseille part 1 a fifth shorter
   Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
   jumpQ=false; PL.hp=PL_MAXHP; PL.dead=false; PL.deadT=0; PL.inv=60; ST.stageScore=ST.score;
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
@@ -3620,7 +3622,7 @@ function startRush(){
   document.getElementById('hud').style.visibility=''; rushNext();
 }
 function rushNext(){
-  const c=ORDER[ST.rush.i]; ST.stage=c; selStage=c; ST.rush.score0=ST.score; resetRun(c===3?2:1);
+  const c=ORDER[ST.rush.i]; ST.stage=c; selStage=c; ST.rush.score0=ST.score; resetRun(c===3?2:c===2?3:1);   // Genova's tank lives at level 3 (1.3.0.80: the rush skipped it)
   ST.scrollX=ST.maxScroll; PL.x=ST.scrollX+220; obs=[]; props=props||[]; ST.carPlan=[]; ST.dogPlan=[]; ST.trevPlan=[]; ST.wavePlan=[]; ST.salvoPlan=[]; items=[];
   document.getElementById('hst').textContent='R'+(ST.rush.i+1)+'/4'; flash('BOSS RUSH '+(ST.rush.i+1)+'/4');
 }
