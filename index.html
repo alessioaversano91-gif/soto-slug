@@ -62,7 +62,7 @@ body.touch .dlabel{font-size:7px;}   /* 1.3.0.64: phones get readable labels */
 #dlg img{width:40px;height:40px;image-rendering:pixelated;border:1px solid #555;flex:none;}
 #dlg .dn{font-size:7px;color:var(--amber);margin-bottom:4px;}
 #dlg .dt{font-size:8px;line-height:12px;color:#f3ecd8;}
-#flash{position:absolute;top:80px;left:0;right:0;text-align:center;font-size:10px;color:var(--amber);text-shadow:2px 2px 0 #000;opacity:0;transition:opacity .2s;}
+#flash{position:absolute;top:80px;left:0;right:0;padding:0 12px;line-height:1.6;text-align:center;font-size:10px;color:var(--amber);text-shadow:2px 2px 0 #000;opacity:0;transition:opacity .2s;}
 #flash.on{opacity:1;}
 #bossbar{position:absolute;top:44px;left:50%;transform:translateX(-50%);width:260px;display:none;}
 #bossbar.on{display:block;}
@@ -98,7 +98,7 @@ body.touch .dlabel{font-size:7px;}   /* 1.3.0.64: phones get readable labels */
 .recf{display:none;flex-direction:column;align-items:center;gap:6px;margin:6px 0;} .recf.on{display:flex;}
 .recf input{font-family:inherit;font-size:10px;width:200px;text-align:center;padding:6px;background:#111;color:var(--gold);border:2px solid var(--gold);text-transform:uppercase;}
 .recf .rl{font-size:7px;color:#56ff8e;}
-#toast{position:absolute;top:58px;right:8px;font-size:7px;color:#1a1000;background:var(--gold);border:2px solid #7a5200;padding:6px 8px;opacity:0;transform:translateX(20px);transition:opacity .25s,transform .25s;pointer-events:none;max-width:260px;line-height:1.6;}
+#toast{position:absolute;top:58px;left:8px;font-size:7px;color:#1a1000;background:var(--gold);border:2px solid #7a5200;padding:6px 8px;opacity:0;transform:translateX(-20px);transition:opacity .25s,transform .25s;pointer-events:none;max-width:260px;line-height:1.6;}
 #toast.on{opacity:1;transform:none;}
 .help{font-size:6px;color:#8d8b76;line-height:2;text-align:center;}
 .stitle{font-size:12px;color:var(--gold);text-shadow:2px 2px 0 #7a3a00;margin:0 0 12px;padding:10px 14px 8px;}
@@ -764,7 +764,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.78', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.79', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -2283,6 +2283,7 @@ function mapArrived(){ return MAP.from===null||MAP.to==='tour'||MAP.t>=MAP_WAIT+
 function mapStart(){                         // leave the map and start the stage (or a new tour)
   if(MAP.to==='tour'){ startFinale(); return; }
   const part=MAP.from===null&&PARTS[MAP.to]&&ST.startPart>1?Math.min(ST.startPart,PARTS[MAP.to]):1; ST.startPart=1;
+  ST.freshPart=part>1&&MAP.to!==2;              // Marseille part 2 picked from the menu: a fresh start, not a continuation (1.3.0.79: bombs were NaN)
   ST.stage=MAP.to; selStage=MAP.to; document.getElementById('hud').style.visibility=''; resetRun(part);
 }
 function mapContinue(){ if(!mapArrived()) MAP.t=MAP_WAIT+MAP_TRAVEL; else mapStart(); }
@@ -3595,7 +3596,7 @@ function resetRun(part){
   Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
   jumpQ=false; PL.hp=PL_MAXHP; PL.dead=false; PL.deadT=0; PL.inv=60; ST.stageScore=ST.score;
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
-  const lvl=ST.part===1||multiLevel(), city=ST.part===1;
+  const lvl=ST.part===1||multiLevel()||ST.freshPart, city=ST.part===1||ST.freshPart; ST.freshPart=false;
   if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
   ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part); initCivs(); initStunt(); traffic=[]; ST.trafT=ri(120,300);
   ST.carPlan=ST.stage===1?[{at:.28,side:-1},{at:.60,side:-1}]:[];   // Lyon only: both cars come from behind and overtake (Marseille: Vespa + Trevor, sprites to come)

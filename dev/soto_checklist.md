@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.78 BETA
+Versione di riferimento: 1.3.0.79 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -613,3 +613,20 @@ Elenco aperto, in ordine di priorità indicativa. [A] alta, [M] media, [B] bassa
 - [ ] [B] Pose a mani nude di Albi e Alecio (checklist sopra)
 - [ ] [B] Versione in inglese dei testi
 - [ ] [B] Modalità a 2 giocatori sullo stesso schermo
+
+## Collaudo completo 1.3.0.79 (4 novembre 2026)
+Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilità), 11 schermate di gioco reali, misure di prestazioni e peso del file.
+
+**Sistemato in questa versione**
+- [x] Marsiglia "Parte 2" scelta dal menu: bombe a "NaN" e statistiche della partita precedente; ora parte come una partita nuova
+- [x] Avviso medaglia spostato in alto a sinistra: si sovrapponeva al contatore COMBO
+- [x] Scritte lunghe al centro (es. "ATTENZIONE: CARRO ... ALLE SPALLE!") ora vanno a capo invece di toccare i bordi
+
+**Da decidere / migliorare**
+- [ ] [A] Modalità GOD (invincibile) attiva di default: chi prova la beta non sente mai la difficoltà e non perde mai vite. Proposta: LIFE di default, GOD come opzione
+- [ ] [A] Curva di difficoltà non crescente: Lione (2a tappa) è la più dura (1-4 morti a partita col bot), Mantova e Marsiglia più facili; Genova 1-1 quasi senza danni
+- [ ] [A] Durate sbilanciate: Genova 1-1 e 1-2 ~1 minuto, Marsiglia 3-4,5 minuti (2 parti, 120-175 nemici)
+- [ ] [M] Boss di Mantova lungo: fino a 100 s col bot (gli altri 30-60 s)
+- [ ] [M] Peso: 8 MB (5,9 MB scaricati da GitHub); su rete mobile lenta 20-30 s senza indicatore di caricamento. Le animazioni di Seba e Lollo da sole valgono 1,7 MB
+- [ ] [M] Nebbia (evento casuale) a Lione copre quasi tutto lo schermo: valutare di renderla meno fitta
+- [ ] [B] Effetti sonoro di armi non usati (mg, rifle, smg, uzi) e passo sul bagnato: da collegare o togliere
