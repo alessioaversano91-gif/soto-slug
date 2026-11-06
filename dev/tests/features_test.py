@@ -50,9 +50,9 @@ with sync_playwright() as p:
     w1=pg.evaluate("()=>{const e=enemies.find(e=>e.type===5);return e&&{wounded:e.wounded,wait:tankWait(e,0)}}")
     shot(pg,oy,'f_boss.png'); print('B9 boss before',w0,'| wounded',w1)
     # B10 bonus crates
-    start(pg,0,2); n=pg.evaluate("()=>[obs.filter(o=>o.bonus).length,obs.length]")
-    pg.evaluate("()=>{spawnEnemy=()=>{};enemies=[];const o=obs.find(o=>o.bonus);ST.scrollX=Math.max(0,o.x-260);PL.x=o.x-120;ST.lockCam=true;}"); pg.wait_for_timeout(200); shot(pg,oy,'f_crate.png')
-    r=pg.evaluate("()=>{const o=obs.find(o=>o.bonus&&o.x>ST.scrollX);const s0=ST.score,i0=items.length;damageOb(o,99);return {items:items.length-i0,score:ST.score-s0}}")
+    start(pg,0,2); n=pg.evaluate("()=>[scn.filter(o=>o.k==='crate').length,obs.length]")   # 1.3.0.83: the old bonus crates became the mystery crates
+    pg.evaluate("()=>{spawnEnemy=()=>{};enemies=[];const o=scn.find(o=>o.k==='crate');ST.scrollX=Math.max(0,o.x-260);PL.x=o.x-120;ST.lockCam=true;}"); pg.wait_for_timeout(200); shot(pg,oy,'f_crate.png')
+    r=pg.evaluate("()=>{const o=scn.find(o=>o.k==='crate');const s0=ST.score,i0=items.length;for(let i=0;i<4;i++) scnHit(o,1,o.x,GROUND-30);for(let i=0;i<20;i++) updateScn();return {items:items.length-i0,score:ST.score-s0}}")
     print('B10 crates (bonus/total)',n,'| destroyed bonus crate ->',r)
     # B11 falling bottles
     start(pg,0,2,False); pg.evaluate("()=>{spawnEnemy=()=>{};enemies=[];ST.frame=400;ST.dropT=1;PL.walking=false;}"); pg.wait_for_timeout(250)

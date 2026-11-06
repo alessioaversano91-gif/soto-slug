@@ -776,7 +776,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.82', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.83', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -1199,15 +1199,13 @@ const OB_DEF={sandbag:{w:72,h:40,hp:10},crate:{w:52,h:50,hp:8},car:{w:100,h:52,h
 function generateLevel(stage){
   obs=[];props=[];
   let x=560;
-  const types=stage!==4?['sandbag','crate','barrel','barrel','sandbag','crate']:['sandbag','crate','car','barrel','barrel','sandbag','crate'];   // Genova and France: the vehicles replace the old car cover (1.3.0.68/1.3.0.70); Mantova keeps it for now
+  const types=stage!==4?['sandbag']:['sandbag','sandbag','car'];   // 1.3.0.83: old crates and barrels removed (the new level objects replace them); Mantova keeps the old car cover for now
   while(x<ST.maxScroll+W-420){
     const t=types[ri(0,types.length-1)], d=OB_DEF[t];
     obs.push({type:t,x,w:d.w,h:d.h,hp:d.hp,max:d.hp,flash:0,bonus:t==='crate'&&Math.random()<.7});
     if(t==='barrel'&&Math.random()<.6){x+=d.w+4;obs.push({type:'barrel',x,w:28,h:38,hp:4,max:4,flash:0});}
-    x+=d.w+ri(320,520);
+    x+=d.w+ri(420,640);
   }
-  for(let bx=900;bx<ST.maxScroll-300;bx+=ri(1300,1700)){              // supply crates between the cover
-    if(obs.some(o=>Math.abs(o.x-bx)<140)) continue; const d=OB_DEF.crate; obs.push({type:'crate',x:bx,w:d.w,h:d.h,hp:6,max:6,flash:0,bonus:true}); }
   if(civs.length) obs=obs.filter(o=>!civs.some(c=>o.x+o.w>c.x-40&&o.x<c.x+civW(c)+40));
   if(scn.length) obs=obs.filter(o=>!scn.some(q=>{ const hw=scnM(q).w/2+30; return o.x+o.w>q.x-hw&&o.x<q.x+hw; }));   // 1.3.0.82: level objects keep their spot
   obs.sort((a,b)=>a.x-b.x);
@@ -3345,7 +3343,7 @@ const scnHittable=o=>(o.k==='barrel'||o.k==='crate'||o.k==='stall')&&o.st==='ok'
 function scnBox(o){ const m=CVM[scnKey(o)]||{w:60,h:60,ax:30}; return {x:o.x-m.w*.42,y:GROUND-m.h,w:m.w*.84,h:m.h}; }
 function initScn(){
   scn=[]; goods=[]; const city=CITY_L[ST.stage]; if(!city||ST.rush||!CVM.obj_barrel0) return;
-  const kinds=['host','stall','barrel','crate','barrel','crate']; if(ST.maxScroll>10000) kinds.push('host','barrel');
+  const kinds=['host','stall','barrel','crate','barrel','crate','crate']; if(ST.maxScroll>10000) kinds.push('host','barrel','crate');   // 1.3.0.83: one crate more, the old supply crates are gone
   const busy=[]; for(const c of civs) busy.push([c.x-50,c.x+civW(c)+50]); for(const o of obs) busy.push([o.x-40,o.x+o.w+40]);
   for(const k of kinds){
     const half=k==='stall'?130:k==='host'?50:40;

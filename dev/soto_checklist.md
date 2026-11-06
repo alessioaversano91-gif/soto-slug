@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.82 BETA
+Versione di riferimento: 1.3.0.83 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -662,3 +662,8 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Nuova medaglia SALVATAGGIO: 10 ostaggi liberati in totale (le medaglie sono 15)
 - [ ] Ostaggi liberati nel riepilogo di fine livello e come obiettivo con stella (da decidere)
 - [ ] Foglio delle casse di bombe/munizioni e premi (prompt pronto in `dev/prompt_oggetti_primi5.md`)
+
+## Pulizia ostacoli (1.3.0.83)
+- [x] Tolte le vecchie casse e i vecchi barili: come ostacoli restano solo i sacchi di sabbia (e a Mantova le vecchie auto bruciate, finché non arrivano le sue vetture)
+- [x] Le vecchie casse con premio sono sostituite dalle casse a sorpresa: ora 3 per livello (4 a Mantova e Marsiglia parte 2)
+- [x] Prompt per la seconda serie di oggetti: `dev/prompt_oggetti_successivi.md` (premi, specialità per città, bombole, idrante, insegna, container, mitragliatrice, tombino, gabbiano, piccione, panni stesi, distributore, Ape blindata)
