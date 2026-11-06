@@ -191,6 +191,17 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-width:20px
 </style>
 </head>
 <body>
+<!-- 1.3.0.81 boot screen: painted while the 8 MB file is still downloading, gone when the sprites are ready -->
+<div id="boot" style="position:fixed;inset:0;z-index:9999;pointer-events:none;background:#0b0d12;color:#ffd23a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:'Press Start 2P',monospace;text-align:center;padding:0 20px">
+ <div style="font-size:22px;letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #c0392b">SOTO SLUG</div>
+ <div style="font-size:9px;color:#8a93a3;letter-spacing:2px">TEX EDITION</div>
+ <div style="width:230px;height:16px;border:2px solid #ffd23a;padding:2px;margin-top:10px"><div id="bootBar" style="height:100%;width:2%;background:#ffd23a;transition:width .25s"></div></div>
+ <div id="bootTxt" style="font-size:9px">CARICAMENTO... 0%</div>
+ <div style="font-size:7px;color:#6d7686;max-width:270px;line-height:1.9">Al primo avvio servono alcuni secondi:<br>il gioco è un unico file da circa 7 MB.</div>
+</div>
+<script>(function(){var p=0,B={set:function(v){if(v<=p)return;p=v;var b=document.getElementById('bootBar'),t=document.getElementById('bootTxt');if(b)b.style.width=p+'%';if(t)t.textContent='CARICAMENTO... '+Math.round(p)+'%';},
+ done:function(){clearInterval(B.i);B.set(100);var e=document.getElementById('boot');if(e){e.style.transition='opacity .4s';e.style.opacity=0;setTimeout(function(){e.remove();},450);}}};
+ B.i=setInterval(function(){B.set(p+(70-p)*.05);},150);window.BOOT=B;})();</script>
 <div id="rot"><div class="rotph"></div><div class="rott">GIRA IL TELEFONO<br>IN VERTICALE</div><div class="rots">SOTO Slug si gioca in verticale:<br>lo schermo e i testi sono piu grandi.</div><button class="mb" id="rotGo">GIOCA LO STESSO</button></div>
 <div id="cab">
 <div id="wrap">
@@ -764,7 +775,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.80', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.81', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -793,9 +804,10 @@ function prep(img){
   return {n,f,wn:white(n),wf:white(f),w,h};
 }
 function loadAssets(){
-  return Promise.all(Object.entries(ASSET_SRC).map(([k,src])=>new Promise((res,rej)=>{
+  const all=Object.entries(ASSET_SRC); let n=0; if(window.BOOT){ clearInterval(BOOT.i); BOOT.set(70); }   // download done: from here the bar shows real decoding progress
+  return Promise.all(all.map(([k,src])=>new Promise((res,rej)=>{
     const i=new Image();
-    i.onload=()=>{S[k]=k.endsWith('_bd')?i:prep(i);res();};
+    i.onload=()=>{S[k]=k.endsWith('_bd')?i:prep(i); if(window.BOOT&&++n%20===0) BOOT.set(70+29*n/all.length); res();};
     i.onerror=()=>rej(new Error('asset '+k));
     i.src=src;
   })));
@@ -2015,6 +2027,8 @@ function spawnCar(side){        // side 1 = from the right (faces left), -1 = fr
   let stopX=side>0?Math.max(PL.x+175,ST.scrollX+W*.64):Math.min(PL.x-175,ST.scrollX+W*.36);
   stopX=side>0?Math.min(stopX,ST.scrollX+W-112):Math.max(stopX,ST.scrollX+56);   // from the left it may sit half off-screen, never on top of the player
   if(ST.stage===1&&side<0) stopX=clamp(PL.x+200,ST.scrollX+W*.62,ST.scrollX+W-112);   // Lyon: it overtakes the player and parks ahead of him
+  for(const c of civs){ if(c.st==='gone') continue; const l=c.x-118, r=c.x+civW(c)+118;   // 1.3.0.81: never park on top of a parked civilian car or its wreck
+    if(stopX>l&&stopX<r){ if(l>=ST.scrollX+56) stopX=l; else if(r<=ST.scrollX+W-112) stopX=r; } }
   const quiet=(ST.carN=(ST.carN||0)+1)>1&&Math.random()<.45;   // undercover approach: lights off, they switch on only once it stops
   cars.push({x,dir,stopX,vx:dir*8.5,st:'arrive',stT:0,t:0,hp:CAR_HP,flash:0,quiet,bk:Math.random()<.5?'car_brake':'car_brakeL'});
   flash(side>0?'GENDARMERIE IN ARRIVO!':'GENDARMERIE ALLE SPALLE!'); sfx(quiet?'engine':'siren');
@@ -3038,13 +3052,14 @@ function drawVeil(){                      // fog and night: a veil with clear ho
   if(!night){ x.globalAlpha=.25; x.fillStyle='#ffffff'; for(let i=0;i<4;i++){ const bx=((i*170-ST.frame*(.3+i*.12)-sx*.4)%(W+300)+W+300)%(W+300)-150; x.beginPath(); x.ellipse(bx,HUD_T+120+i*110,160,34,0,0,Math.PI*2); x.fill(); } x.globalAlpha=1; }
   x.globalCompositeOperation='destination-out';
   const hole=(hx,hy,r)=>{ x.drawImage(hs,hx-r,hy-r,r*2,r*2); };
-  hole(PL.x-sx,feetY()-70,night?135:150);
+  hole(PL.x-sx,feetY()-70,night?135:190);
+  if(!night) for(const e of enemies) if(e.hp>0&&e.type!==5) hole(e.x+e.w/2-sx,e.y+e.h/2,62);   // 1.3.0.81: enemies stay readable in the fog
   for(const b of eshots) hole(b.x-sx,b.y,30);
   for(const f of falls) hole(f.x-sx,f.warn>0?GROUND:f.y,44);
   for(const e of enemies) if(e.type===5&&e.hp>0) hole(e.x+TANK_W/2-sx,GROUND-100,120);
   if(night){ for(const p of props) if(p.k==='lamp'&&p.x>sx-80&&p.x<sx+W+80) hole(p.x-sx,GROUND-70,95);
     for(const l of lights) hole(l.x-sx,l.y,Math.min(140,l.r*1.6)); }
-  G.save(); G.globalAlpha=ev.amt*(night?.86:.78); G.drawImage(VEIL.c,0,0); G.restore();
+  G.save(); G.globalAlpha=ev.amt*(night?.86:.55); /* 1.3.0.81: fog thinner (was .78) */ G.drawImage(VEIL.c,0,0); G.restore();
   if(night) for(const e of enemies){ if(e.hp<=0||e.type===5||e.type===7) continue; const ex=e.x+e.w/2-sx, ey=e.y+e.h*.42;   /* glowing eyes in the dark */
     G.fillStyle=`rgba(255,60,40,${(.55*ev.amt).toFixed(2)})`; G.fillRect(ex-6,ey,3,2); G.fillRect(ex+3,ey,3,2); }
 }
@@ -3179,7 +3194,7 @@ function drawStarC(x,y,r,on){ G.beginPath(); for(let i=0;i<10;i++){ const a=-Mat
 // ═══════════════════════════════════════════════════════════════
 const CVM=__CIVMETA__;
 let civs=[];
-const CIV_HP=12, CIV_CALM=75, CIV_HPS={w:12,g:12,v:16,c:14,f:14};   // f SUV francese (Lione, Marsiglia) 1.3.0.70
+const CIV_HP=12, CIV_HPS={w:12,g:12,v:16,c:14,f:14};   // f SUV francese (Lione, Marsiglia) 1.3.0.70
 const civPool=()=>ST.stage===2?['w','g','v','c']:ST.stage===1||ST.stage===3?['f']:[];   // w/g utilitaria bianca/verde, v furgone, c Carabinieri (1.3.0.68)
 const civN=(col,kind)=>{ let n=0; while(CVM['civ'+col+'_'+kind+n]) n++; return n||1; };
 function civPlanFor(){
@@ -3193,12 +3208,8 @@ function civPlanFor(){
 function initCivs(){ civs=civPlanFor().map(p=>({col:p.col,x:p.x,st:'park',hp:CIV_HPS[p.col]||CIV_HP,max:CIV_HPS[p.col]||CIV_HP,t:ri(0,60),stT:0,calm:0,flash:0,vx:0,hurt:false,fx:0})); }
 const civKey=(c,k)=>'civ'+c.col+'_'+k;
 function civFrame(c){
-  const A=civN(c.col,'alarm'), P=civN(c.col,'peel'), D=civN(c.col,'drive'), num=(k,n,i)=>CVM[civKey(c,k+'0')]?k+i:k;
   switch(c.st){
-    case 'park': return civKey(c,'idle');
-    case 'alarm': return c.hp<=c.max*.5?civKey(c,'dmg'):civKey(c,num('alarm',A,A>1?1+Math.floor(c.t/6)%(A-1):0));
-    case 'peel': return civKey(c,num('peel',P,Math.min(P-1,Math.floor(c.stT/(36/P)))));
-    case 'drive': return c.stT<22&&Math.floor(c.stT/4)%2===0?civKey(c,'warn'):civKey(c,num('drive',D,Math.floor(c.t/3)%D));
+    case 'park': return c.hp<=c.max*.75?civKey(c,'dmg'):civKey(c,'idle');   // 1.3.0.81: no alarm and no escape, damage shows after a few hits
     case 'burn': return civKey(c,'burn');
     case 'boom': return civKey(c,'boom');
     case 'wreck': return civKey(c,'wreck');
@@ -3207,14 +3218,13 @@ function civFrame(c){
 }
 const civW=c=>(CVM[civKey(c,'idle')]||{bw:190}).bw;
 function civBox(c){ const w=civW(c); return {x:c.x+8,y:GROUND-104,w:w-16,h:100}; }
-const civHittable=c=>c.st==='park'||c.st==='alarm'||c.st==='burn';
+const civHittable=c=>c.st==='park'||c.st==='burn';
 function civHit(c,dmg,x,y){
   if(!civHittable(c)) return;
-  c.hp-=dmg; c.flash=5; c.calm=CIV_CALM;
+  c.hp-=dmg; c.flash=5; if(c.st==='park'&&ST.frame-(c.clank||-99)>8){ c.clank=ST.frame; sfx('hit'); }
   for(let i=0;i<4;i++) P({t:'spark',x,y,vx:rnd(-3,3),vy:rnd(-3,0),g:.25,life:12,col:i%2?'#ffffff':'#ffd23a'});
-  if(c.st==='park'){ c.st='alarm'; c.stT=0; sfx(c.col==='c'?'siren':'caralarm'); popText(c.x+civW(c)/2,GROUND-130,'ALLARME!'); }
   if(c.hp<=0&&c.st!=='burn'){ c.st='burn'; c.stT=0; c.fuse=24; }
-  else if(c.st==='alarm'&&c.hp<=c.max*.4){ c.st='burn'; c.stT=0; c.fuse=80; flash('L\'AUTO STA PER ESPLODERE!'); }
+  else if(c.st==='park'&&c.hp<=c.max*.4){ c.st='burn'; c.stT=0; c.fuse=80; flash('L\'AUTO STA PER ESPLODERE!'); }
 }
 function civBoom(c){
   const cx=c.x+civW(c)/2, cy=GROUND-60;
@@ -3232,23 +3242,6 @@ function updateCivs(){
     c.t++; c.stT++; if(c.flash>0) c.flash--;
     const cx=c.x+civW(c)/2;
     switch(c.st){
-      case 'alarm':
-        if(c.stT%55===0) sfx(c.col==='c'?'siren':'caralarm');
-        if(ST.frame%3===0){ const blue=Math.floor(c.t/6)%2===0; light(cx+(blue?-20:20),GROUND-110,40,blue?'80,140,255':'255,60,60',2,.28); }
-        if(--c.calm<=0){ c.st='peel'; c.stT=0; sfx('screech'); sfx('engine'); decals.push({x:c.x+20,dir:1,life:900}); popText(cx,GROUND-130,'SCAPPA!'); }
-        break;
-      case 'peel':
-        if(c.stT%2===0) P({t:'smoke',x:c.x+10+rnd(-6,6),y:GROUND-8,vx:-rnd(.6,2),vy:-rnd(.2,1),life:ri(30,50),size:rnd(7,12)});
-        c.x+=c.stT>18?1.2:0;
-        if(c.stT>=36){ c.st='drive'; c.stT=0; c.vx=2.5; }
-        break;
-      case 'drive':
-        c.vx=Math.min(c.vx+.35,11); c.x+=c.vx;
-        if(c.stT%3===0) P({t:'smoke',x:c.x+6,y:GROUND-8,vx:-1,vy:-.4,life:24,size:rnd(4,7)});
-        if(!c.hurt&&!PL.dead&&PL.x>c.x+10&&PL.x<c.x+civW(c)-10&&PL.jy>-60){ c.hurt=true; hurtPlayer('civram',PL.x,GROUND-50); ST.shake=Math.max(ST.shake,4); }
-        for(const e of enemies){ if(e.hp<=0||e.type===5||e.type===2||e.civHit===c) continue; const ex=e.x+e.w/2; if(ex>c.x&&ex<c.x+civW(c)){ e.civHit=c; e.hp-=8; e.flash=8; e.x+=24; if(e.hp<=0) killEnemy(e); } }
-        if(c.x>ST.scrollX+W+320) c.st='gone';
-        break;
       case 'burn':
         if(c.stT%3===0) P({t:'fire',x:c.x+rnd(20,civW(c)-20),y:GROUND-rnd(50,100),vx:rnd(-.3,.3),vy:rnd(-1.6,-.6),life:20,size:rnd(4,8)});
         if(c.stT%5===0) P({t:'smoke',x:c.x+rnd(30,civW(c)-30),y:GROUND-100,vx:rnd(-.4,.4),vy:-rnd(.8,1.6),life:50,size:rnd(6,11)});
@@ -3388,7 +3381,7 @@ function levelEnd(){                         // end of a boss-less level: the su
   ST.lvlEnd=true; ST.lockCam=true; PL.inv=Math.max(PL.inv,200); eshots=[];
   for(const e of enemies) if(e.hp>0&&!e.dying&&e.type!==5){ for(let i=0;i<6;i++) P({t:'smoke',x:e.x+e.w/2+rnd(-12,12),y:e.y+e.h*.6,vx:rnd(-1,1),vy:rnd(-1.4,-.4),life:28,size:rnd(5,9)}); e.hp=0; e.gone=true; }
   enemies=enemies.filter(e=>!e.gone);
-  flash('LIVELLO COMPLETATO!'); sfx('select'); announce('Livello completato!'); ST.winT=110;
+  flash('LIVELLO COMPLETATO! +5000'); addScore(5000); popText(PL.x,GROUND-170,'BONUS +5000'); sfx('select'); announce('Livello completato!'); ST.winT=110;   // 1.3.0.81: end-of-level bonus in place of the tank's points
 }
 function drawProgress(){
   if(ST.bossIn||ST.partT||ST.lvlEnd||ST.mode==='win') return;
@@ -3706,8 +3699,8 @@ function loop(ts){
 loadAssets().then(()=>{
   makeObSprites(); fixCarLettering(); buildMenus(); updHUD(); updContBtn(); updDiffBtn();
   document.getElementById('hpimg').src=ASSET_SRC.por0;
-  requestAnimationFrame(loop);
-}).catch(err=>{console.error(err);showPanel('perr');});
+  requestAnimationFrame(loop); if(window.BOOT) BOOT.done();
+}).catch(err=>{console.error(err);showPanel('perr'); if(window.BOOT) BOOT.done();});
 </script>
 </body>
 </html>

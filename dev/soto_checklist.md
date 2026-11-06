@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.80 BETA
+Versione di riferimento: 1.3.0.81 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -496,9 +496,9 @@ Genova passa da un livello a tre, in sequenza. Gli sprite li prepara Alessio pi�
 Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per livello.
 
 **Comportamenti previsti**
-- [ ] Auto parcheggiata: fa da copertura, i colpi la danneggiano a vista e alla fine esplode (danno ad area a nemici e giocatore), lasciando la carcassa
-- [ ] Allarme: al primo colpo lampeggiano le frecce e suona l'allarme (attira i nemici vicini)
-- [ ] Fuga: auto con conducente che, quando inizia lo scontro, sgomma e scappa fuori schermo
+- [x] Auto parcheggiata: fa da copertura, i colpi la danneggiano a vista e alla fine esplode (danno ad area a nemici e giocatore), lasciando la carcassa
+- [x] ~~Allarme~~ tolto nella 1.3.0.81 (decisione di Alessio)
+- [x] ~~Fuga~~ tolta nella 1.3.0.81 (decisione di Alessio)
 - [ ] Traffico di passaggio: vetture che attraversano la mappa; sulla corsia di sfondo sono decorative, su quella del giocatore sono un pericolo da saltare, con avviso "!" prima
 
 **Auto civile 1 (1.3.0.67)**
@@ -588,25 +588,25 @@ Dopo le vetture arriveranno chioschi, ostacoli e altri oggetti, livello per live
 Elenco aperto, in ordine di priorità indicativa. [A] alta, [M] media, [B] bassa.
 
 **Da sistemare**
-- [ ] [A] Genova 1-1 e 1-2 ora durano circa un minuto e finiscono senza un momento forte: serve un traguardo vero (arrivo a Boccadasse, corsa al treno) o un mini-evento finale al posto del carro
+- [x] [A] Genova 1-1 e 1-2: ultimo sbarramento e bonus di fine livello (1.3.0.80-81); il traguardo vero (treno) resta in lista sopra
 - [ ] [A] Prova su iPhone/Safari reale: finora i test mobili sono simulati (dimensioni, tocchi, schermo intero, audio dopo il primo tocco)
-- [ ] [M] Seba e Lollo a mani nude: pugni e calci non danneggiano le vetture (solo colpi ed esplosioni); decidere se devono farlo
-- [ ] [M] L'allarme delle vetture non attira ancora i nemici vicini (previsto in checklist, non fatto)
+- [x] [M] A mani nude non si danneggiano le vetture: solo armi e bombe (deciso)
+- [x] [M] Allarme delle vetture tolto (1.3.0.81)
 - [ ] [M] Mantova ha ancora le vecchie auto-ostacolo bruciate: sostituirle quando arrivano le vetture di Mantova
-- [ ] [M] Lione: le auto della gendarmeria che entrano in scena possono sovrapporsi a un SUV parcheggiato; valutare di tenerle distanti
+- [x] [M] Gendarmeria: non si ferma mai sopra una vettura parcheggiata o una carcassa (1.3.0.81)
 - [ ] [M] Sfondo di Corso Italia a bassa risoluzione: serve la versione grande (3168 x 1344)
 - [ ] [B] Il fotogramma dell'esplosione delle vetture è uno solo: con 2-3 fotogrammi l'esplosione sarebbe più viva
-- [ ] [B] File unico da circa 7,5 MB: sul telefono con rete lenta il primo caricamento è lento; valutare immagini più leggere o una schermata di caricamento con barra
+- [x] [B] Schermata di caricamento con barra (1.3.0.81)
 
 **Da tarare dopo le prime partite**
 - [ ] [M] Vetture: colpi necessari (12-16), tempo prima della fuga, danno dell'esplosione al giocatore
 - [ ] [M] Frequenza del traffico (ora ogni 6-12 s) e velocità
-- [ ] [M] Obiettivi e stelle di Genova ora che i carri intermedi non ci sono più (es. "ultimo carro in meno di 60 s" resta valido solo per l'1-3)
-- [ ] [B] Punteggio: con meno carri Genova vale meno punti delle altre città; eventualmente un bonus di fine livello
+- [x] [M] Obiettivi di Genova: "ultimo carro" vale per l'1-3 (verificato)
+- [x] [B] Bonus di fine livello +5000 a Genova 1-1 e 1-2 (1.3.0.81)
 
 **Si potrebbe migliorare**
-- [ ] [M] Traffico anche sulla corsia del giocatore, con "!" di avviso, come pericolo da saltare
-- [ ] [M] Vetture diverse per ogni livello di Genova (vedi proposta sopra) e per Marsiglia (es. taxi, scooter)
+- [ ] [M] Traffico anche sulla corsia del giocatore, con "!" di avviso (rimandato: opzione per più avanti)
+- [ ] [M] Vetture diverse per ogni livello di Genova (vedi proposta sopra); Marsiglia fatta (1.3.0.77-78)
 - [ ] [M] Altri elementi di scena dopo le vetture: chioschi, bancarelle, motorini, panchine
 - [ ] [B] Traffico più vario: colore casuale, clacson, qualche vettura che si ferma
 - [ ] [B] Sprite mancanti già in lista: Pinuccia, nemici e boss di Mantova, boss diversi per città
@@ -628,6 +628,16 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] [A] Durate (1.3.0.80): Genova 1-1 e 1-2 finiscono con un "ultimo sbarramento" (ondata finale a camera ferma) prima del riepilogo; Marsiglia parte 1 accorciata di un quinto (Marsiglia intera ~3,5 minuti col bot)
 - [x] [M] Carro di Mantova con il 18% di energia in meno (durata media col bot ~64 → ~41 s) (1.3.0.80)
 - [x] Boss rush: a Genova partiva dal livello 1 e saltava il carro; ora parte dal livello 3 (1.3.0.80)
-- [ ] [M] Peso: 8 MB (5,9 MB scaricati da GitHub); su rete mobile lenta 20-30 s senza indicatore di caricamento. Le animazioni di Seba e Lollo da sole valgono 1,7 MB
-- [ ] [M] Nebbia (evento casuale) a Lione copre quasi tutto lo schermo: valutare di renderla meno fitta
-- [ ] [B] Effetti sonoro di armi non usati (mg, rifle, smg, uzi) e passo sul bagnato: da collegare o togliere
+- [x] [M] Caricamento: schermata con barra e percentuale; file da 8,0 a 7,5 MB togliendo i fotogrammi di allarme e fuga (1.3.0.81). Resta: animazioni di Seba e Lollo (1,7 MB)
+- [x] [M] Nebbia meno fitta e nemici sempre leggibili (1.3.0.81)
+- [x] [B] Suoni delle armi: erano già collegati (UZI per Seba, fucile per Lollo, mitra per Alecio quando trovano l'arma); era un falso allarme del collaudo
+
+## Vetture senza allarme, caricamento, nebbia (1.3.0.81)
+- [x] Vetture parcheggiate: niente allarme, niente fuga. Colpi → si ammacca (dal 25% di danno) → prende fuoco (sotto il 40%) → esplode → carcassa. Al colpo un rumore metallico
+- [x] Solo armi e bombe le danneggiano; pugni e calci no
+- [x] Schermata di caricamento SOTO SLUG con barra: compare subito mentre il file si scarica, la barra arriva al 100% quando gli sprite sono pronti
+- [x] Nebbia di Lione e Mantova: velo più leggero (55% invece di 78%), buco più largo attorno al personaggio e nemici sempre visibili
+- [x] Gendarmeria di Lione: si ferma prima o dopo le vetture parcheggiate, mai sopra
+- [x] Genova 1-1 e 1-2: bonus +5000 a fine livello
+- [x] Prompt per generare gli sprite con l'AI: `dev/prompt_sprite_soto.md` (anche nel progetto SOTO)
+- [ ] Traffico sulla corsia del giocatore: rimandato
