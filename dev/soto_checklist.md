@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.81 BETA
+Versione di riferimento: 1.3.0.82 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -643,12 +643,22 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [ ] Traffico sulla corsia del giocatore: rimandato
 
 ## Oggetti nei livelli (proposte, dettagli e prompt in `dev/prompt_sprite_soto.md`)
-- [ ] [A] Barile rosso esplosivo
-- [ ] [A] Cassa con premio a sorpresa
-- [ ] [A] Cassa di bombe e cassa di munizioni (premi)
-- [ ] [A] Ostaggio da liberare (variante per città) + obiettivo/medaglia
-- [ ] [A] Bancarella del mercato con merce per città
+- [x] [A] Barile rosso esplosivo (1.3.0.82)
+- [x] [A] Cassa con premio a sorpresa (1.3.0.82)
+- [ ] [A] Cassa di bombe e cassa di munizioni (premi): manca il foglio, per ora escono le icone già nel gioco
+- [x] [A] Ostaggio da liberare, uno per città + medaglia SALVATAGGIO (1.3.0.82)
+- [x] [A] Bancarella del mercato con merce per città (1.3.0.82)
 - [ ] [M] Distributore automatico, bombole del gas, idrante, insegna che cade, container della gru, mitragliatrice fissa
 - [ ] [M] Nuovi sprite delle specialità della città
 - [ ] [B] Tombino con vapore, gabbiani e piccioni, panni stesi e bandiere
 - [ ] [B] Ape car o muletto da guidare (veicolo del giocatore)
+
+## Oggetti nei livelli (1.3.0.82)
+- [x] In ogni livello delle quattro città: 1 ostaggio, 1 bancarella, 2 barili rossi, 2 casse a sorpresa (Mantova e Marsiglia parte 2, più lunghi: 2 ostaggi e 3 barili). Posizioni diverse a ogni partita, mai sopra vetture o ostacoli
+- [x] Barile rosso: 3 colpi, poi trema e prende fuoco per mezzo secondo ("ATTENTO!") ed esplode: danno ad area ai nemici, reazione a catena con barili, casse, bancarelle e vetture vicine, danno al personaggio se è troppo vicino; +500
+- [x] Cassa a sorpresa: 4 colpi; dentro bombe, raffica, caffè, specialità, ricarica o fucile a pompa, tesoro (+1000) o, una volta su otto, una bottiglia nemica
+- [x] Bancarella: 10 colpi; crolla (+300) e lascia cadere 4 prodotti della città da raccogliere (+200 l'uno), a volte la specialità
+- [x] Ostaggio: legato e imbavagliato, chiede "AIUTO!"; si libera toccandolo, sparandogli vicino o con un'esplosione. Si alza, saluta, ringrazia nella sua lingua, ti lascia un premio e scappa (+2000). Pescatore a Genova, cuoco a Lione, signora col barboncino a Marsiglia, contadino a Mantova
+- [x] Nuova medaglia SALVATAGGIO: 10 ostaggi liberati in totale (le medaglie sono 15)
+- [ ] Ostaggi liberati nel riepilogo di fine livello e come obiettivo con stella (da decidere)
+- [ ] Foglio delle casse di bombe/munizioni e premi (prompt pronto in `dev/prompt_oggetti_primi5.md`)

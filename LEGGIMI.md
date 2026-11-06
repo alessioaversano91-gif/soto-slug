@@ -1,5 +1,5 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.81 - primo rilascio interno
+Beta 1.3.0.82 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".
@@ -30,7 +30,7 @@ DA SAPERE
 - Quando la bottiglia sul carro brilla, i colpi valgono doppio.
 - Le città vanno in ordine: Genova, Lione, Mantova, Marsiglia.
 - Genova ha tre livelli: Porto Antico, Corso Italia e Stazione Principe. Il carro armato arriva solo alla fine del terzo; i primi due finiscono con un ultimo sbarramento.
-- A Genova, Lione e Marsiglia ci sono vetture parcheggiate: con armi e bombe si danneggiano, prendono fuoco ed esplodono (attento a starci vicino). Quelle che passano in basso, in primo piano, sono solo traffico.
+- A Genova, Lione e Marsiglia ci sono vetture parcheggiate: con armi e bombe si danneggiano, prendono fuoco ed esplodono (attento a starci vicino). Nei livelli trovi anche barili rossi esplosivi, casse a sorpresa, bancarelle del mercato e ostaggi da liberare (toccali o spara vicino). Quelle che passano in basso, in primo piano, sono solo traffico.
 
 PROBLEMI NOTI DELLA BETA
 - Non ancora provata su un iPhone vero.
