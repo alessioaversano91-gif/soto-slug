@@ -641,3 +641,14 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Genova 1-1 e 1-2: bonus +5000 a fine livello
 - [x] Prompt per generare gli sprite con l'AI: `dev/prompt_sprite_soto.md` (anche nel progetto SOTO)
 - [ ] Traffico sulla corsia del giocatore: rimandato
+
+## Oggetti nei livelli (proposte, dettagli e prompt in `dev/prompt_sprite_soto.md`)
+- [ ] [A] Barile rosso esplosivo
+- [ ] [A] Cassa con premio a sorpresa
+- [ ] [A] Cassa di bombe e cassa di munizioni (premi)
+- [ ] [A] Ostaggio da liberare (variante per città) + obiettivo/medaglia
+- [ ] [A] Bancarella del mercato con merce per città
+- [ ] [M] Distributore automatico, bombole del gas, idrante, insegna che cade, container della gru, mitragliatrice fissa
+- [ ] [M] Nuovi sprite delle specialità della città
+- [ ] [B] Tombino con vapore, gabbiani e piccioni, panni stesi e bandiere
+- [ ] [B] Ape car o muletto da guidare (veicolo del giocatore)
