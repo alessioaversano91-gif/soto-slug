@@ -457,6 +457,7 @@ const SFX={
   whistle:()=>{for(let i=0;i<9;i++)tone('sine',i%2?2800:2500,i%2?2800:2500,.045,.09,i*.045);},
   growl:()=>{for(let i=0;i<7;i++)tone('sawtooth',80+Math.random()*14,70,.07,.12,i*.065);},
   bark:()=>{tone('square',430,210,.09,.13);noise(.06,.1,'bandpass',900,600,2);},
+  water:()=>{noise(.35,.12,'highpass',1800,3000);},   // hydrant jet (1.3.0.84)
   scooter:()=>{for(let i=0;i<9;i++)tone('sawtooth',190+i*28,215+i*28,.07,.05,i*.055);tone('square',520,760,.35,.03,.5);},   // two-stroke whine (1.3.0.77)
   trambell:()=>{for(const d of [0,.32]){tone('sine',1760,1745,.7,.09,d);tone('sine',4400,4380,.35,.03,d);tone('triangle',2640,2630,.5,.035,d);}},   // tram bell: ding-ding (1.3.0.73)
   siren:()=>{for(let i=0;i<4;i++)tone('triangle',i%2?900:680,i%2?900:680,.24,.07,i*.25);},
@@ -776,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.83', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.84', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -2692,7 +2693,14 @@ const ITEM_PIX={
     'oYYYYYssYYYYssYYYYssYYYYYo','oYYYYYYYYYYYYYYYYYYYYYYYYo','.obbbbbbbbbbbbbbbbbbbbbbo.','..oooooooooooooooooooooo..']},
 };
 const CITY_ITEM={1:['croissant','CROISSANT'],2:['focaccia','FOCACCIA'],3:['baguette','BAGUETTE'],4:['sbrisolona','SBRISOLONA']};
-const ITEM_SPR={};
+const ITEM_SPR={}, ITEM_SHINE={};
+const SPEC_NAMES={g:['FOCACCIA','FARINATA','PESTO'],l:['TARTE PRALINE','SAUCISSON','QUENELLE'],s:['BOUILLABAISSE','NAVETTES','ROUILLE'],m:['TORTELLI DI ZUCCA','SBRISOLONA','ZUCCA']};
+function applyItemArt(){                         // 1.3.0.84: drawn pickups replace the procedural icons where a sheet exists
+  const map={bombs:'obj_it0',sgammo:'obj_it1',kit:'obj_it2',coin:'obj_it3',medal:'obj_it4'};
+  for(const [k,key] of Object.entries(map)) if(S[key]){ ITEM_SPR[k]=S[key].n; if(S[key+'s']) ITEM_SHINE[k]=S[key+'s'].n; }
+}
+const specKey=(si,shine)=>{ const c=CITY_L[ST.stage]; return c&&S['obj_sp'+c+si]?'obj_sp'+c+si+(shine?'s':''):null; };
+const specName=si=>{ const c=CITY_L[ST.stage]; return c&&SPEC_NAMES[c]?SPEC_NAMES[c][si]:CITY_ITEM[ST.stage][1]; };
 function makeItemSprites(){
   for(const [k,d] of Object.entries(ITEM_PIX)){
     const px=3, w=Math.max(...d.rows.map(r=>r.length)), c=document.createElement('canvas'); c.width=w*px; c.height=d.rows.length*px;
@@ -2701,9 +2709,10 @@ function makeItemSprites(){
   }
 }
 function dropItem(x,y,big,chute){
-  if(items.length>=4&&big!=='uzi'&&big!=='sg'&&big!=='rapid'&&big!=='sgammo'&&!MODS[big]) return;
-  const kind=MODS[big]?big:big==='uzi'?'uzi':big==='sg'?'sg':big==='rapid'?'rapid':big==='sgammo'?'sgammo':big==='bombs'?'bombs':big?CITY_ITEM[ST.stage][0]:'coffee';
-  items.push({x:clamp(x,ST.scrollX+30,ST.scrollX+W-30),y,vx:chute?0:rnd(-1,1),vy:chute?0:-4,big,kind,chute,t:0,land:false,got:false});
+  if(items.length>=4&&big!=='uzi'&&big!=='sg'&&big!=='rapid'&&big!=='sgammo'&&big!=='kit'&&big!=='coin'&&big!=='medal'&&!MODS[big]) return;
+  const kind=MODS[big]?big:big==='uzi'?'uzi':big==='sg'?'sg':big==='rapid'?'rapid':big==='sgammo'?'sgammo':big==='bombs'?'bombs':big==='kit'?'kit':big==='coin'?'coin':big==='medal'?'medal':big?CITY_ITEM[ST.stage][0]:'coffee';
+  const si=kind===CITY_ITEM[ST.stage][0]&&specKey(0)?ri(0,2):null;   // 1.3.0.84: one of the three city specialties
+  items.push({x:clamp(x,ST.scrollX+30,ST.scrollX+W-30),y,vx:chute?0:rnd(-1,1),vy:chute?0:-4,big,kind,si,chute,t:0,land:false,got:false});
   if(chute) sfx('chute');
 }
 function updateItems(){
@@ -2723,9 +2732,12 @@ function updateItems(){
       else if(it.kind==='sgammo'){ if(sgOn()){ PL.sgAmmo=SG_SHOTS; updSG(); flash('FUCILE A POMPA RICARICATO!'); } else { ST.powT=600; flash('RAFFICA! 10 SECONDI DI FUOCO DOPPIO'); } sfx('pump'); addScore(500); }
       else if(it.kind==='sg'){ setSG(true); PL.sgAmmo=SG_SHOTS; updSG(); updWpnIcon(); PL.pickT=PL.walking||PL.air?0:44; PL.pickMax=44; addScore(1000); sfx('life'); sfx('pump'); flash(CHARS[ST.char].name+' HA IL FUCILE A POMPA! '+SG_SHOTS+' COLPI'); say('pl','SHOTGUN!',60); award('shotgun'); }
       else if(it.kind==='uzi'){ PL.hasUzi=true; if(CHARS[ST.char].name==='SEBA') award('uzi'); PL.pickT=PL.walking||PL.air?0:44; PL.pickMax=44; PL.reloadT=PL.pickT?0:36; addScore(1000); sfx('life'); sfx('start'); {const cc=CHARS[ST.char], g=cc.gunBase||cc.gun; flash(cc.name+' HA TROVATO '+(g.unlockLabel||'UN\'ARMA')+'!'+(sgOn()?' (DOPO LA POMPA)':'')); popText(it.x,it.y-40,(g.unlock||'').toUpperCase()+'!');} updWpnIcon(); }
+      else if(it.kind==='kit'){ addScore(300); sfx('life'); if(!ST.god){ PL.hp=Math.min(PL_MAXHP,PL.hp+15); updEnergy(); popText(it.x,it.y-40,'+15 KIT MEDICO'); } else popText(it.x,it.y-40,'+300 KIT MEDICO'); }
+      else if(it.kind==='coin'){ addScore(1000); sfx('life'); popText(it.x,it.y-40,'MONETA +1000'); }
+      else if(it.kind==='medal'){ addScore(3000); sfx('life'); sfx('select'); popText(it.x,it.y-40,'MEDAGLIA +3000'); }
       else if(it.kind==='bombs'){ addScore(300); sfx('life');
         if(!ST.god){ ST.bombs=Math.min(BOMB_MAX,ST.bombs+3); updBombs(); popText(it.x,it.y-40,'+3 BOMBE'); } else popText(it.x,it.y-40,'+300'); }
-      else { const heal=it.big?10:4, name=it.big?CITY_ITEM[ST.stage][1]:'CAFFE\'';
+      else { const heal=it.big?10:4, name=it.big?(it.si!=null?specName(it.si):CITY_ITEM[ST.stage][1]):'CAFFE\'';
       addScore(it.big?500:200); sfx('eat');
       if(!ST.god){ PL.hp=Math.min(PL_MAXHP,PL.hp+heal); updEnergy(); popText(it.x,it.y-40,'+'+heal+' '+name); }
       else popText(it.x,it.y-40,'+'+(it.big?500:200)+' '+name); }
@@ -2805,7 +2817,7 @@ function drawRain(){
 function drawItems(){
   for(const it of items){
     if(it.land&&it.t>480&&Math.floor(it.t/5)%2) continue;          // blink before vanishing
-    const c=ITEM_SPR[it.kind], bob=it.land?Math.round(Math.sin(it.t*.12)*1.5)-2:0, x=Math.round(it.x-c.width/2), y=Math.round(it.y-c.height+bob);
+    const sk=it.si!=null?specKey(it.si,it.t%60<8):null, c=sk?S[sk].n:(it.t%60<8&&ITEM_SHINE[it.kind])||ITEM_SPR[it.kind], bob=it.land?Math.round(Math.sin(it.t*.12)*1.5)-2:0, x=Math.round(it.x-c.width/2), y=Math.round(it.y-c.height+bob);
     if(it.land||it.y>GROUND-40){ G.fillStyle='rgba(0,0,0,.33)';G.beginPath();G.ellipse(it.x,GROUND+2,c.width*.45,3,0,0,Math.PI*2);G.fill(); }
     if(it.chute){                                                     // little parachute
       const cy=y-34;
@@ -3036,7 +3048,7 @@ function updateVariety(){
   // hidden specialties
   for(const s of ST.specs||[]){ if(s.got) continue; s.t++;
     const feet=GROUND+PL.jy; if(!PL.dead&&Math.abs(PL.x-s.x)<28&&s.y>feet-124&&s.y<feet+12){ s.got=true; ST.spec.got.push(s.id);
-      const n=ST.spec.got.length, name=CITY_ITEM[ST.stage][1]; addScore(1000); sfx('life'); sfx('eat');
+      const n=ST.spec.got.length, name=specKey(0)?specName(specIdx(s)):CITY_ITEM[ST.stage][1]; addScore(1000); sfx('life'); sfx('eat');
       popText(s.x,s.y-30,name+' '+n+'/3'); if(n>=3) flash('TUTTE E 3 LE '+(ST.stage===3?'BAGUETTE':name==='CROISSANT'?'CROISSANT':name==='FOCACCIA'?'FOCACCE':'SBRISOLONE')+'! STELLA!');
       if(!ST.god){ PL.hp=Math.min(PL_MAXHP,PL.hp+4); updEnergy(); }
       for(let i=0;i<14;i++) P({t:'spark',x:s.x,y:s.y-10,vx:rnd(-3,3),vy:rnd(-4,0),g:.12,life:26,col:i%2?'#ffd23a':'#fff6c0'}); } }
@@ -3070,9 +3082,11 @@ function drawWind(){
   if(!ST.wind||SET.calm) return; G.strokeStyle=`rgba(240,240,230,${(.28*Math.abs(ST.wind)/.7).toFixed(2)})`; G.lineWidth=1; G.beginPath();
   for(const s of AMB.streaks||[]){ G.moveTo(s.x,s.y); G.lineTo(s.x-Math.sign(ST.wind)*s.l,s.y+1); } G.stroke();
 }
+const specIdx=s=>{ const [pt,i]=s.id.split('-').map(Number); return ST.stage===2?Math.min(2,pt-1):ST.stage===3&&pt===2?2:Math.min(2,i); };   // which of the three dishes this hidden specialty is
 function drawSpecs(){
-  const c=ITEM_SPR[CITY_ITEM[ST.stage][0]]; if(!c) return;
+  const c0=ITEM_SPR[CITY_ITEM[ST.stage][0]]; if(!c0) return;
   for(const s of ST.specs||[]){ if(s.got||s.x<ST.scrollX-60||s.x>ST.scrollX+W+60) continue;
+    const sk=specKey(specIdx(s)), c=sk?S[sk].n:c0;
     const bob=Math.round(Math.sin(s.t*.08)*3), w=Math.round(c.width*.75), h=Math.round(c.height*.75), x=Math.round(s.x-w/2), y=Math.round(s.y-h+bob);
     G.globalAlpha=.75; G.drawImage(c,x,y,w,h); G.globalAlpha=1;
     if(s.t%90<10){ const k=s.t%90; G.fillStyle='#fff'; G.fillRect(x+w-4,y-2+k,2,6); G.fillRect(x+w-6,y+k,6,2); } }
@@ -3322,7 +3336,8 @@ function drawStunt(){
 //  Placed in the middle of every level of the four cities, never on a parked car or an obstacle.
 // ═══════════════════════════════════════════════════════════════
 const CITY_L={2:'g',1:'l',3:'s',4:'m'};
-const SCN_HP={barrel:3,crate:4,stall:10};
+const SCN_HP={barrel:3,crate:4,stall:10,gas:3,hyd:2,sign:2,cont:3};
+const SIGN_TOP=GROUND-262, CONT_HANG=GROUND-212;   // 1.3.0.84: hanging sign and harbor container heights
 const HOST_LINE={g:'GRAZIE, BELIN!',l:'MERCI BEAUCOUP!',s:'MERCI MON CHERI!',m:'GRAZIE, RAGAZZO!'};
 let scn=[], goods=[];
 function scnKey(o){
@@ -3336,22 +3351,32 @@ function scnKey(o){
       if(o.st==='free') return 'obj_h'+c+'_free'+Math.min(3,Math.floor(o.stT/10));
       if(o.st==='give') return 'obj_h'+c+'_give'+(o.stT<14?0:1);
       return 'obj_h'+c+'_run'+(Math.floor(o.stT/5)%4); }
+    case 'gas': return 'obj_gas'+(o.st==='done'?4:o.st==='blast2'?3:o.st==='blast1'?2:o.st==='fuse'||o.hp<o.max?1:0);
+    case 'hyd': return o.st==='jet'?'obj_hydj'+(Math.floor(o.t/4)%4):o.st==='cap'?'obj_hyd1':o.st==='done'?'obj_hyd2':'obj_hyd0';
+    case 'sign': return o.st==='snap'?'obj_sign1':o.st==='fall'?'obj_signf':o.st==='done'?'obj_signc':'obj_sign0';
+    case 'cont': return o.st==='snap'?'obj_cont1':o.st==='fall'?'obj_cont2':o.st==='done'?'obj_cont3':'obj_cont0';
   }
 }
 const scnM=o=>CVM[scnKey(o)]||{w:60,h:60,ax:30,gy:60};
-const scnHittable=o=>(o.k==='barrel'||o.k==='crate'||o.k==='stall')&&o.st==='ok'||o.k==='host'&&o.st==='tied';
-function scnBox(o){ const m=CVM[scnKey(o)]||{w:60,h:60,ax:30}; return {x:o.x-m.w*.42,y:GROUND-m.h,w:m.w*.84,h:m.h}; }
+const scnHittable=o=>(o.k==='barrel'||o.k==='crate'||o.k==='stall'||o.k==='gas'||o.k==='hyd'||o.k==='sign')&&o.st==='ok'||o.k==='cont'&&(o.st==='ok'||o.st==='creak')||o.k==='host'&&o.st==='tied';
+function scnBox(o){ const m=CVM[scnKey(o)]||{w:60,h:60,ax:30};
+  if(o.k==='sign') return {x:o.x-m.w*.4,y:SIGN_TOP+m.h*.38,w:m.w*.8,h:m.h*.62};          // the board and its chains
+  if(o.k==='cont') return {x:o.x-135,y:CONT_HANG-125,w:270,h:125};                     // the container body
+  return {x:o.x-m.w*.42,y:GROUND-m.h,w:m.w*.84,h:m.h}; }
 function initScn(){
   scn=[]; goods=[]; const city=CITY_L[ST.stage]; if(!city||ST.rush||!CVM.obj_barrel0) return;
-  const kinds=['host','stall','barrel','crate','barrel','crate','crate']; if(ST.maxScroll>10000) kinds.push('host','barrel','crate');   // 1.3.0.83: one crate more, the old supply crates are gone
+  const kinds=['host','stall','barrel','crate','barrel','crate','crate','hyd','sign']; if(ST.maxScroll>10000) kinds.push('host','barrel','crate');   // 1.3.0.83: one crate more, the old supply crates are gone
+  if(CVM.obj_gas0&&(ST.stage===2||ST.stage===3)) kinds.push('gas');                                  // 1.3.0.84: gas cylinders in Genova and Marseille
+  if(CVM.obj_cont0&&(ST.stage===2&&ST.part===1||ST.stage===3)) kinds.push('cont', ...(ST.stage===2?['cont']:[]));   // harbor containers: Porto Antico and Marseille
+  if(!CVM.obj_hyd0) kinds.splice(kinds.indexOf('hyd'),2);
   const busy=[]; for(const c of civs) busy.push([c.x-50,c.x+civW(c)+50]); for(const o of obs) busy.push([o.x-40,o.x+o.w+40]);
   for(const k of kinds){
-    const half=k==='stall'?130:k==='host'?50:40;
+    const half=k==='stall'?130:k==='cont'?150:k==='sign'?80:k==='host'?50:40;
     for(let tries=0;tries<40;tries++){
       const x=Math.round(rnd(.07,.9)*ST.maxScroll)+W*.6;
       if(busy.some(([a,b])=>x+half>a&&x-half<b)) continue;
       busy.push([x-half-60,x+half+60]);
-      scn.push({k,city,x,hp:SCN_HP[k]||1,max:SCN_HP[k]||1,st:k==='host'?'tied':'ok',t:ri(0,40),stT:0,flash:0,dir:1});
+      scn.push({k,city,x,hp:SCN_HP[k]||1,max:SCN_HP[k]||1,st:k==='host'?'tied':'ok',t:ri(0,40),stT:0,flash:0,dir:1,y:k==='cont'?CONT_HANG:0,vy:0});
       break; }
   }
   ST.hostTot=scn.filter(o=>o.k==='host').length; ST.hostN=0;
@@ -3361,30 +3386,35 @@ function scnHit(o,dmg,x,y){
   if(o.k==='host'){ freeHostage(o); return; }
   o.hp-=dmg; o.flash=5;
   for(let i=0;i<3;i++) P({t:'spark',x,y,vx:rnd(-3,3),vy:rnd(-3,0),g:.25,life:10,col:o.k==='barrel'?'#ffd23a':'#c8a070'});
-  if(o.hp>0){ sfx(o.k==='barrel'?'hit':'punch'); return; }
+  if(o.hp>0){ sfx(o.k==='barrel'||o.k==='gas'||o.k==='hyd'||o.k==='cont'||o.k==='sign'?'hit':'punch'); return; }
   if(o.k==='barrel'){ o.st='fuse'; o.stT=0; sfx('warn'); popText(o.x,GROUND-90,'ATTENTO!'); }
+  else if(o.k==='gas'){ o.st='fuse'; o.stT=0; sfx('warn'); popText(o.x,GROUND-110,'GAS! VIA DI LI!'); }
+  else if(o.k==='hyd'){ o.st='cap'; o.stT=0; sfx('hit'); addScore(100); }
+  else if(o.k==='sign'){ o.st='snap'; o.stT=0; sfx('hit'); }
+  else if(o.k==='cont'){ o.st='snap'; o.stT=0; sfx('hit'); popText(o.x,CONT_HANG-150,'SGANCIATO!'); }
   else if(o.k==='crate'){ o.st='break'; o.stT=0; sfx('glass'); }
   else if(o.k==='stall'){ o.st='done'; o.stT=0; sfx('glass'); ST.shake=Math.max(ST.shake,3); addScore(300); popText(o.x,GROUND-170,'+300');
     for(let i=0;i<4;i++) goods.push({key:'obj_gd'+o.city+(i%4),x:o.x+rnd(-80,80),y:GROUND-90,vx:rnd(-2.2,2.2),vy:rnd(-6,-3),land:false,t:0});
     if(Math.random()<.3) dropItem(o.x,GROUND-100,true);
     for(let i=0;i<10;i++) P({t:'debris',x:o.x+rnd(-90,90),y:GROUND-rnd(30,120),vx:rnd(-4,4),vy:rnd(-7,-2),g:.4,life:ri(40,70),size:ri(3,5),col:i%2?'#7a4a24':'#d8d0c0',bounce:.4,vr:rnd(-.4,.4)}); }
 }
-function barrelBoom(o){
-  const cx=o.x, cy=GROUND-40; o.st='done'; o.stT=0;
-  boom(cx,cy,80); boom(cx-30,cy-20,40); boom(cx+30,cy-20,40); light(cx,cy,180,'255,150,60',16);
-  ST.shake=Math.max(ST.shake,8); ST.hitStop=Math.max(ST.hitStop||0,4); sfx('boom'); addScore(500); popText(cx,GROUND-150,'+500');
-  for(const e of enemies){ if(e.hp<=0||e.dying) continue; if(Math.abs(e.x+e.w/2-cx)<125&&e.y+e.h>GROUND-200){ e.hp-=e.type===5?20:14; e.flash=8; if(e.type===5) e.hitT=9; if(e.hp<=0) killEnemy(e); } }
+function barrelBoom(o){ o.st='done'; o.stT=0; blastAt(o,o.x,125,500); }
+function blastAt(o,cx,R,pts){
+  const cy=GROUND-40;
+  boom(cx,cy,80*R/125); boom(cx-30,cy-20,40); boom(cx+30,cy-20,40); light(cx,cy,180*R/125,'255,150,60',16);
+  ST.shake=Math.max(ST.shake,8); ST.hitStop=Math.max(ST.hitStop||0,4); sfx('boom'); addScore(pts); popText(cx,GROUND-150,'+'+pts);
+  for(const e of enemies){ if(e.hp<=0||e.dying) continue; if(Math.abs(e.x+e.w/2-cx)<R&&e.y+e.h>GROUND-200){ e.hp-=e.type===5?20:14; e.flash=8; if(e.type===5) e.hitT=9; if(e.hp<=0) killEnemy(e); } }
   for(const c of civs) if(civHittable(c)&&Math.abs(c.x+civW(c)/2-cx)<170) civHit(c,8,c.x+civW(c)/2,GROUND-60);
-  for(const s2 of scn) if(s2!==o&&s2.k!=='host'&&scnHittable(s2)&&Math.abs(s2.x-cx)<150) scnHit(s2,s2.k==='barrel'?9:6,s2.x,GROUND-40);   // chain reaction
-  for(const s2 of scn) if(s2.k==='host'&&s2.st==='tied'&&Math.abs(s2.x-cx)<150) freeHostage(s2);
-  for(const ob of obs) if(ob.hp>0&&Math.abs(ob.x+ob.w/2-cx)<120) damageOb(ob,10);
-  if(!PL.dead&&Math.abs(PL.x-cx)<95&&PL.jy>-90) hurtPlayer('civboom',cx,cy);
+  for(const s2 of scn) if(s2!==o&&s2.k!=='host'&&s2.k!=='sign'&&s2.k!=='cont'&&scnHittable(s2)&&Math.abs(s2.x-cx)<R+25) scnHit(s2,s2.k==='barrel'||s2.k==='gas'?9:6,s2.x,GROUND-40);   // chain reaction
+  for(const s2 of scn) if(s2.k==='host'&&s2.st==='tied'&&Math.abs(s2.x-cx)<R+25) freeHostage(s2);
+  for(const ob of obs) if(ob.hp>0&&Math.abs(ob.x+ob.w/2-cx)<R) damageOb(ob,10);
+  if(!PL.dead&&Math.abs(PL.x-cx)<R*.76&&PL.jy>-90) hurtPlayer('civboom',cx,cy);
 }
 function crateReward(o){
   const r=Math.random();
   if(r<.12){ const n=enemies.length; if(spawnEnemy()!==false&&enemies.length>n){ const e=enemies[enemies.length-1]; e.x=o.x-e.w/2; flash('SORPRESA! UNA BOTTIGLIA NELLA CASSA!'); sfx('alarm'); return; } }
-  if(r<.3){ addScore(1000); popText(o.x,GROUND-110,'TESORO! +1000'); sfx('life'); for(let i=0;i<10;i++) P({t:'spark',x:o.x+rnd(-12,12),y:GROUND-40,vx:rnd(-2.5,2.5),vy:rnd(-5,-2),g:.25,life:24,col:'#ffd23a'}); return; }
-  const pool=['bombs','bombs','rapid',false,true,sgOn()?'sgammo':'rapid'];
+  if(r<.3){ for(let i=0;i<10;i++) P({t:'spark',x:o.x+rnd(-12,12),y:GROUND-40,vx:rnd(-2.5,2.5),vy:rnd(-5,-2),g:.25,life:24,col:'#ffd23a'}); dropItem(o.x,GROUND-70,r<.16?'medal':'coin'); return; }
+  const pool=['bombs','bombs','rapid','kit',false,true,sgOn()?'sgammo':'rapid'];
   dropItem(o.x,GROUND-70,pool[ri(0,pool.length-1)]);
 }
 function freeHostage(o){
@@ -3399,10 +3429,42 @@ function updateScn(){
     if(o.k==='barrel'&&o.st==='fuse'){ if(o.stT%3===0) P({t:'fire',x:o.x+rnd(-14,14),y:GROUND-rnd(40,70),vx:rnd(-.3,.3),vy:rnd(-1.6,-.6),life:18,size:rnd(4,7)}); if(o.stT>=34) barrelBoom(o); }
     else if(o.k==='barrel'&&o.st==='done'){ if(o.stT<600&&o.t%16===0) P({t:'smoke',x:o.x+rnd(-8,8),y:GROUND-20,vx:rnd(-.2,.2),vy:-rnd(.4,.9),life:50,size:rnd(4,7)}); }
     else if(o.k==='crate'&&o.st==='break'&&o.stT>=14){ o.st='done'; o.stT=0; crateReward(o); }
+    else if(o.k==='gas'){
+      if(o.st==='fuse'){ if(o.stT%2===0) P({t:'smoke',x:o.x-10+rnd(-4,4),y:GROUND-74,vx:rnd(.6,1.6),vy:rnd(-1.8,-.8),life:22,size:rnd(3,5)}); if(o.stT%12===0) sfx('warn'); if(o.stT>=50){ o.st='blast1'; o.stT=0; sfx('boom'); ST.shake=Math.max(ST.shake,5);
+          for(const e of enemies) if(e.hp>0&&!e.dying&&Math.abs(e.x+e.w/2-o.x)<48){ e.hp-=18; e.flash=8; if(e.hp<=0) killEnemy(e); }
+          if(!PL.dead&&Math.abs(PL.x-o.x)<40) hurtPlayer('civboom',o.x,GROUND-60); } }
+      else if(o.st==='blast1'){ if(o.stT%2===0) P({t:'fire',x:o.x+rnd(-10,10),y:GROUND-rnd(60,150),vx:rnd(-.5,.5),vy:rnd(-2,-1),life:16,size:rnd(5,8)}); if(o.stT>=14){ o.st='blast2'; o.stT=0; blastAt(o,o.x,150,800); } }
+      else if(o.st==='blast2'&&o.stT>=16){ o.st='done'; o.stT=0; }
+      else if(o.st==='done'&&o.stT<600&&o.t%14===0) P({t:'smoke',x:o.x+rnd(-14,14),y:GROUND-14,vx:rnd(-.2,.2),vy:-rnd(.4,.9),life:50,size:rnd(4,7)}); }
+    else if(o.k==='hyd'){
+      if(o.st==='cap'&&o.stT>=10){ o.st='jet'; o.stT=0; sfx('water'); popText(o.x,GROUND-170,'SPLASH!'); }
+      else if(o.st==='jet'){ if(o.stT%30===0) sfx('water');
+        for(const e of enemies){ if(e.hp<=0||e.dying||e.type===5) continue; const d=e.x+e.w/2-o.x; if(Math.abs(d)<44&&e.y+e.h>GROUND-170){ e.x+=Math.sign(d||1)*3.2; if(e.y+e.h<GROUND-4) e.vy=Math.min(e.vy||0,-1); } }
+        if(!PL.dead&&Math.abs(PL.x-o.x)<34){ PL.x+=Math.sign(PL.x-o.x||1)*1.6; }
+        for(const c of civs) if(c.st==='burn'&&Math.abs(c.x+civW(c)/2-o.x)<170){ c.st='park'; c.hp=Math.max(1,Math.ceil(c.max*.45)); c.stT=0; popText(c.x+civW(c)/2,GROUND-120,'SPENTO!'); }   // the water puts burning cars out
+        if(o.t%3===0) P({t:'spark',x:o.x+rnd(-8,8),y:GROUND-rnd(100,150),vx:rnd(-2,2),vy:rnd(-1,1),g:.25,life:20,col:'#cfeaff'});
+        if(o.stT>=300){ o.st='done'; o.stT=0; } } }
+    else if(o.k==='sign'){
+      if(o.st==='snap'&&o.stT>=14){ o.st='fall'; o.stT=0; o.y=SIGN_TOP+(CVM.obj_sign0?CVM.obj_sign0.h*.55:60); o.vy=0; }
+      else if(o.st==='fall'){ o.vy+=.55; o.y+=o.vy; const fm=CVM.obj_signf||{h:60};
+        if(o.y+fm.h*.5>=GROUND){ o.st='done'; o.stT=0; ST.shake=Math.max(ST.shake,4); sfx('glass'); addScore(200);
+          for(const e of enemies) if(e.hp>0&&!e.dying&&e.type!==5&&Math.abs(e.x+e.w/2-o.x)<60){ e.hp-=30; e.flash=8; if(e.hp<=0) killEnemy(e); popText(o.x,GROUND-120,'CENTRO!'); }
+          if(!PL.dead&&Math.abs(PL.x-o.x)<40&&PL.jy>-60) hurtPlayer('drop',o.x,GROUND-60);
+          for(let i=0;i<8;i++) P({t:'debris',x:o.x+rnd(-40,40),y:GROUND-10,vx:rnd(-3,3),vy:rnd(-5,-1),g:.4,life:ri(30,50),size:ri(2,4),col:'#7a4a24',bounce:.4,vr:rnd(-.4,.4)}); } } }
+    else if(o.k==='cont'){
+      if(o.st==='ok'&&!PL.dead&&Math.abs(PL.x-o.x)<240){ o.st='creak'; o.stT=0; sfx('warn'); popText(o.x,CONT_HANG-150,'ATTENZIONE!'); }
+      else if(o.st==='creak'){ if(o.stT%20===0) sfx('warn'); if(o.stT>=80){ o.st='snap'; o.stT=0; sfx('hit'); } }
+      else if(o.st==='snap'&&o.stT>=12){ o.st='fall'; o.stT=0; o.vy=0; }
+      else if(o.st==='fall'){ o.vy+=.6; o.y+=o.vy;
+        if(o.y>=GROUND){ o.y=GROUND; o.st='done'; o.stT=0; ST.shake=Math.max(ST.shake,10); ST.hitStop=Math.max(ST.hitStop||0,5); sfx('boom'); addScore(400); popText(o.x,GROUND-150,'+400');
+          for(const e of enemies) if(e.hp>0&&!e.dying&&Math.abs(e.x+e.w/2-o.x)<150&&e.y+e.h>GROUND-140){ e.hp-=e.type===5?25:40; e.flash=8; if(e.type===5) e.hitT=9; if(e.hp<=0) killEnemy(e); }
+          for(const c of civs) if(civHittable(c)&&Math.abs(c.x+civW(c)/2-o.x)<170) civHit(c,10,c.x+civW(c)/2,GROUND-60);
+          if(!PL.dead&&Math.abs(PL.x-o.x)<130&&PL.jy>-80) hurtPlayer('drop',o.x,GROUND-60);
+          for(let i=0;i<16;i++) P({t:'smoke',x:o.x+rnd(-140,140),y:GROUND-rnd(4,20),vx:rnd(-2.5,2.5),vy:rnd(-1.6,-.3),life:ri(30,55),size:rnd(6,11)}); } } }
     else if(o.k==='host'){
       if(o.st==='tied'){ if(!PL.dead&&Math.abs(PL.x-o.x)<44&&PL.jy>-40) freeHostage(o); else if(o.t%170===0&&Math.abs(PL.x-o.x)<360) popText(o.x,GROUND-120,'AIUTO!'); }
       else if(o.st==='free'&&o.stT>=44){ o.st='give'; o.stT=0; popText(o.x,GROUND-150,HOST_LINE[o.city]||'GRAZIE!'); }
-      else if(o.st==='give'&&o.stT===16){ const pool=['bombs','rapid',true,sgOn()?'sgammo':'sg']; dropItem(o.x+o.dir*46,GROUND-60,pool[ri(0,pool.length-1)]); }
+      else if(o.st==='give'&&o.stT===16){ const pool=['bombs','rapid','kit',true,sgOn()?'sgammo':'sg']; dropItem(o.x+o.dir*46,GROUND-60,pool[ri(0,pool.length-1)]); }
       else if(o.st==='give'&&o.stT>=34){ o.st='run'; o.stT=0; }
       else if(o.st==='run'){ o.x-=o.dir*4.6; if(o.x<ST.scrollX-120||o.x>ST.scrollX+W+120) o.st='gone'; }
     }
@@ -3412,10 +3474,33 @@ function updateScn(){
     if(!g.got&&g.t>20&&!PL.dead&&Math.abs(PL.x-g.x)<30&&PL.jy>-60){ g.got=true; addScore(200); popText(g.x,GROUND-60,'+200'); sfx('eat'); } }
   goods=goods.filter(g=>!g.got&&g.t<900);
 }
+function drawHanging(o){                         // 1.3.0.84: shop sign and harbor container hang above the street
+  const img=k=>S[k]&&CVM[k]?[S[k].n,CVM[k]]:null;
+  if(o.k==='sign'){
+    const base=img('obj_sign0'), br=img('obj_signb'); if(!base) return; const left=Math.round(o.x-base[1].ax);
+    if(o.st==='ok'||o.st==='snap'){ const f=img(o.st==='ok'?'obj_sign0':'obj_sign1'); G.drawImage(f[0],left,SIGN_TOP);
+      const em=o.st==='ok'&&img('obj_signp'+({g:0,l:1,s:2,m:3}[o.city]||0));
+      if(em){ const h=Math.round(base[1].h*.3), w=Math.round(h*em[1].w/em[1].h); G.drawImage(em[0],Math.round(o.x-w/2),Math.round(SIGN_TOP+base[1].h*.83-h/2),w,h); }   // the city's emblem painted on the board
+      if(o.flash>0){ G.globalAlpha=.4; G.fillStyle='#fff'; G.fillRect(left,SIGN_TOP+base[1].h*.6,base[1].w,base[1].h*.4); G.globalAlpha=1; } return; }
+    if(br) G.drawImage(br[0],left,SIGN_TOP);
+    const f=img(o.st==='fall'?'obj_signf':'obj_signc'); if(f) G.drawImage(f[0],Math.round(o.x-f[1].w/2),o.st==='fall'?Math.round(o.y-f[1].h/2):GROUND+2-f[1].h);
+    return; }
+  // container: shadow on the street grows and turns red while it creaks and falls
+  const fall=o.st==='fall'?Math.min(1,(o.y-CONT_HANG)/(GROUND-CONT_HANG)):0;
+  if(o.st!=='done'){ const warn=o.st==='creak'||o.st==='snap'||o.st==='fall'; G.fillStyle=warn&&Math.floor(o.t/6)%2?'rgba(170,20,10,.45)':'rgba(0,0,0,.28)';
+    G.beginPath(); G.ellipse(o.x,GROUND+2,110+fall*30,6+fall*3,0,0,Math.PI*2); G.fill(); }
+  const key=o.st==='snap'?'obj_cont1':o.st==='fall'?'obj_cont2':o.st==='done'?'obj_cont3':'obj_cont0', f=img(key); if(!f) return;
+  const wob=o.st==='creak'?Math.round(Math.sin(o.stT*.6)*2):0, bottom=o.st==='fall'?o.y:o.st==='done'?GROUND+2:CONT_HANG;
+  const x=Math.round(o.x-f[1].w/2)+wob, y=Math.round(bottom-f[1].h);
+  if(o.st==='ok'||o.st==='creak'||o.st==='snap'){ G.strokeStyle='#2a2a2a'; G.lineWidth=2; G.beginPath(); const cx=o.x+(key==='obj_cont0'?-f[1].w*.03:-f[1].w*.06); G.moveTo(cx-5+wob,HUD_T); G.lineTo(cx-5+wob,y+2); G.moveTo(cx+5+wob,HUD_T); G.lineTo(cx+5+wob,y+2); G.stroke(); }   // crane cables up to the top of the screen
+  G.drawImage(f[0],x,y);
+  if(o.flash>0){ G.globalAlpha=.35; G.fillStyle='#fff'; G.fillRect(o.x-135,bottom-125,270,125); G.globalAlpha=1; }
+}
 function drawScn(){
   for(const o of scn){
     const key=scnKey(o), s=S[key], m=CVM[key]; if(!s||!m) continue;
     if(o.x+m.w<ST.scrollX-40||o.x-m.w>ST.scrollX+W+40) continue;
+    if(o.k==='sign'||o.k==='cont'){ drawHanging(o); continue; }
     const flip=o.k==='host'&&o.st==='run'?o.dir>0:o.k==='host'&&o.st!=='tied'&&o.dir<0;   // hostages face the player, then run away from him
     let x=Math.round(o.x-(flip?m.w-m.ax:m.ax)), y=GROUND+2-m.h;
     if(o.k==='barrel'&&o.st==='fuse') x+=(o.stT%4<2?-1:1);
@@ -3653,7 +3738,7 @@ function buildMenus(){
   pb.addEventListener('pointerdown',e=>{e.preventDefault();auInit();togglePause();});
   mb.addEventListener('pointerdown',e=>{e.preventDefault();auInit();setMute(!AU.muted);});
   PL.hp=PL_MAXHP; ST.lives=START_LIVES; setMute(AU.muted); setGod(false);   // 1.3.0.80: LIFE is the default, GOD stays a choice
-  let bl=true; try{bl=localStorage.getItem('sotoBlood')!=='0';}catch(e){} setBlood(bl); setMusic(MU.on); makeItemSprites(); makeGunSprite(); useMitraIcon();   // LIFE is the default mode (1.3.0.80)
+  let bl=true; try{bl=localStorage.getItem('sotoBlood')!=='0';}catch(e){} setBlood(bl); setMusic(MU.on); makeItemSprites(); applyItemArt(); makeGunSprite(); useMitraIcon();   // LIFE is the default mode (1.3.0.80)
 }
 function drawCharCards(){
   MF++;

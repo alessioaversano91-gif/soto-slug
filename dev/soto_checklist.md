@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.83 BETA
+Versione di riferimento: 1.3.0.84 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -645,11 +645,11 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 ## Oggetti nei livelli (proposte, dettagli e prompt in `dev/prompt_sprite_soto.md`)
 - [x] [A] Barile rosso esplosivo (1.3.0.82)
 - [x] [A] Cassa con premio a sorpresa (1.3.0.82)
-- [ ] [A] Cassa di bombe e cassa di munizioni (premi): manca il foglio, per ora escono le icone già nel gioco
+- [x] [A] Cassa di bombe e cassa di munizioni (premi) (1.3.0.84)
 - [x] [A] Ostaggio da liberare, uno per città + medaglia SALVATAGGIO (1.3.0.82)
 - [x] [A] Bancarella del mercato con merce per città (1.3.0.82)
 - [ ] [M] Distributore automatico, bombole del gas, idrante, insegna che cade, container della gru, mitragliatrice fissa
-- [ ] [M] Nuovi sprite delle specialità della città
+- [x] [M] Nuovi sprite delle specialità della città (1.3.0.84)
 - [ ] [B] Tombino con vapore, gabbiani e piccioni, panni stesi e bandiere
 - [ ] [B] Ape car o muletto da guidare (veicolo del giocatore)
 
@@ -661,9 +661,18 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Ostaggio: legato e imbavagliato, chiede "AIUTO!"; si libera toccandolo, sparandogli vicino o con un'esplosione. Si alza, saluta, ringrazia nella sua lingua, ti lascia un premio e scappa (+2000). Pescatore a Genova, cuoco a Lione, signora col barboncino a Marsiglia, contadino a Mantova
 - [x] Nuova medaglia SALVATAGGIO: 10 ostaggi liberati in totale (le medaglie sono 15)
 - [ ] Ostaggi liberati nel riepilogo di fine livello e come obiettivo con stella (da decidere)
-- [ ] Foglio delle casse di bombe/munizioni e premi (prompt pronto in `dev/prompt_oggetti_primi5.md`)
 
 ## Pulizia ostacoli (1.3.0.83)
 - [x] Tolte le vecchie casse e i vecchi barili: come ostacoli restano solo i sacchi di sabbia (e a Mantova le vecchie auto bruciate, finché non arrivano le sue vetture)
 - [x] Le vecchie casse con premio sono sostituite dalle casse a sorpresa: ora 3 per livello (4 a Mantova e Marsiglia parte 2)
 - [x] Prompt per la seconda serie di oggetti: `dev/prompt_oggetti_successivi.md` (premi, specialità per città, bombole, idrante, insegna, container, mitragliatrice, tombino, gabbiano, piccione, panni stesi, distributore, Ape blindata)
+
+## Seconda serie di oggetti (1.3.0.84)
+- [x] Premi disegnati: cassa di granate (+3 bombe), cassa di munizioni (ricarica), kit medico (+15 energia, nuovo), moneta (+1000, nuova), medaglia (+3000, nuova); luccicano ogni secondo
+- [x] Specialità: tre piatti per città (Genova focaccia, farinata, pesto; Lione tarte praline, saucisson, quenelle; Marsiglia bouillabaisse, navettes, rouille; Mantova tortelli di zucca, sbrisolona, zucca), sia quelle nascoste sia quelle che cadono
+- [x] Bombole del gas (Genova, Marsiglia): 3 colpi, fischiano ("GAS! VIA DI LI!"), colonna di fuoco e poi grande esplosione a catena (+800)
+- [x] Idrante (tutte le città): 2 colpi, salta il tappo e parte il getto per 5 secondi; allontana i nemici e spegne le vetture in fiamme
+- [x] Insegna appesa (tutte le città): con lo stemma della città (ancora, leone, veliero, zucca); 2 colpi e cade sui nemici sotto
+- [x] Container della gru (Genova Porto Antico ×2, Marsiglia): quando ti avvicini scricchiola e l'ombra a terra lampeggia rossa, poi cade; puoi sganciarlo prima sparando (3 colpi). Schiaccia nemici e vetture (+400)
+- [ ] Prossimi oggetti (prompt pronti): mitragliatrice fissa, tombino, gabbiani e piccioni, panni stesi, distributore, Ape blindata
+- [ ] Nuovi sprite dei personaggi: analisi e 60 prompt in `dev/prompt_personaggi.md`
