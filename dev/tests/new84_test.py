@@ -18,7 +18,7 @@ with sync_playwright() as p:
     r=pg.evaluate("""()=>{ const h=scn.find(o=>o.k==='hyd'); h.x=ST.scrollX+300; spawnEnemy(); const e=enemies[enemies.length-1]; e.x=h.x-e.w/2+10; const x0=e.x; const st=[];
       for(let i=0;i<2;i++) scnHit(h,1,h.x,GROUND-20); for(let i=0;i<60;i++){ update(); if(!st.includes(h.st)) st.push(h.st); } return {st,pushed:Math.round(e.x-x0)}; }""")
     print('hydrant',r)
-    r=pg.evaluate("""()=>{ enemies=[]; const s=scn.find(o=>o.k==='sign'); s.x=ST.scrollX+300; spawnEnemy(); const e=enemies[enemies.length-1]; e.x=s.x-e.w/2; const hb=scnBox(s); const st=[];
+    r='signs set aside in 1.3.0.85' if not pg.evaluate("()=>scn.some(o=>o.k==='sign')") else pg.evaluate("""()=>{ enemies=[]; const s=scn.find(o=>o.k==='sign'); s.x=ST.scrollX+300; spawnEnemy(); const e=enemies[enemies.length-1]; e.x=s.x-e.w/2; const hb=scnBox(s); const st=[];
       shots.push({x:s.x,y:hb.y+hb.h/2,vx:0,vy:0,life:5,dmg:1,k:'b',pl:true}); for(let i=0;i<2;i++) scnHit(s,1,s.x,hb.y+10); for(let i=0;i<90;i++){ update(); if(!st.includes(s.st)) st.push(s.st); } return {st,enemyHit:e.hp<=0||e.flash>0}; }""")
     print('sign',r)
     r=pg.evaluate("""()=>{ enemies=[]; const c=scn.find(o=>o.k==='cont'); c.x=ST.scrollX+330; PL.x=ST.scrollX+40; spawnEnemy(); const e=enemies[enemies.length-1]; e.x=c.x-e.w/2; const st=[];
@@ -28,6 +28,6 @@ with sync_playwright() as p:
     for st,pt,nm in [(2,1,'genova'),(3,1,'mars')]:
         pg.evaluate(START,[0,st,pt])
         pg.evaluate("""()=>{ civs=[]; obs=[]; traffic=[]; const sx=ST.scrollX, pick=k=>scn.find(o=>o.k===k); const put=(k,x)=>{const o=pick(k); if(o) o.x=sx+x; };
-          put('cont',300); put('sign',110); put('gas',420); put('hyd',40); PL.x=sx+180; PL.dir=1; items=[]; dropItem(sx+250,GROUND,'bombs'); dropItem(sx+330,GROUND,true); for(const it of items){it.y=GROUND;it.land=true;} render(); }""")
+          put('cont',300); put('gas',420); put('hyd',40); PL.x=sx+180; PL.dir=1; items=[]; dropItem(sx+250,GROUND,'bombs'); dropItem(sx+330,GROUND,true); for(const it of items){it.y=GROUND;it.land=true;} render(); }""")
         pg.screenshot(path=SP+f'obj84_{nm}.png',clip={'x':0,'y':oy+40,'width':480,'height':580})
     print('ERR',errs); b.close()

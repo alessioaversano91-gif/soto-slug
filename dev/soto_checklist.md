@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.84 BETA
+Versione di riferimento: 1.3.0.85 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -672,7 +672,12 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Specialità: tre piatti per città (Genova focaccia, farinata, pesto; Lione tarte praline, saucisson, quenelle; Marsiglia bouillabaisse, navettes, rouille; Mantova tortelli di zucca, sbrisolona, zucca), sia quelle nascoste sia quelle che cadono
 - [x] Bombole del gas (Genova, Marsiglia): 3 colpi, fischiano ("GAS! VIA DI LI!"), colonna di fuoco e poi grande esplosione a catena (+800)
 - [x] Idrante (tutte le città): 2 colpi, salta il tappo e parte il getto per 5 secondi; allontana i nemici e spegne le vetture in fiamme
-- [x] Insegna appesa (tutte le città): con lo stemma della città (ancora, leone, veliero, zucca); 2 colpi e cade sui nemici sotto
+- [ ] Insegna appesa: tolta dai livelli nella 1.3.0.85 (codice e sprite restano, da riprendere più avanti)
 - [x] Container della gru (Genova Porto Antico ×2, Marsiglia): quando ti avvicini scricchiola e l'ombra a terra lampeggia rossa, poi cade; puoi sganciarlo prima sparando (3 colpi). Schiaccia nemici e vetture (+400)
 - [ ] Prossimi oggetti (prompt pronti): mitragliatrice fissa, tombino, gabbiani e piccioni, panni stesi, distributore, Ape blindata
 - [ ] Nuovi sprite dei personaggi: analisi e 60 prompt in `dev/prompt_personaggi.md`
+
+## Ritocchi (1.3.0.85)
+- [x] Traffico in basso più grande del 15% rispetto alle vetture parcheggiate (più vicino alla camera)
+- [x] Insegne tolte dai livelli (restano nel gioco per dopo)
+- [x] Corretto: un ostaggio poteva lasciare il fucile a pompa a un personaggio che non lo usa, e il gioco si bloccava al disegno del premio

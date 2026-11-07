@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.84', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.85', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -2817,7 +2817,7 @@ function drawRain(){
 function drawItems(){
   for(const it of items){
     if(it.land&&it.t>480&&Math.floor(it.t/5)%2) continue;          // blink before vanishing
-    const sk=it.si!=null?specKey(it.si,it.t%60<8):null, c=sk?S[sk].n:(it.t%60<8&&ITEM_SHINE[it.kind])||ITEM_SPR[it.kind], bob=it.land?Math.round(Math.sin(it.t*.12)*1.5)-2:0, x=Math.round(it.x-c.width/2), y=Math.round(it.y-c.height+bob);
+    const sk=it.si!=null?specKey(it.si,it.t%60<8):null, c=sk?S[sk].n:(it.t%60<8&&ITEM_SHINE[it.kind])||ITEM_SPR[it.kind]||ITEM_SPR.rapid; if(!c) continue; const bob=it.land?Math.round(Math.sin(it.t*.12)*1.5)-2:0, x=Math.round(it.x-c.width/2), y=Math.round(it.y-c.height+bob);
     if(it.land||it.y>GROUND-40){ G.fillStyle='rgba(0,0,0,.33)';G.beginPath();G.ellipse(it.x,GROUND+2,c.width*.45,3,0,0,Math.PI*2);G.fill(); }
     if(it.chute){                                                     // little parachute
       const cy=y-34;
@@ -3273,7 +3273,8 @@ function updateCivs(){
 }
 // ── PASSING TRAFFIC (1.3.0.69): vehicles crossing on the far lane, both ways; scenery only, they can't be hit ──
 let traffic=[];
-const trafW=col=>{ const m=CVM['civ'+col+'_drive0']||CVM['civ'+col+'_idle']; return m?m.w:300; };
+const TRAF_SC=1.15;   // 1.3.0.85: passing traffic a little bigger than the parked cars, closer to the camera
+const trafW=col=>{ const m=CVM['civ'+col+'_drive0']||CVM['civ'+col+'_idle']; return m?m.w*TRAF_SC:300; };
 function updateTraffic(){
   const pool=civPool().concat(ST.stage===2?['b','p']:ST.stage===1?['t','p']:ST.stage===3?['s','m']:[]);   // s: scooter, m: city bus, Marsiglia (1.3.0.77/78)   // p: Fiat 500, traffic only in Genova and Lione (1.3.0.76)   // t: tram, Lione traffic only (1.3.0.73)
    if(!pool.length||ST.rush){ traffic=[]; return; }   // b: AMT bus, Genova traffic only (1.3.0.72)
@@ -3289,7 +3290,7 @@ function updateTraffic(){
 function drawTraffic(){                      // traffic lane along the bottom edge of the street, same size as the parked cars (1.3.0.71)
   for(const v of traffic){
     const D=civN(v.col,'drive'), k=CVM['civ'+v.col+'_drive0']?'civ'+v.col+'_drive'+(Math.floor(v.t/3)%D):'civ'+v.col+'_idle', s=S[k], m=CVM[k]; if(!s||!m) continue;
-    const sc=1, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-3;
+    const sc=TRAF_SC, bw=(CVM['civ'+v.col+'_idle']||m).bw*sc, lane=H-HUD_B-3;
     G.save(); G.translate(Math.round(v.x),lane); G.scale(sc,sc);
     G.fillStyle='rgba(0,0,0,.28)'; G.beginPath(); G.ellipse(m.bw/2,2,m.bw*.5,5,0,0,Math.PI*2); G.fill();
     if(v.dir>0) G.drawImage(s.n,-m.ax,-m.gy); else G.drawImage(s.f,-(m.w-m.ax-m.bw),-m.gy);
@@ -3365,10 +3366,10 @@ function scnBox(o){ const m=CVM[scnKey(o)]||{w:60,h:60,ax:30};
   return {x:o.x-m.w*.42,y:GROUND-m.h,w:m.w*.84,h:m.h}; }
 function initScn(){
   scn=[]; goods=[]; const city=CITY_L[ST.stage]; if(!city||ST.rush||!CVM.obj_barrel0) return;
-  const kinds=['host','stall','barrel','crate','barrel','crate','crate','hyd','sign']; if(ST.maxScroll>10000) kinds.push('host','barrel','crate');   // 1.3.0.83: one crate more, the old supply crates are gone
+  const kinds=['host','stall','barrel','crate','barrel','crate','crate','hyd'];   // 1.3.0.85: hanging signs set aside for later (code and sprites stay) if(ST.maxScroll>10000) kinds.push('host','barrel','crate');   // 1.3.0.83: one crate more, the old supply crates are gone
   if(CVM.obj_gas0&&(ST.stage===2||ST.stage===3)) kinds.push('gas');                                  // 1.3.0.84: gas cylinders in Genova and Marseille
   if(CVM.obj_cont0&&(ST.stage===2&&ST.part===1||ST.stage===3)) kinds.push('cont', ...(ST.stage===2?['cont']:[]));   // harbor containers: Porto Antico and Marseille
-  if(!CVM.obj_hyd0) kinds.splice(kinds.indexOf('hyd'),2);
+  if(!CVM.obj_hyd0) kinds.splice(kinds.indexOf('hyd'),1);
   const busy=[]; for(const c of civs) busy.push([c.x-50,c.x+civW(c)+50]); for(const o of obs) busy.push([o.x-40,o.x+o.w+40]);
   for(const k of kinds){
     const half=k==='stall'?130:k==='cont'?150:k==='sign'?80:k==='host'?50:40;
@@ -3464,7 +3465,7 @@ function updateScn(){
     else if(o.k==='host'){
       if(o.st==='tied'){ if(!PL.dead&&Math.abs(PL.x-o.x)<44&&PL.jy>-40) freeHostage(o); else if(o.t%170===0&&Math.abs(PL.x-o.x)<360) popText(o.x,GROUND-120,'AIUTO!'); }
       else if(o.st==='free'&&o.stT>=44){ o.st='give'; o.stT=0; popText(o.x,GROUND-150,HOST_LINE[o.city]||'GRAZIE!'); }
-      else if(o.st==='give'&&o.stT===16){ const pool=['bombs','rapid','kit',true,sgOn()?'sgammo':'sg']; dropItem(o.x+o.dir*46,GROUND-60,pool[ri(0,pool.length-1)]); }
+      else if(o.st==='give'&&o.stT===16){ const pool=['bombs','rapid','kit',true,'sgammo']; dropItem(o.x+o.dir*46,GROUND-60,pool[ri(0,pool.length-1)]); }
       else if(o.st==='give'&&o.stT>=34){ o.st='run'; o.stT=0; }
       else if(o.st==='run'){ o.x-=o.dir*4.6; if(o.x<ST.scrollX-120||o.x>ST.scrollX+W+120) o.st='gone'; }
     }
