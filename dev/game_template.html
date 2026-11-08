@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.91', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.92', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -847,6 +847,7 @@ const CHARS=[
         melee:['albi_gmel0','albi_gmel1','albi_gmel2'],cmelee:['albi_gcmel0','albi_gcmel1','albi_gcmel2'],hurt:['albi_n_hurt0','albi_n_hurt1'],stun:['albi_n_getup3','albi_n_getup2'],knock:['albi_n_hurt2','albi_n_hurt3','albi_n_getup0','albi_n_getup1','albi_n_getup2','albi_n_getup3'],heavy:'albi_n_getup1',
         win:['albi_n_win1','albi_n_win2','albi_n_win3','albi_n_win2'],burn:['albi_gburn0','albi_gburn1'],
         up:['albi_n_up0'],diag:['albi_n_diag0','albi_n_diag1'],wup:['albi_n_up0'],jup:'albi_n_up0',jdn:['albi_n_jdn0','albi_n_jdn1'],
+        slide:['albi_n_slide1','albi_n_slide2','albi_n_roll0','albi_n_roll1','albi_n_roll2','albi_n_roll3'],
         run:['albi_n_walk0','albi_n_walk1','albi_n_walk2','albi_n_walk3','albi_n_walk4','albi_n_walk5','albi_n_walk6','albi_n_walk7'],longIdle:['albi_gli0','albi_gli1','albi_gli2','albi_gli1'],
         pick:['albi_gpk0','albi_gpk1','albi_gpk2'],wpick:['albi_gwpk0','albi_gwpk1','albi_gwpk2'],
         para:['albi_n_para0'],pfire:'albi_n_parafire',paraLand:['albi_n_paraland','albi_n_paraland','albi_n_paraready'],canopy:true},
@@ -1399,6 +1400,7 @@ function barePose(c){
 function gunOn(c){ return !!c.gun&&(!c.gun.unlock||!!PL.hasUzi); }
 function gunPose(c){
   const g=c.gun, flip=PL.dir<0, firing=PL.fireAnim>0, alt=Math.floor(ST.frame/3)%2;
+  if(PL.slideT>0&&g.slide) return [slidePose(g),flip];
   if(PL.bombT>0){
     const el=PL.bombMax-PL.bombT, pick=a=>a[Math.min(a.length-1,Math.floor(el/PL.bombMax*a.length))];
     if(PL.air&&g.jthrow) return [Array.isArray(g.jthrow)?pick(g.jthrow):g.jthrow,flip];   /* 1.3.0.90: multi-frame air throw */
@@ -1600,7 +1602,7 @@ function meleeImpact(){
   if(hit){ ST.shake=Math.max(ST.shake,3); sfx('punch'); }
 }
 function doBomb(){
-  if(ST.mode!=='playing'||PL.dead) return;
+  if(ST.mode!=='playing'||PL.dead||PL.slideT>0) return;
   if(!ST.god&&ST.bombs<=0){ sfx('select'); if(!PL.noBombT){ popText(PL.x,feetY()-140,'BOMBE FINITE'); PL.noBombT=40; } return; }
   if(!ST.god){ ST.bombs--; updBombs(); } ST.bombsUsed=(ST.bombsUsed||0)+1;
   sfx('bomb');
@@ -1609,6 +1611,9 @@ function doBomb(){
   else my=muzzle()[1];
   shots.push({k:'bomb',x:PL.x+PL.dir*14,y:my-6,vx:4.8*PL.dir,vy:-8,g:.4,dmg:15,life:160,rot:0,vr:.25});
 }
+// 1.3.0.92: slide + roll (down while running) — only characters with gun.slide; invulnerable for the whole move
+const SLIDE_T=38, SLIDE_SEQ=[[4,0],[14,1],[5,2],[5,3],[5,4],[5,5]];
+function slidePose(g){ let e=SLIDE_T-PL.slideT; for(const [n,i] of SLIDE_SEQ){ if(e<n) return g.slide[i]; e-=n; } return g.slide[5]; }
 function updatePlayer(){
   const c=CHARS[ST.char];
   if(PL.inv>0) PL.inv--;
@@ -1617,19 +1622,28 @@ function updatePlayer(){
   // JUMP — latch consumed here every frame; crouch never writes Y, jump never fights crouch
   const canJump=!!(c.fr&&c.fr.jump);
   if(jumpQ){
-    if(canJump&&!PL.air&&!K.d&&PL.melee<=0){sfx('jump');PL.vy=JUMP_V;PL.air=true;P({t:'dust',x:PL.x,y:GROUND-3,vx:0,vy:-.2,life:20,size:6});}
+    if(canJump&&!PL.air&&!K.d&&PL.melee<=0&&!(PL.slideT>0)){sfx('jump');PL.vy=JUMP_V;PL.air=true;P({t:'dust',x:PL.x,y:GROUND-3,vx:0,vy:-.2,life:20,size:6});}
     jumpQ=false;
   }
   if(PL.air){
     PL.vy+=JUMP_G; if(PL.chute) PL.vy=Math.min(PL.vy,1.9); if(PL.slam){ PL.slamT++; PL.vy=PL.slamT<10?Math.min(PL.vy,.5):Math.min(PL.vy+1.2,15); } PL.jy+=PL.vy;
     if(PL.jy>=0){ PL.landAlt=Math.random()<.5; if(PL.slam){ PL.slam=false; PL.slamLand=18; slamImpact(); } sfx(ST.stage===1?'land_wet':'land');PL.jy=0;PL.vy=0;PL.air=false;PL.landT=7;PL.stepT=PL.chute?0:14;if(PL.chute){PL.chute=false;PL.paraLand=true;PL.landT=34;}for(const s of[-1,1])P({t:'dust',x:PL.x+s*12,y:GROUND-3,vx:s*.8,vy:-.3,life:24,size:5});}
   }
-  PL.crouch=!!K.d&&!PL.air;
+  const slG=gunOn(c)&&c.gun.slide;
+  if(slG&&K.d&&!PL.dPrev&&PL.walking&&!PL.air&&!PL.slideT&&!(PL.slideCd>0)&&PL.melee<=0&&PL.bombT<=0&&!PL.chute){
+    PL.slideT=SLIDE_T; PL.slideCd=SLIDE_T+16; sfx('land'); for(let i=0;i<4;i++) P({t:'dust',x:PL.x-PL.dir*8,y:GROUND-3,vx:-PL.dir*rnd(.4,1.4),vy:-rnd(.1,.5),life:22,size:5}); }
+  PL.dPrev=!!K.d; if(PL.slideCd>0) PL.slideCd--;
+  if(slG&&!window.__slideTip&&ST.mode==='playing'&&!ST.tut&&PL.walking&&PL.t>200){ window.__slideTip=true; flash(TOUCH?'ALBI: ▼ MENTRE CORRI = SCIVOLATA':'ALBI: GIÙ MENTRE CORRI = SCIVOLATA'); }   // one hint per session
+  if(PL.slideT>0){ PL.slideT--; const e=SLIDE_T-PL.slideT; PL.crouch=false; PL.back=false;
+    PL.vx=PL.dir*c.spd*(e<18?1.9:e<28?1.3:.9);
+    if(e<18&&ST.frame%3===0) P({t:'dust',x:PL.x-PL.dir*14,y:GROUND-3,vx:-PL.dir*.6,vy:-.3,life:18,size:4});
+  }
+  else { PL.crouch=!!K.d&&!PL.air;
   if(PL.crouch||PL.melee>0||PL.slamLand>0){PL.vx=0; if(K.l)PL.dir=-1; else if(K.r)PL.dir=1;}
   else if(K.l||K.r){ const want=K.l?-1:1;
     if(K.s&&!PL.air&&want!==PL.dir&&gunOn(c)&&c.gun.back){PL.vx=want*c.spd*.7;PL.back=true;}   // hold fire: back off while still facing the enemy
     else {PL.vx=want*c.spd;PL.dir=want;PL.back=false;} }
-  else PL.vx=0;
+  else PL.vx=0; }
   if(PL.vx===0) PL.back=false;
   // obstacles are walk-past cover (no jump in this build, so they never trap the player)
   const nx=PL.x+PL.vx+(ST.wind||0)*(PL.air?1.1:.55);   // city event: wind pushes
@@ -1638,7 +1652,7 @@ function updatePlayer(){
   PL.walking=Math.abs(PL.vx)>0.1;
   if(PL.walking){PL.t++; if(!PL.air&&Math.floor(PL.t)%16===0&&ST.mode==='playing') sfx(ST.stage===1?'step_wet':ST.stage===4?'step_stone':ST.scrollX<ST.maxScroll*.15?'step_wood':'step_stone'); if(!PL.air&&PL.t%14===0) P({t:'dust',x:PL.x-PL.dir*10,y:GROUND-3,vx:-PL.dir*.4,vy:-.3,life:22,size:4});}
   else PL.t+=.35;
-  if(K.s) doShoot();
+  if(K.s&&!(PL.slideT>0)) doShoot();
   if(PL.shootCd>0) PL.shootCd--;
   if(PL.fireAnim>0) PL.fireAnim--;
   if(PL.catchT>0) PL.catchT--; if(PL.heavyT>0) PL.heavyT--; if(PL.slamLand>0) PL.slamLand--;
@@ -1823,7 +1837,7 @@ function setBlood(v){
   const b=document.getElementById('pauseBloodBtn'); if(b) b.textContent='SANGUE: '+(v?'SI':'NO');
 }
 function hurtPlayer(kind,x,y){
-  if(PL.dead||PL.inv>0) return;
+  if(PL.dead||PL.inv>0||PL.slideT>0) return;   // 1.3.0.92: sliding/rolling dodges every hit
   const dmg=Math.max(1,Math.round((ENEMY_DMG[kind]||1)*[.6,1,1.3][skill()])); ST.dmgTaken=(ST.dmgTaken||0)+dmg; if(ST.bossIn) ST.bossHit=true; if(ST.streak){ ST.streak=0; updSG(); } PL.lastHurt=kind; if(dmg>=4) PL.stunT=40; if(dmg>=3) PL.heavyT=28;
   sfx(kind==='dogbite'?'bark':'hurt');
   buzz(dmg>=4?70:35); ST.combo=0; ST.comboT=0; PL.porHitT=45;
@@ -3791,7 +3805,7 @@ function resetRun(part){
   ST.part=part||1; ST.partT=0; ST.fadeIn=0; ST.lvlEnd=false; ST.finalW=false;
   ST.hitStop=0;ST.slowT=0;ST.scrollX=0;ST.frame=0;ST.bossIn=false;ST.bossDead=false;ST.bossT=0;ST.winT=0;ST.shake=0;ST.lockCam=false;
   ST.maxScroll=7200+ST.stage*1100; if(ST.stage===3&&ST.part===1) ST.maxScroll=Math.round(ST.maxScroll*.8);   // 1.3.0.80: Marseille part 1 a fifth shorter
-  Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
+  Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,slideT:0,slideCd:0,dPrev:false,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
   jumpQ=false; PL.hp=PL_MAXHP; PL.dead=false; PL.deadT=0; PL.inv=60; ST.stageScore=ST.score;
   items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
   const lvl=ST.part===1||multiLevel()||ST.freshPart, city=ST.part===1||ST.freshPart; ST.freshPart=false;

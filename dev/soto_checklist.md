@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.91 BETA
+Versione di riferimento: 1.3.0.92 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -711,7 +711,14 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Colpo pesante che lo stende (carro armato, colpi da 4+): vola indietro, a terra, si rialza puntellandosi, in ginocchio, in piedi, si gratta la testa stordito
 - [x] Colpo forte (3): giù su un ginocchio per un attimo
 - [x] Scivolata e capriola ritagliate dal foglio con le didascalie (scritte ignorate), pronte ma non ancora usate
-- [ ] Da decidere: mossa di scivolata/capriola (giù mentre corri? tasto dedicato?) con breve invulnerabilità
+- [x] Mossa di scivolata/capriola: fatta nella 1.3.0.92 (giù mentre corri, solo Albi)
 - [ ] Pose che usano ancora gli sprite vecchi: corpo a corpo, raccolta oggetto, attesa lunga, bruciato
 - [ ] Non usati: Albi accucciato a mani nude, salto a mani nude (Albi parte già armato), passo della vittoria, vista frontale
+
+## Scivolata e capriola (1.3.0.92)
+- [x] Albi: giù mentre corre = scivolata a terra e capriola, poi si rimette in piedi (circa 0,6 secondi)
+- [x] Durante la mossa è invulnerabile, va più veloce della corsa, non spara e non lancia bombe; la telecamera lo segue
+- [x] Giù da fermo resta l'accovacciata; tenendo premuto giù, finita la capriola, Albi si accovaccia
+- [x] Suggerimento una volta per sessione ("GIÙ MENTRE CORRI = SCIVOLATA")
+- [ ] Estendere la scivolata a Seba, Lollo, Alecio e Pinuccia quando arrivano i loro fogli (basta aggiungere `slide` nel loro set)
 
