@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.87 BETA
+Versione di riferimento: 1.3.0.88 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -689,3 +689,7 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [ ] Restano dal set vecchio: corpo a corpo, raccolta dell'arma, paracadute, bruciato, sparo in basso in volo, lancio in volo, attesa lunga
 - [ ] Pronti ma non ancora usati: salto a mani nude (5), a terra e rialzarsi (4+4), scivolata e capriola (servono nuovi comandi)
 - [ ] Prossimi personaggi: Seba, Lollo, Alecio, Pinuccia (prompt in `dev/prompt_personaggi.md`)
+
+## Albi: ritorno agli sprite originali (1.3.0.88)
+- [x] Albi torna al set originale in gioco, nella selezione e nella schermata iniziale (i nuovi non convincono)
+- [x] I fogli nuovi e lo script di ritaglio restano in `dev/assets/albi/` per un eventuale secondo tentativo
