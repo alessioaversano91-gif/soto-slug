@@ -7,7 +7,7 @@ RST="Object.assign(PL,{walking:false,fireAnim:0,crouch:false,air:false,chute:fal
 STATES={'chute':"PL.chute=true;PL.air=true;PL.jy=-40;",'chute+fire':"PL.chute=true;PL.air=true;PL.jy=-40;PL.fireAnim=10;",
  'land0':"PL.paraLand=true;PL.landT=30;",'land1':"PL.paraLand=true;PL.landT=4;",'airdown':"PL.air=true;PL.jy=-80;PL.vy=1;PL.aimDnT=10;",
  'jthrow0':"PL.air=true;PL.jy=-80;PL.bombT=15;PL.bombMax=16;",'jthrow1':"PL.air=true;PL.jy=-80;PL.bombT=8;PL.bombMax=16;",'jthrow2':"PL.air=true;PL.jy=-80;PL.bombT=2;PL.bombMax=16;"}
-EXP={'chute':'albi_n_para0','chute+fire':'albi_n_parafire','land0':'albi_n_paraland','land1':'albi_n_paraready','airdown':'albi_n_jdn','jthrow0':'albi_n_jthrow0','jthrow1':'albi_n_jthrow1','jthrow2':'albi_n_jthrow2'}
+EXP={'chute':'albi_n_para0','chute+fire':'albi_n_para0','land0':'albi_n_paraland','land1':'albi_n_paraready','airdown':'albi_n_jdn','jthrow0':'albi_n_jthrow0','jthrow1':'albi_n_jthrow1','jthrow2':'albi_n_jthrow2'}
 ok=True
 with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':480,'height':800}); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))

@@ -1,5 +1,5 @@
 SOTO SLUG - TEX EDITION
-Beta 1.3.0.92 - primo rilascio interno
+Beta 1.3.0.93 - primo rilascio interno
 
 COME SI GIOCA
 - PC (Windows o Mac): fai doppio clic su "index.html".
@@ -15,7 +15,8 @@ COMANDI DA TASTIERA
   M                        audio            N                musica
   F                        schermo intero   G                God / Life
   Invio                    conferma         Esc              indietro nei menu
-  Con Albi: giu' mentre corri = scivolata e capriola (per un attimo e' invulnerabile).
+  Con Albi e Alecio: giu' mentre corri = scivolata e capriola (per un attimo e' invulnerabile).
+  Durante la discesa col paracadute non si comanda nulla: si parte appena si tocca terra.
   Si gioca anche col gamepad. I tasti si cambiano da Impostazioni > Comandi.
 
 DA SAPERE

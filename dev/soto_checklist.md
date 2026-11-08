@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.92 BETA
+Versione di riferimento: 1.3.0.93 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -720,5 +720,16 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Durante la mossa è invulnerabile, va più veloce della corsa, non spara e non lancia bombe; la telecamera lo segue
 - [x] Giù da fermo resta l'accovacciata; tenendo premuto giù, finita la capriola, Albi si accovaccia
 - [x] Suggerimento una volta per sessione ("GIÙ MENTRE CORRI = SCIVOLATA")
-- [ ] Estendere la scivolata a Seba, Lollo, Alecio e Pinuccia quando arrivano i loro fogli (basta aggiungere `slide` nel loro set)
+- [x] Scivolata anche per Alecio (1.3.0.93)
+- [ ] Estendere la scivolata a Seba, Lollo e Pinuccia quando arrivano i loro fogli (basta aggiungere `slide` nel loro set)
+
+## Alecio, sprite nuovi con l'AK (1.3.0.93)
+- [x] Selezione con la scheda modello; in gioco: fermo (5 fotogrammi), camminata sparando (6), corsa (16), sparo dritto/diagonale/in alto (lampi tolti, li disegna il gioco), accovacciato, bomba in piedi e bassa, colpito, atterramento e rialzata, colpo forte in ginocchio, sconfitta, vittoria (lampo tolto), scivolata e capriola
+- [x] Controllo coerenza: stessa altezza in piedi di prima (130 px), canna del mitra rimisurata su ogni fotogramma, ogni riga del foglio corsa riportata alla stessa scala, polvere della scivolata tolta
+- [ ] Ancora con gli sprite vecchi: salto (salita, discesa, sparo e bomba in volo, mira in alto e in basso in volo), corpo a corpo, raccolta oggetto, attesa lunga, paracadute e atterraggio, bruciato
+- [ ] Non usati: salto a mani nude (5), accovacciato a mani nude (2), riga di tiro "in piedi abbassato" del foglio salto, passo della vittoria, vista frontale
+
+## Paracadute senza comandi (1.3.0.93)
+- [x] Durante la discesa il personaggio non si muove, non spara, non lancia bombe e non scivola; nemmeno il vento lo sposta. I comandi tornano appena tocca terra
+- [x] Tolta la posa di sparo da appeso di Albi (non serve più)
 

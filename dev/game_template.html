@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.92', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.93', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -886,17 +886,19 @@ const CHARS=[
    sg:{idle:['lollo_xsgidle'],breath:true,fire:['lollo_xsshoot'],pump:'lollo_xspump',wfire:'lollo_xsgfire',walk:['lollo_xsw0','lollo_xsw1','lollo_xsw3','lollo_xsw4'],crouch:'lollo_xscrouch',cfire:'lollo_xscfire',jump:['lollo_xsjup','lollo_xsjdn'],jfire:'lollo_xsjfire',up:['lollo_xsup'],wup:['lollo_xsup'],jup:'lollo_xsup',jdn:['lollo_xsdfire'],throw:['lollo_xsth2'],cthrow:['lollo_xscth'],jthrow:'lollo_xsjth',melee:['lollo_xsmelA','lollo_xsmelB','lollo_xsmelA'],hurt:['lollo_xshit2','lollo_xshit2'],stun:['lollo_xsstun'],win:['lollo_xswin0','lollo_xswin1'],run:['lollo_xsrn0','lollo_xsrn1','lollo_xsrn2','lollo_xsrn3'],die:['lollo_xshit2','lollo_xsfall'],dead:'lollo_xsdead',burn:['lollo_xgimpact','lollo_xgash'],pick:['lollo_xpick0','lollo_xpick1','lollo_xpick2'],itemSpr:'lollo_xsgitem',icon:'lollo_sgicon'},pors:{n:'lollo_porN',h:'lollo_porH',v:'lollo_porV'}},
   {name:'ALECIO',  idle:'alecio_idle',  shoot:null,          por:'por3',wpn:'smg',    spd:2.7,label:'RAFFICA',cd:4,pow:1,bombs:8,fire:5,str:3,sp:2,
    fr:{walk:6,walkL:6,idle:2,crouch:1,jump:2,punch:3,kick:2,lpunch:2,hurt:1},pre:'alecio_',
-   gun:{idle:['alecio_gyidle1'],breath:true,fire:['alecio_gfrec0','alecio_gfrec1'],
-        walk:['alecio_gfrunR0','alecio_gfrunR1','alecio_gfrunR2','alecio_gfrunR3','alecio_gfrunR4'],
-        walkL:['alecio_gfrunL0','alecio_gfrunL1','alecio_gfrunL2','alecio_gfrunL3'],
-        crouch:'alecio_gfc3',cfire:'alecio_gfc0',jump:['alecio_gxjasc','alecio_gyjdsc'],jfire:'alecio_gfj2',
-        throw:['alecio_gywind0','alecio_gywind1','alecio_gft1','alecio_gyrel'],cthrow:['alecio_gxcth0','alecio_gycth1'],jthrow:'alecio_gfjt',land:'alecio_gfland',
-        up:['alecio_gxup0','alecio_gxup1'],wup:['alecio_gxwup0','alecio_gxwup1'],jup:'alecio_gxjup',jdn:['alecio_gxjdn0','alecio_gxjdn1'],
-        run:['alecio_gxrun0','alecio_gxrun1','alecio_gxrun2','alecio_gxrun3'],longIdle:['alecio_gxidle0','alecio_gxidle1','alecio_gxli0','alecio_gxli1'],
+   sel:'alecio_n_sel',   // 1.3.0.93: new AK sheets (model, idle, walk, run, fire 3 directions, crouch, throw, hurt/knockdown, defeat, victory, slide); jump, melee, pick-up, parachute, long idle and burn still use the old frames
+   gun:{idle:['alecio_n_idle0','alecio_n_idle1','alecio_n_idle2','alecio_n_idle3','alecio_n_idle4'],fire:['alecio_n_fire0','alecio_n_fire1'],
+        walk:['alecio_n_walk0','alecio_n_walk1','alecio_n_walk2','alecio_n_walk3','alecio_n_walk4','alecio_n_walk5'],
+        crouch:'alecio_n_cwalk0',cfire:'alecio_n_cwalk2',jump:['alecio_gxjasc','alecio_gyjdsc'],jfire:'alecio_gfj2',
+        throw:['alecio_n_throw0','alecio_n_throw1','alecio_n_throw2','alecio_n_throw3'],cthrow:['alecio_n_cthrow0','alecio_n_cthrow1','alecio_n_cthrow2'],jthrow:'alecio_gfjt',land:'alecio_n_cwalk0',
+        up:['alecio_n_up0'],diag:['alecio_n_diag0','alecio_n_diag1'],wup:['alecio_n_up0'],jup:'alecio_gxjup',jdn:['alecio_gxjdn0','alecio_gxjdn1'],
+        run:['alecio_n_run1','alecio_n_run2','alecio_n_run3','alecio_n_run4','alecio_n_run5','alecio_n_run6','alecio_n_run7','alecio_n_run8','alecio_n_run9','alecio_n_run10','alecio_n_run11','alecio_n_run12','alecio_n_run13','alecio_n_run14','alecio_n_run15','alecio_n_run16'],runRate:4,longIdle:['alecio_gxidle0','alecio_gxidle1','alecio_gxli0','alecio_gxli1'],
+        slide:['alecio_n_slide1','alecio_n_slide2','alecio_n_roll0','alecio_n_roll1','alecio_n_roll2','alecio_n_roll3'],
         pick:['alecio_gxpk0','alecio_gxpk1','alecio_gxpk2'],para:['alecio_gychute0'],paraLand:'alecio_gychute1',canopy:true,
-        die:['alecio_gffall0','alecio_gffall1'],dead:'alecio_gffall2',
+        die:['alecio_n_die0','alecio_n_die1','alecio_n_die2','alecio_n_die3'],dead:'alecio_n_die3',
         melee:['alecio_gfs0','alecio_gfs1','alecio_gfs3'],cmelee:['alecio_gfc0','alecio_gfc1','alecio_gfc2'],
-        hurt:['alecio_gfhit0','alecio_gxhit1'],stun:['alecio_gfstun0','alecio_gfstun1'],win:['alecio_gfwin0','alecio_gfwin1'],burn:['alecio_gfburn','alecio_gxburn1']},
+        hurt:['alecio_n_hurt0','alecio_n_hurt1'],stun:['alecio_n_getup3','alecio_n_getup2'],knock:['alecio_n_hurt2','alecio_n_hurt3','alecio_n_getup0','alecio_n_getup1','alecio_n_getup2','alecio_n_getup3'],heavy:'alecio_n_getup1',
+        win:['alecio_n_win1','alecio_n_win2','alecio_n_win3','alecio_n_win2'],burn:['alecio_gfburn','alecio_gxburn1']},
    pors:{n:'alecio_porN',h:'alecio_porH',v:'alecio_porV'},icon:'alecio_rifle_icon'},
   {name:'PINUCCIA',idle:'pinuccia_idle',shoot:null,          por:'por4',wpn:'axe',    spd:3.0,label:'ASCIA GIGANTE',bombs:10,fire:1,str:5,sp:3,
    fr:{walk:6,idle:4,crouch:1,jump:2,hurt:1,strike:5,thrust:4,catk:4,throw:5},pre:'pin_',
@@ -1407,7 +1409,6 @@ function gunPose(c){
     if(PL.crouch&&g.cthrow) return [pick(g.cthrow),flip];
     if(!PL.air&&!PL.crouch&&g.throw) return [pick(g.throw),flip];
   }
-  if(PL.chute&&g.pfire&&firing&&!(PL.aimUpT>0)) return [g.pfire,flip];   // 1.3.0.90: shooting while hanging
   if(PL.chute&&g.para) return [g.para[Math.floor(ST.frame/22)%g.para.length],flip];
   if(PL.aimUpT>0&&g.up){ if(PL.air&&g.jup) return [g.jup,flip]; if(g.diag&&PL.upA!==undefined&&PL.upA>-1.0) return [g.diag[(firing?alt:0)%g.diag.length],flip];   /* 1.3.0.86: shallow angles use the diagonal pose */
     if(PL.walking&&g.wup) return [g.wup[Math.floor(PL.t/6)%g.wup.length],flip]; return [g.up[alt%g.up.length],flip]; }
@@ -1420,7 +1421,7 @@ function gunPose(c){
   if(PL.landT>0&&g.land&&!PL.walking&&!firing) return [g.land,flip];
   if(PL.walking&&firing&&g.wfire&&PL.fireAnim>16) return [g.wfire,flip];
   if(PL.walking&&PL.back&&g.back) return [g.back[Math.floor(PL.t/6)%g.back.length],flip];   // stepping backwards, gun still on target
-  if(PL.walking&&!firing&&g.run){ const i=Math.floor(PL.t/5)%g.run.length; return [g.run[i],flip]; }   // running with the gun lowered
+  if(PL.walking&&!firing&&g.run){ const i=Math.floor(PL.t/(g.runRate||5))%g.run.length; return [g.run[i],flip]; }   // running with the gun lowered
   if(PL.walking){ const L=PL.dir<0&&g.walkL?g.walkL:g.walk, i=Math.floor(PL.t/(L.length>3?5:6))%L.length; return [L[i],PL.dir<0&&!g.walkL]; }
   if(firing&&g.pump) return [PL.fireAnim>14?g.fire[0]:g.pump,flip];   // shotgun: blast, then pump
   if(firing) return [g.fire[alt%g.fire.length],flip];
@@ -1602,7 +1603,7 @@ function meleeImpact(){
   if(hit){ ST.shake=Math.max(ST.shake,3); sfx('punch'); }
 }
 function doBomb(){
-  if(ST.mode!=='playing'||PL.dead||PL.slideT>0) return;
+  if(ST.mode!=='playing'||PL.dead||PL.slideT>0||PL.chute) return;
   if(!ST.god&&ST.bombs<=0){ sfx('select'); if(!PL.noBombT){ popText(PL.x,feetY()-140,'BOMBE FINITE'); PL.noBombT=40; } return; }
   if(!ST.god){ ST.bombs--; updBombs(); } ST.bombsUsed=(ST.bombsUsed||0)+1;
   sfx('bomb');
@@ -1630,7 +1631,7 @@ function updatePlayer(){
     if(PL.jy>=0){ PL.landAlt=Math.random()<.5; if(PL.slam){ PL.slam=false; PL.slamLand=18; slamImpact(); } sfx(ST.stage===1?'land_wet':'land');PL.jy=0;PL.vy=0;PL.air=false;PL.landT=7;PL.stepT=PL.chute?0:14;if(PL.chute){PL.chute=false;PL.paraLand=true;PL.landT=34;}for(const s of[-1,1])P({t:'dust',x:PL.x+s*12,y:GROUND-3,vx:s*.8,vy:-.3,life:24,size:5});}
   }
   const slG=gunOn(c)&&c.gun.slide;
-  if(slG&&K.d&&!PL.dPrev&&PL.walking&&!PL.air&&!PL.slideT&&!(PL.slideCd>0)&&PL.melee<=0&&PL.bombT<=0&&!PL.chute){
+  if(slG&&K.d&&!PL.dPrev&&PL.walking&&!PL.chute&&!PL.air&&!PL.slideT&&!(PL.slideCd>0)&&PL.melee<=0&&PL.bombT<=0&&!PL.chute){
     PL.slideT=SLIDE_T; PL.slideCd=SLIDE_T+16; sfx('land'); for(let i=0;i<4;i++) P({t:'dust',x:PL.x-PL.dir*8,y:GROUND-3,vx:-PL.dir*rnd(.4,1.4),vy:-rnd(.1,.5),life:22,size:5}); }
   PL.dPrev=!!K.d; if(PL.slideCd>0) PL.slideCd--;
   if(slG&&!window.__slideTip&&ST.mode==='playing'&&!ST.tut&&PL.walking&&PL.t>200){ window.__slideTip=true; flash(TOUCH?'ALBI: ▼ MENTRE CORRI = SCIVOLATA':'ALBI: GIÙ MENTRE CORRI = SCIVOLATA'); }   // one hint per session
@@ -1638,6 +1639,7 @@ function updatePlayer(){
     PL.vx=PL.dir*c.spd*(e<18?1.9:e<28?1.3:.9);
     if(e<18&&ST.frame%3===0) P({t:'dust',x:PL.x-PL.dir*14,y:GROUND-3,vx:-PL.dir*.6,vy:-.3,life:18,size:4});
   }
+  else if(PL.chute){ PL.crouch=false; PL.vx=0; PL.back=false; }   // 1.3.0.93: hanging from the parachute: no moving, shooting or bombs until the feet touch the ground
   else { PL.crouch=!!K.d&&!PL.air;
   if(PL.crouch||PL.melee>0||PL.slamLand>0){PL.vx=0; if(K.l)PL.dir=-1; else if(K.r)PL.dir=1;}
   else if(K.l||K.r){ const want=K.l?-1:1;
@@ -1646,13 +1648,13 @@ function updatePlayer(){
   else PL.vx=0; }
   if(PL.vx===0) PL.back=false;
   // obstacles are walk-past cover (no jump in this build, so they never trap the player)
-  const nx=PL.x+PL.vx+(ST.wind||0)*(PL.air?1.1:.55);   // city event: wind pushes
+  const nx=PL.x+PL.vx+(PL.chute?0:(ST.wind||0)*(PL.air?1.1:.55));   // city event: wind pushes
   const minX=ST.scrollX+PL_W/2+6, maxX=ST.scrollX+W-PL_W/2-6;
   PL.x=clamp(nx,minX,maxX);
   PL.walking=Math.abs(PL.vx)>0.1;
   if(PL.walking){PL.t++; if(!PL.air&&Math.floor(PL.t)%16===0&&ST.mode==='playing') sfx(ST.stage===1?'step_wet':ST.stage===4?'step_stone':ST.scrollX<ST.maxScroll*.15?'step_wood':'step_stone'); if(!PL.air&&PL.t%14===0) P({t:'dust',x:PL.x-PL.dir*10,y:GROUND-3,vx:-PL.dir*.4,vy:-.3,life:22,size:4});}
   else PL.t+=.35;
-  if(K.s&&!(PL.slideT>0)) doShoot();
+  if(K.s&&!(PL.slideT>0)&&!PL.chute) doShoot();
   if(PL.shootCd>0) PL.shootCd--;
   if(PL.fireAnim>0) PL.fireAnim--;
   if(PL.catchT>0) PL.catchT--; if(PL.heavyT>0) PL.heavyT--; if(PL.slamLand>0) PL.slamLand--;
