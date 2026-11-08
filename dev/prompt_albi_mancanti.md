@@ -9,6 +9,8 @@ Regole che valgono per tutti (sono già dentro i prompt):
 
 **Aggiornamento 1.3.0.90:** i fogli 5 (in volo: sparo in basso e bomba) e 6 (paracadute, compreso lo sparo appeso) sono arrivati e sono nel gioco. Restano 1, 2, 3, 4, 7 e 8.
 
+**Aggiornamento 1.3.0.91:** il foglio scivolata/capriola già consegnato è stato ritagliato ignorando le scritte, quindi il punto 8 non serve più. I fotogrammi sono pronti, ma nel gioco manca ancora la mossa che li usa. Restano 1, 2, 3, 4 e 7.
+
 Ordine consigliato: 1 (corsa), 2 (sparo pulito), 3 (corpo a corpo), 4 (raccolta arma), poi il resto.
 
 ---
@@ -152,7 +154,7 @@ BACKGROUND: one solid flat magenta color #FF00FF. No floor, no shadow, no gradie
 Avoid: text, letters, captions, labels, front view, three-quarter view, different scale between frames, overlapping frames, blur.
 ```
 
-## 8. Rifare senza scritte: scivolata e capriola
+## 8. Rifare senza scritte: scivolata e capriola — NON SERVE (1.3.0.91, ritagliato dal foglio esistente)
 Il foglio che hai mandato è bello ma ha le didascalie sotto ogni fotogramma (RUNNING START, Tuck…): conviene rigenerarlo pulito, e con il mitra in mano.
 ```
 Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.

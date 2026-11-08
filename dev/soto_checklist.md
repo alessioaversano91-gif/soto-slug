@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.90 BETA
+Versione di riferimento: 1.3.0.91 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -698,11 +698,20 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Reintegrati i fogli nuovi (modello, fermo, camminata, sparo, salto, accovacciato, bomba, colpito, sconfitta, vittoria); per muoversi usa la camminata da 8 fotogrammi, il foglio della corsa è messo da parte
 - [x] Selezione con la scheda modello; schermata iniziale con lo sprite originale
 - [x] Sparo in basso e bomba in volo, paracadute: arrivati nella 1.3.0.90
-- [ ] Fogli mancanti (prompt in `dev/prompt_albi_mancanti.md`): corsa compatta, sparo senza lampo, corpo a corpo, raccolta oggetto, bruciato e attesa lunga, scivolata e capriola senza scritte
+- [ ] Fogli mancanti (prompt in `dev/prompt_albi_mancanti.md`): corsa compatta, sparo senza lampo, corpo a corpo, raccolta oggetto, bruciato e attesa lunga
 
 ## Albi, paracadute e pose in volo (1.3.0.90)
 - [x] Discesa col paracadute con la vela del foglio nuovo; sparando da appeso usa la posa di tiro dedicata (vela compresa)
 - [x] Atterraggio in due tempi: vela che si affloscia, poi Albi in piedi col mitra pronto
 - [x] In volo: mitra puntato in basso (2 fotogrammi) e lancio della bomba in 3 fotogrammi (prima era un fotogramma solo)
 - [ ] Ancora da fare: lo sparo in diagonale da appeso (secondo fotogramma del foglio) non è usato, perché da appeso si spara solo dritto
+
+## Albi, fogli ricontrollati e pose rimaste fuori (1.3.0.91)
+- [x] I 9 fogli rimandati sono identici a quelli già nel gioco dalla 1.3.0.89 (verificati byte per byte)
+- [x] Colpo pesante che lo stende (carro armato, colpi da 4+): vola indietro, a terra, si rialza puntellandosi, in ginocchio, in piedi, si gratta la testa stordito
+- [x] Colpo forte (3): giù su un ginocchio per un attimo
+- [x] Scivolata e capriola ritagliate dal foglio con le didascalie (scritte ignorate), pronte ma non ancora usate
+- [ ] Da decidere: mossa di scivolata/capriola (giù mentre corri? tasto dedicato?) con breve invulnerabilità
+- [ ] Pose che usano ancora gli sprite vecchi: corpo a corpo, raccolta oggetto, attesa lunga, bruciato
+- [ ] Non usati: Albi accucciato a mani nude, salto a mani nude (Albi parte già armato), passo della vittoria, vista frontale
 
