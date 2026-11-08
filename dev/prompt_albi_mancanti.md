@@ -7,6 +7,8 @@ Regole che valgono per tutti (sono già dentro i prompt):
 - **niente lampi, fumo, nuvole di respiro, scritte, didascalie o griglie**: i lampi e il fumo li disegna il gioco, e le scritte vanno cancellate a mano;
 - fondo **magenta pieno #FF00FF**.
 
+**Aggiornamento 1.3.0.90:** i fogli 5 (in volo: sparo in basso e bomba) e 6 (paracadute, compreso lo sparo appeso) sono arrivati e sono nel gioco. Restano 1, 2, 3, 4, 7 e 8.
+
 Ordine consigliato: 1 (corsa), 2 (sparo pulito), 3 (corpo a corpo), 4 (raccolta arma), poi il resto.
 
 ---
@@ -95,7 +97,7 @@ BACKGROUND: one solid flat magenta color #FF00FF. No floor, no shadow, no gradie
 Avoid: text, letters, captions, labels, front view, three-quarter view, different scale between frames, overlapping frames, blur.
 ```
 
-## 5. In volo: sparo in basso e lancio della bomba
+## 5. In volo: sparo in basso e lancio della bomba — FATTO (1.3.0.90)
 ```
 Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
 
@@ -114,7 +116,7 @@ BACKGROUND: one solid flat magenta color #FF00FF. No floor, no shadow, no gradie
 Avoid: muzzle flash, smoke, text, letters, captions, labels, front view, three-quarter view, different scale between frames, overlapping frames, blur.
 ```
 
-## 6. Paracadute (ingresso nel livello)
+## 6. Paracadute (ingresso nel livello) — FATTO (1.3.0.90)
 ```
 Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
 
