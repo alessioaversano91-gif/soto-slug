@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.86 BETA
+Versione di riferimento: 1.3.0.87 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -683,7 +683,7 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Corretto: un ostaggio poteva lasciare il fucile a pompa a un personaggio che non lo usa, e il gioco si bloccava al disegno del premio
 
 ## Albi, sprite nuovi (1.3.0.86)
-- [x] Selezione personaggio: Albi di profilo dalla scheda modello
+- [x] Selezione personaggio: Albi di profilo dalla scheda modello; nella schermata iniziale resta lo sprite originale (1.3.0.87)
 - [x] Con l'arma, tutto di profilo e alla stessa scala: fermo (4), camminata mentre spara (8), corsa (8), sparo dritto (2), in diagonale (2), verso l'alto, accovacciato e sparo da accovacciato, salto e sparo in volo, atterraggio, lancio della bomba in piedi (4) e accovacciato (3), colpito (2), stordito (si rialza), sconfitta (4), vittoria (4)
 - [x] Lampi e fumo dei fogli tolti: li disegna il gioco, allineati alla nuova canna
 - [ ] Restano dal set vecchio: corpo a corpo, raccolta dell'arma, paracadute, bruciato, sparo in basso in volo, lancio in volo, attesa lunga

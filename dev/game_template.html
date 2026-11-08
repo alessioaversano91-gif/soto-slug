@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.86', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.87', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -3665,12 +3665,12 @@ function drawTitle(){
   CHARS.forEach((c,i)=>{
     TX.fillStyle='rgba(0,0,0,.4)';TX.beginPath();TX.ellipse(xs[i]+14,192,22,4,0,0,Math.PI*2);TX.fill();
     // title screen: everyone stands still and breathes (idle frames, offset so they don't breathe in sync)
-    if(c.fr){ const fk=menuIdle(c,MF+i*9), fs=S[fk];
+    if(c.fr){ const fk=menuIdle(c,MF+i*9,true), fs=S[fk];   // title screen keeps the original sprites (1.3.0.87)
       drawFrame(TX,fk,xs[i]+14+((FR[fk]||[.5])[0]-.5)*fs.w,190,false,0); }
     else drawActor(TX,c.idle,xs[i]+14,190,1,'idle',MF+i*9,0);
   });
 }
-function menuIdle(c,t){ return c.sel&&S[c.sel]?c.sel:c.pre+'idle'+(Math.floor(t/14)%c.fr.idle); }   // 1.3.0.86: model sheet pose for the character select   // menus: bare-handed idle for everyone
+function menuIdle(c,t,title){ return !title&&c.sel&&S[c.sel]?c.sel:c.pre+'idle'+(Math.floor(t/14)%c.fr.idle); }   // 1.3.0.86: model sheet pose for the character select   // menus: bare-handed idle for everyone
 function buildMenus(){
   const cg=document.getElementById('cgr');
   CHARS.forEach((c,i)=>{
