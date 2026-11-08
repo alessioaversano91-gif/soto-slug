@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.88', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.89', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -838,15 +838,16 @@ function drawFrame(ctx,key,fx,fy,flip,flash){
 const CHARS=[
   {name:'ALBI',    idle:'albi_idle',    shoot:null,          por:'por0',wpn:'smg',    spd:3.3,label:'EQUILIBRATO',cd:6,pow:1,bombs:10,fire:3,str:3,sp:4,
    fr:{walk:6,walkL:6,idle:2,crouch:1,punch:3,lpunch:2,hurt:1,jump:2},pre:'albi_',
-   gun:{idle:['albi_grifle0','albi_grifle1'],fire:['albi_gfire0','albi_gfire2'],
-        walk:['albi_gwfire0','albi_gwfire1','albi_gwfire2','albi_gwfire3','albi_gwfire4','albi_gwfire5'],
-        crouch:'albi_gcr0',cfire:'albi_gcr1',jump:['albi_gjf0','albi_gjf2'],jfire:'albi_gjf1',
-        throw:['albi_gth0','albi_gth1','albi_gth2'],cthrow:['albi_gcth0','albi_gcth1'],jthrow:'albi_gjth0',land:'albi_gland0',
-        die:['albi_gdie0','albi_gdie1','albi_gdie2','albi_gdie3'],dead:'albi_gdead',
-        melee:['albi_gmel0','albi_gmel1','albi_gmel2'],cmelee:['albi_gcmel0','albi_gcmel1','albi_gcmel2'],hurt:['albi_gghit0','albi_gghit1'],stun:['albi_gstun0','albi_gstun1'],
-        win:['albi_gwin0','albi_gwin1'],burn:['albi_gburn0','albi_gburn1'],
-        up:['albi_gup1'],wup:['albi_gwup1','albi_gwup2'],jup:'albi_gjup',jdn:['albi_gjdn0','albi_gjdn1'],
-        run:['albi_grun0','albi_grun1','albi_grun2b','albi_grun3b'],longIdle:['albi_gli0','albi_gli1','albi_gli2','albi_gli1'],
+   sel:'albi_n_sel',   // 1.3.0.89: new side-view sheets (run sheet set aside, the walk cycle is used for moving) (model, idle, walk, run, fire in 3 directions, jump, crouch, throw, hurt, defeat, victory)
+   gun:{idle:['albi_n_idle0','albi_n_idle1','albi_n_idle2','albi_n_idle3'],fire:['albi_n_fire0','albi_n_fire1'],
+        walk:['albi_n_walk0','albi_n_walk1','albi_n_walk2','albi_n_walk3','albi_n_walk4','albi_n_walk5','albi_n_walk6','albi_n_walk7'],
+        crouch:'albi_n_crouch2',cfire:'albi_n_crouch3',jump:['albi_n_jump0','albi_n_jump0'],jfire:'albi_n_jump1',
+        throw:['albi_n_throw0','albi_n_throw1','albi_n_throw2','albi_n_throw3'],cthrow:['albi_n_cthrow0','albi_n_cthrow1','albi_n_cthrow2'],jthrow:'albi_gjth0',land:'albi_n_crouch2',
+        die:['albi_n_die0','albi_n_die1','albi_n_die2','albi_n_die3'],dead:'albi_n_die3',
+        melee:['albi_gmel0','albi_gmel1','albi_gmel2'],cmelee:['albi_gcmel0','albi_gcmel1','albi_gcmel2'],hurt:['albi_n_hurt0','albi_n_hurt1'],stun:['albi_n_getup3','albi_n_getup2'],
+        win:['albi_n_win1','albi_n_win2','albi_n_win3','albi_n_win2'],burn:['albi_gburn0','albi_gburn1'],
+        up:['albi_n_up0'],diag:['albi_n_diag0','albi_n_diag1'],wup:['albi_n_up0'],jup:'albi_n_up0',jdn:['albi_gjdn0','albi_gjdn1'],
+        run:['albi_n_walk0','albi_n_walk1','albi_n_walk2','albi_n_walk3','albi_n_walk4','albi_n_walk5','albi_n_walk6','albi_n_walk7'],longIdle:['albi_gli0','albi_gli1','albi_gli2','albi_gli1'],
         pick:['albi_gpk0','albi_gpk1','albi_gpk2'],wpick:['albi_gwpk0','albi_gwpk1','albi_gwpk2'],
         para:['albi_gchute1'],paraLand:'albi_gchute2',canopy:true},
    pors:{n:'albi_porN',h:'albi_porH',v:'albi_porV'}},

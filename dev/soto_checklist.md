@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.88 BETA
+Versione di riferimento: 1.3.0.89 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -693,3 +693,8 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 ## Albi: ritorno agli sprite originali (1.3.0.88)
 - [x] Albi torna al set originale in gioco, nella selezione e nella schermata iniziale (i nuovi non convincono)
 - [x] I fogli nuovi e lo script di ritaglio restano in `dev/assets/albi/` per un eventuale secondo tentativo
+
+## Albi, sprite nuovi senza la corsa (1.3.0.89)
+- [x] Reintegrati i fogli nuovi (modello, fermo, camminata, sparo, salto, accovacciato, bomba, colpito, sconfitta, vittoria); per muoversi usa la camminata da 8 fotogrammi, il foglio della corsa è messo da parte
+- [x] Selezione con la scheda modello; schermata iniziale con lo sprite originale
+- [ ] Fogli mancanti (prompt in `dev/prompt_albi_mancanti.md`): corsa compatta, sparo senza lampo, corpo a corpo, raccolta oggetto, sparo in basso e bomba in volo, paracadute, bruciato e attesa lunga, scivolata e capriola senza scritte
