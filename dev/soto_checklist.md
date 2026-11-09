@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.95 BETA
+Versione di riferimento: 1.3.0.96 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -740,6 +740,7 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 
 ## Corsa sparando in alto e nemici dall'alto (prompt pronti, `dev/prompt_sparo_alto_nemici_aerei.md`)
 - [x] Albi: corsa mirando in alto e in diagonale, nel gioco dalla 1.3.0.95
-- [ ] Fogli "corsa mirando in alto e in diagonale" (8+8 fotogrammi): Alecio, Seba, Lollo; Pinuccia con l'ascia alzata e il fendente verso l'alto
+- [x] Seba (con l'UZI): corsa mirando in alto, 3 fotogrammi, nel gioco dalla 1.3.0.96 (manca la diagonale: in diagonale usa la stessa posa)
+- [ ] Fogli "corsa mirando in alto e in diagonale" (8+8 fotogrammi): Alecio, Lollo; Seba solo la riga in diagonale; Pinuccia con l'ascia alzata e il fendente verso l'alto
 - [ ] Nemici: bottiglia a elica, gabbiano/piccione bombardiere, bottiglia paracadutista, drone della gendarmeria, nemico al balcone, mongolfiera-bottiglia (mini-boss)
 

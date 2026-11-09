@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.95', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.96', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -864,7 +864,8 @@ const CHARS=[
         melee:['seba_gumel0','seba_gumel1','seba_gumel2'],cmelee:['seba_gucmel0','seba_gucmel1','seba_gucmel1'],
         stun:['seba_gustun0','seba_gustun1','seba_gustun2'],win:['seba_guwin0','seba_guwin1','seba_guwin2'],land:'seba_guland1',
         die:['seba_gufall2','seba_gufall1','seba_gufall0'],dead:'seba_gudead',burn:['seba_gburn0','seba_gburn1'],
-        pick:['seba_gpick0','seba_gpick1','seba_gpick2','seba_gpick3'],up:['seba_guup0','seba_guup1'],
+        pick:['seba_gpick0','seba_gpick1','seba_gpick2','seba_gpick3'],up:['seba_guup0','seba_guup1'],wup:['seba_n_rup0','seba_n_rup1','seba_n_rup2'],   // 1.3.0.96: running while aiming the UZI up
+        
         longIdle:['seba_gsli0','seba_gsli1','seba_gsli0','seba_gsli2','seba_gsli3'],para:['seba_gschute0','seba_gschute1'],paraLand:'seba_gschland',canopy:true},
    bare:{throw:['seba_gbth0','seba_gbth1','seba_gbth2'],cthrow:['seba_gbcth0','seba_gbcth1'],jthrow:'seba_gbjth',
         stun:['seba_gbstun0','seba_gbstun1'],win:['seba_gbwin0','seba_gbwin1','seba_gbwin2'],
