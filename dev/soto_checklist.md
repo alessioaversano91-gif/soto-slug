@@ -738,3 +738,7 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit√
 - [x] Ora ogni gruppo di pose √® riportato alla stessa corporatura del personaggio fermo, misurando la larghezza della testa (via di mezzo tra altezza e testa, per non farlo diventare troppo alto o troppo basso)
 - [ ] Nei prossimi fogli chiedere esplicitamente "same head size and same body proportions as the idle frames"
 
+## Corsa sparando in alto e nemici dall'alto (prompt pronti, `dev/prompt_sparo_alto_nemici_aerei.md`)
+- [ ] Fogli "corsa mirando in alto e in diagonale" (8+8 fotogrammi): Albi, Alecio, Seba, Lollo; Pinuccia con l'ascia alzata e il fendente verso l'alto
+- [ ] Nemici: bottiglia a elica, gabbiano/piccione bombardiere, bottiglia paracadutista, drone della gendarmeria, nemico al balcone, mongolfiera-bottiglia (mini-boss)
+
