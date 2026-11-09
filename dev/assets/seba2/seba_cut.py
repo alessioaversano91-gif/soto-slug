@@ -22,6 +22,19 @@ def unpink(f):                        # magenta spill on edges and shoes -> neut
 fr=[unpink(f) for f in fr]
 body=np.median([f.shape[0]-hat_top(f) for f in fr]); k=126/body     # hat-to-feet a little taller than his running frames: this sheet draws him slimmer, so the same height looked smaller
 for i,f in enumerate(fr): put(f'seba_n_rup{i}',f,k,'u')
+# 1.3.0.97 — sheet 2: running while aiming diagonally up (6 frames), same cleaning and scale
+a,fg=load('s2.png'); c=a.astype(int); fg&=~(((c[...,0]-c[...,1])>45)&((c[...,2]-c[...,1])>45))
+lab,n=nd.label(fg); sz=nd.sum(fg,lab,range(1,n+1)); fg=np.isin(lab,1+np.where(sz>=25)[0])
+W=a.shape[1]; d=[]
+for i in range(6):
+    x0,x1=i*W//6,(i+1)*W//6; sub=fg[:,x0:x1].copy(); L,n_=nd.label(sub,structure=np.ones((3,3))); z=nd.sum(sub,L,range(1,n_+1))
+    sub=np.isin(L,1+np.where(z>=z.max()*.08)[0]); fg[:,x0:x1]=sub            # keep the figure, drop slivers of the next frame
+    ys,xs=np.where(fg[:,x0:x1]); d.append(unpink(frame(a,fg,(ys.min(),ys.max()+1,x0+xs.min(),x0+xs.max()+1))))
+kd=126/np.median([f.shape[0]-hat_top(f) for f in d])
+for i,f in enumerate(d):
+    put(f'seba_n_rdiag{i}',f,kd)
+    m=(f[...,3]>0)&(f[...,:3].max(2)<90); ys,xs=np.where(m[:int(f.shape[0]*.6)]); j=np.argmax(xs-ys)
+    OUT_M[f'seba_n_rdiag{i}'][1:]=[round(xs[j]/f.shape[1],3),round(ys[j]/f.shape[0],3)]
 json.dump(OUT_A,open('seba_assets.json','w')); json.dump(OUT_M,open('seba_meta.json','w'))
 ims=[ref]+[Image.open(io.BytesIO(base64.b64decode(v.split(',')[1]))) for v in OUT_A.values()]
 S=Image.new('RGB',(sum(i.width+10 for i in ims),150),(70,78,90)); x=0
