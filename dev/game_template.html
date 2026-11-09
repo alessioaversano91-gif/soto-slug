@@ -777,7 +777,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.94', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.95', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -846,7 +846,8 @@ const CHARS=[
         die:['albi_n_die0','albi_n_die1','albi_n_die2','albi_n_die3'],dead:'albi_n_die3',
         melee:['albi_gmel0','albi_gmel1','albi_gmel2'],cmelee:['albi_gcmel0','albi_gcmel1','albi_gcmel2'],hurt:['albi_n_hurt0','albi_n_hurt1'],stun:['albi_n_getup3','albi_n_getup2'],knock:['albi_n_hurt2','albi_n_hurt3','albi_n_getup0','albi_n_getup1','albi_n_getup2','albi_n_getup3'],heavy:'albi_n_getup1',
         win:['albi_n_win1','albi_n_win2','albi_n_win3','albi_n_win2'],burn:['albi_gburn0','albi_gburn1'],
-        up:['albi_n_up0'],diag:['albi_n_diag0','albi_n_diag1'],wup:['albi_n_up0'],jup:'albi_n_up0',jdn:['albi_n_jdn0','albi_n_jdn1'],
+        up:['albi_n_up0'],diag:['albi_n_diag0','albi_n_diag1'],wup:['albi_n_rup0','albi_n_rup1','albi_n_rup2','albi_n_rup3','albi_n_rup4','albi_n_rup5','albi_n_rup6','albi_n_rup7'],wdiag:['albi_n_rdiag0','albi_n_rdiag1','albi_n_rdiag2','albi_n_rdiag3','albi_n_rdiag4','albi_n_rdiag5','albi_n_rdiag6','albi_n_rdiag7'],   // 1.3.0.95: running while aiming up / diagonally up
+        jup:'albi_n_up0',jdn:['albi_n_jdn0','albi_n_jdn1'],
         slide:['albi_n_slide1','albi_n_slide2','albi_n_roll0','albi_n_roll1','albi_n_roll2','albi_n_roll3'],
         run:['albi_n_walk0','albi_n_walk1','albi_n_walk2','albi_n_walk3','albi_n_walk4','albi_n_walk5','albi_n_walk6','albi_n_walk7'],longIdle:['albi_gli0','albi_gli1','albi_gli2','albi_gli1'],
         pick:['albi_gpk0','albi_gpk1','albi_gpk2'],wpick:['albi_gwpk0','albi_gwpk1','albi_gwpk2'],
@@ -1368,7 +1369,7 @@ function drawLights(camX){
 //  c.gunPH : no armed sheet yet -> extended-arm frame + a pixel-art mitra in the fist
 const GUN_HOLD=new Set();
 CHARS.forEach(c=>{ [c.gun,c.sg].forEach(g=>{ if(!g) return;
-  [g.idle,g.fire,g.walk,g.walkL,[g.crouch],[g.cfire],g.jump,[g.jfire],[g.wfire],g.reload,g.up,g.diag,g.wup,[g.jup],g.jdn,g.run,[g.pfire]].forEach(a=>(a||[]).forEach(k=>k&&GUN_HOLD.add(k))); }); });
+  [g.idle,g.fire,g.walk,g.walkL,[g.crouch],[g.cfire],g.jump,[g.jfire],[g.wfire],g.reload,g.up,g.diag,g.wup,g.wdiag,[g.jup],g.jdn,g.run,[g.pfire]].forEach(a=>(a||[]).forEach(k=>k&&GUN_HOLD.add(k))); }); });
 // Lollo's shotgun: while loaded it simply takes the place of his gun set; empty -> back to the rifle (or fists)
 const SG_SHOTS=20, SG_STREAK=8;
 function setSG(on){ CHARS.forEach(c=>{ if(c.sg){ if(!c.gunBase) c.gunBase=c.gun; c.gun=(on&&c===CHARS[ST.char])?c.sg:c.gunBase; } }); if(!on) PL.sgAmmo=0; updWpnIcon(); updSG(); }
@@ -1410,7 +1411,11 @@ function gunPose(c){
     if(!PL.air&&!PL.crouch&&g.throw) return [pick(g.throw),flip];
   }
   if(PL.chute&&g.para) return [g.para[Math.floor(ST.frame/22)%g.para.length],flip];
-  if(PL.aimUpT>0&&g.up){ if(PL.air&&g.jup) return [g.jup,flip]; if(g.diag&&PL.upA!==undefined&&PL.upA>-1.0) return [g.diag[(firing?alt:0)%g.diag.length],flip];   /* 1.3.0.86: shallow angles use the diagonal pose */
+  if(PL.aimUpT>0&&g.up){ if(PL.air&&g.jup) return [g.jup,flip];
+    const rr=g.runRate||5, dg=PL.upA!==undefined&&PL.upA>-1.0;
+    if(PL.walking&&!PL.air&&g.wdiag&&dg) return [g.wdiag[Math.floor(PL.t/rr)%g.wdiag.length],flip];   // 1.3.0.95: legs keep running under the raised gun
+    if(PL.walking&&!PL.air&&g.wdiag&&g.wup) return [g.wup[Math.floor(PL.t/rr)%g.wup.length],flip];
+    if(g.diag&&dg) return [g.diag[(firing?alt:0)%g.diag.length],flip];   /* 1.3.0.86: shallow angles use the diagonal pose */
     if(PL.walking&&g.wup) return [g.wup[Math.floor(PL.t/6)%g.wup.length],flip]; return [g.up[alt%g.up.length],flip]; }
   if(PL.aimDnT>0&&PL.air&&g.jdn) return [g.jdn[alt%g.jdn.length],flip];
   if(PL.air){ if(!g.jump) return null; return [firing&&g.jfire?g.jfire:g.jump[PL.vy<0?0:1],flip]; }
