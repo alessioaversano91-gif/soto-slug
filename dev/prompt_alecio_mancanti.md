@@ -7,6 +7,7 @@ Le regole che seguono valgono per tutti i fogli e sono già scritte dentro i pro
 - **Effetti e testo:** niente lampi, fumo, bossoli, stelline, polvere, scritte, didascalie o griglie. Lampi e fumo li disegna il gioco.
 - **Spazio tra i fotogrammi:** largo. Nei fogli consegnati la canna dell'AK toccava il personaggio accanto in quasi tutte le righe, e ho dovuto separare i fotogrammi a mano.
 - **Scala:** la stessa in tutte le righe del foglio. Nel foglio della corsa la prima riga era disegnata più grande delle altre.
+- **Proporzioni:** la stessa grandezza della testa e la stessa corporatura del foglio "fermo". I fogli consegnati lo disegnavano con la testa piccola nella camminata e grande nella corsa e nello sparo, e ho dovuto correggere a mano (1.3.0.94).
 - **Fondo:** magenta pieno #FF00FF.
 
 Ordine consigliato:
@@ -27,7 +28,7 @@ Questa è la descrizione di Alecio usata in tutti i prompt, presa dalla sua sche
 ## 1. Salto con l'AK (8 fotogrammi)
 Oggi in salto Alecio usa i fotogrammi vecchi, e lo stacco di stile è il più visibile.
 ```
-Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same face, same outfit and colors, same proportions, same pixel density and outline, SAME SIZE as the attached idle and walk frames.
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same face, same outfit and colors, same proportions, same pixel density and outline, SAME SIZE as the attached idle frames: same head size and same body proportions as the idle frames.
 
 SUBJECT: ALECIO: man in his thirties, tanned skin, black hair styled in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch on the chest, grey t-shirt, dark brown cargo trousers with side pockets, black boots, no backpack, an assault rifle with a dark metal body, curved magazine, wooden stock and wooden handguard, held with both hands.
 
@@ -48,7 +49,7 @@ Avoid: text, letters, numbers, captions, labels, muzzle flash, smoke, ejected ca
 ## 2. Paracadute (ingresso nel livello, 4 fotogrammi)
 Durante la discesa non si spara e non ci si muove, per cui basta la posa appesa e l'atterraggio.
 ```
-Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size: same head size and same body proportions as the attached idle frames.
 
 SUBJECT: ALECIO: man in his thirties, tanned skin, black hair in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch, grey t-shirt, dark brown cargo trousers, black boots, no backpack, an assault rifle with wooden stock and handguard.
 
@@ -65,7 +66,7 @@ Avoid: text, letters, captions, labels, muzzle flash, smoke, dust, front view, t
 
 ## 3. Corpo a corpo con l'AK (in piedi e accovacciato, 6 fotogrammi)
 ```
-Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size: same head size and same body proportions as the attached idle frames.
 
 SUBJECT: ALECIO: man in his thirties, tanned skin, black hair in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch, grey t-shirt, dark brown cargo trousers, black boots, no backpack, an assault rifle with wooden stock and handguard.
 
@@ -84,7 +85,7 @@ Avoid: text, letters, captions, labels, impact stars, motion lines, muzzle flash
 
 ## 4. Raccoglie un oggetto e cambia arma (6 fotogrammi)
 ```
-Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size: same head size and same body proportions as the attached idle frames.
 
 SUBJECT: ALECIO: man in his thirties, tanned skin, black hair in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch, grey t-shirt, dark brown cargo trousers, black boots, no backpack, an assault rifle with wooden stock and handguard.
 
@@ -103,7 +104,7 @@ Avoid: text, letters, captions, labels, sparkles, front view, three-quarter view
 
 ## 5. Bruciato e attesa lunga (6 fotogrammi)
 ```
-Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size.
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size: same head size and same body proportions as the attached idle frames.
 
 SUBJECT: ALECIO: man in his thirties, tanned skin, black hair in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch, grey t-shirt, dark brown cargo trousers, black boots, no backpack, an assault rifle with wooden stock and handguard.
 

@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.93 BETA
+Versione di riferimento: 1.3.0.94 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -732,4 +732,9 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 ## Paracadute senza comandi (1.3.0.93)
 - [x] Durante la discesa il personaggio non si muove, non spara, non lancia bombe e non scivola; nemmeno il vento lo sposta. I comandi tornano appena tocca terra
 - [x] Tolta la posa di sparo da appeso di Albi (non serve più)
+
+## Alecio, grandezze uniformi (1.3.0.94)
+- [x] I fogli lo disegnano con proporzioni diverse: nella camminata la testa è piccola, nella corsa e nello sparo è grande. Prima erano tutti portati alla stessa altezza, così correndo o sparando sembrava più grosso
+- [x] Ora ogni gruppo di pose è riportato alla stessa corporatura del personaggio fermo, misurando la larghezza della testa (via di mezzo tra altezza e testa, per non farlo diventare troppo alto o troppo basso)
+- [ ] Nei prossimi fogli chiedere esplicitamente "same head size and same body proportions as the idle frames"
 

@@ -24,6 +24,14 @@ def row(a,fg,R,spec):                  # spec: frames per detected box
     for b,n in zip(R,spec): out+= [grab(a,fg,c) for c in (split(fg,b,n) if n>1 else [b])]
     return out
 H0=130; P='alecio_n_'
+# 1.3.0.94 — SIZE_FIX: the sheets draw Alecio with different proportions (walk: small head; run and fire: big head).
+# Each group is rescaled toward the idle pose using the head width (idle = 27 px): multiplier = (27/head)^EXP
+import os
+EXP=float(os.environ.get('SIZE_EXP','0.6')); HEAD={'walk':22.5,'cwalk':24,'run':30.5,'fire':29,'diag':29,'up':29}
+_put=put
+def put(key,f,k,gun=None):
+    g=next((n for n in sorted(HEAD,key=len,reverse=True) if key[len(P):].startswith(n)),None)
+    return _put(key,f,k*((27/HEAD[g])**EXP if g else 1),gun)
 def sh(i): a,fg=load(f's{i}.jpg'); return a,fg,rows(boxes(fg))
 # 1 model
 a,fg,R=sh(1); f=row(a,fg,R[0],[1,1,1]); k=H0/f[0].shape[0]; put(P+'sel',f[0],k); put(P+'front',f[1],k)
