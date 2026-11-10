@@ -24,7 +24,7 @@ with sync_playwright() as p:
     pg.evaluate("()=>{K.r=1; for(let i=0;i<10;i++) update(); K.d=1;}")
     for i in range(6):
         pg.evaluate("()=>{ for(let j=0;j<6;j++) update(); render(); }")
-        pg.screenshot(path=SP+'_a.png',clip={'x':0,'y':oy+300,'width':480,'height':200}); ims.append(Image.open(SP+'_a.png').copy())
+        pg.screenshot(path=SP+'_a_%d.png'%__import__('os').getpid(),clip={'x':0,'y':oy+300,'width':480,'height':200}); ims.append(Image.open(SP+'_a_%d.png'%__import__('os').getpid()).copy())
     pg.evaluate("()=>{K.r=0;K.d=0;}")
     o=Image.new('RGB',(480*3,400))
     for i,im in enumerate(ims): o.paste(im,((i%3)*480,(i//3)*200))

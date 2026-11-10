@@ -1,6 +1,6 @@
 # SOTO Slug — Checklist di sviluppo
 
-Versione di riferimento: 1.3.0.97 BETA
+Versione di riferimento: 1.3.0.98 BETA
 Priorità: [A] alta · [M] media · [B] bassa
 
 ## 1. Bug e difetti noti
@@ -743,4 +743,23 @@ Fatto: 70 test automatici, 4 bot (20 partite ciascuno, con e senza invincibilit�
 - [x] Seba (con l'UZI): corsa mirando in alto (3 fotogrammi, 1.3.0.96) e in diagonale (6 fotogrammi, 1.3.0.97)
 - [ ] Fogli "corsa mirando in alto e in diagonale" (8+8 fotogrammi): Alecio, Lollo; Pinuccia con l'ascia alzata e il fendente verso l'alto
 - [ ] Nemici: bottiglia a elica, gabbiano/piccione bombardiere, bottiglia paracadutista, drone della gendarmeria, nemico al balcone, mongolfiera-bottiglia (mini-boss)
+
+## Verso la 1.4 — nemici dall'alto con gli sprite attuali (1.3.0.98)
+- [x] Bottiglia volante: ogni tanto ti vola sopra e sgancia un tappo esplosivo (cerchio a terra prima che cada); all'ultimo colpo si butta in picchiata sul punto segnato
+- [x] Bottiglia paracadutista: scende dal cielo con la vela; abbattuta in aria vale 400 punti in più ("AL VOLO!"), se atterra diventa una bottiglia normale
+- [x] Stormi: tre bottiglie volanti attraversano lo schermo in alto e sganciano un tappo a testa sui cerchi; più frequenti a Genova Porto Antico e a Marsiglia
+- [x] Niente nemici dall'alto nel tutorial, nel Boss Rush, durante i carri e gli scontri con Trevor
+- [x] Riepilogo di fine livello: ostaggi liberati (500 l'uno, +1000 se li liberi tutti) e nemici abbattuti in volo (150 l'uno)
+- [x] Medaglia nuova CONTRAEREA: 25 nemici abbattuti in volo in totale
+- [ ] Sostituire gli sprite quando arrivano i fogli: bottiglia a elica, gabbiano/piccione, vela della paracadutista
+- [ ] Ancora senza foglio: drone della gendarmeria, nemico al balcone, mongolfiera (mini-boss)
+
+## Difetti corretti (1.3.0.98)
+- [x] Dopo l'atterraggio col paracadute, muovendosi subito, il personaggio non "scivola" più nella posa di atterraggio
+- [x] Colpo pesante: Albi e Alecio vengono sbalzati all'indietro per un attimo anche mentre corrono o sparano (i comandi restano liberi); da fermi resta la sequenza completa
+- [ ] Alecio accovacciato: l'area colpibile è bassa come per tutti, ma lo sprite è alto 119 px (Albi 107). Serve il foglio 6 di `dev/prompt_alecio_mancanti.md`
+
+## Test (1.3.0.98)
+- [x] `run_tests.sh`: i test che aspettano l'orologio vero (cane, comandi touch) girano da soli, gli altri a 4 alla volta; chi fallisce viene rilanciato una volta prima di essere segnalato
+- [x] Ogni test salva gli screenshot su un file suo (prima due test si pestavano i piedi)
 

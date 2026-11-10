@@ -689,7 +689,8 @@ const MEDALS=[
   ['rush','BOSS RUSH','Abbatti i quattro carri di fila'],
   ['rushfast','A TUTTA BIRRA','Completa il Boss Rush in meno di 4 minuti'],
   ['stars','TRE STELLE OVUNQUE','Ottieni tutte le 12 stelle delle quattro citta'],
-  ['hostages','SALVATAGGIO','Libera 10 ostaggi in totale']];
+  ['hostages','SALVATAGGIO','Libera 10 ostaggi in totale'],
+  ['air','CONTRAEREA','Abbatti 25 nemici in volo in totale']];
 function award(id){
   if(PROG.med[id]) return; PROG.med[id]=Date.now(); saveProg(); (ST.stageMedals=ST.stageMedals||[]).push(id);
   const m=MEDALS.find(x=>x[0]===id); if(!m) return; const el=document.getElementById('toast');
@@ -777,7 +778,7 @@ function refreshStageRecords(){
   for(const c of ORDER){ const el=document.getElementById('lr'+(c-1)); if(!el) continue;
     el.innerHTML=(PROG.done[c]?'REC '+String(PROG.best[c]||0).padStart(6,'0')+' ':'')+[0,1,2].map(i=>STAR_SVG(!!(PROG.stars[c]||[])[i])).join(''); }
 }
-const VERSION='1.3.0.97', CHANNEL='BETA';   // first internal release
+const VERSION='1.3.0.98', CHANNEL='BETA';   // first internal release
 // single source of truth for the version shown on screen and in the tab
 document.title='SOTO Slug - '+VERSION+' '+CHANNEL; for(const id of ['ver','lgv']){const el=document.getElementById(id); if(el) el.textContent='v'+VERSION+(id==='lgv'?' '+CHANNEL:'');}
 
@@ -1246,7 +1247,7 @@ function slamImpact(){                         // Pinuccia lands axe-first: shoc
   const c=CHARS[ST.char], R=86, dmg=8*(c.pow||1); ST.shake=Math.max(ST.shake,6); ST.hitStop=Math.max(ST.hitStop||0,3); sfx('stamp'); sfx('bomb');
   for(let i=0;i<16;i++) P({t:'dust',x:PL.x+rnd(-70,70),y:GROUND-3,vx:rnd(-3,3),vy:-rnd(.3,1.4),life:ri(20,34),size:rnd(5,9)});
   if(S.pin_impact) P({t:'spr',key:'pin_impact',x:PL.x+PL.dir*30,y:GROUND-30,life:12});
-  for(const e of enemies){ if(e.hp<=0||e.type===2) continue; const ex=e.x+e.w/2; if(Math.abs(ex-PL.x)>R+e.w/2) continue;
+  for(const e of enemies){ if(e.hp<=0||airborne(e)) continue; const ex=e.x+e.w/2; if(Math.abs(ex-PL.x)>R+e.w/2) continue;
     e.hp-=dmg*(e.type===5?.55:1); e.flash=8; if(e.type!==5) e.x+=(ex<PL.x?-1:1)*22; if(e.type===6) gendFlinch(e); if(e.type===7&&e.hp>0) dogSet(e,'hurt'); if(e.type===5) e.hitT=9;
     popText(ex,e.y-10,'SLAM!'); if(e.hp<=0) killEnemy(e); }
   for(const o of obs) if(o.hp>0&&Math.abs(o.x+o.w/2-PL.x)<R) damageOb(o,6);
@@ -1384,7 +1385,7 @@ function sgDmg(e){ return e.type===5?e.max/10+.001:e.type===6?e.max/2+.01:e.hp+1
 function barePose(c){
   const b=c.bare, flip=PL.dir<0;
   if(PL.chute&&b.para) return [b.para[Math.floor(ST.frame/22)%b.para.length],flip];
-  if(PL.landT>0&&PL.paraLand&&b.paraLand){ const P0=(PL.landAlt&&b.paraLandAlt)||b.paraLand, L=Array.isArray(P0)?P0:[P0];   /* two landing variants, picked at random */ return [L[Math.min(L.length-1,Math.floor((34-PL.landT)/(34/L.length)))],flip]; }
+  if(PL.landT>0&&PL.paraLand&&b.paraLand&&!PL.walking){ const P0=(PL.landAlt&&b.paraLandAlt)||b.paraLand, L=Array.isArray(P0)?P0:[P0];   /* two landing variants, picked at random */ return [L[Math.min(L.length-1,Math.floor((34-PL.landT)/(34/L.length)))],flip]; }
   if(PL.air&&PL.apT>0) return [b.jpunch[PL.apT>10?0:1],flip];
   if(PL.bombT>0){ const el=PL.bombMax-PL.bombT, pick=a=>a[Math.min(a.length-1,Math.floor(el/PL.bombMax*a.length))];
     if(PL.air) return [b.jthrow,flip]; return [pick(PL.crouch?b.cthrow:b.throw),flip]; }
@@ -1405,6 +1406,7 @@ function gunOn(c){ return !!c.gun&&(!c.gun.unlock||!!PL.hasUzi); }
 function gunPose(c){
   const g=c.gun, flip=PL.dir<0, firing=PL.fireAnim>0, alt=Math.floor(ST.frame/3)%2;
   if(PL.slideT>0&&g.slide) return [slidePose(g),flip];
+  if(PL.stunT>28&&g.knock&&(PL.walking||firing)&&!PL.air&&!PL.dead) return [g.knock[0],flip];   // 1.3.0.98: a heavy hit throws him back for a moment even while running or shooting (controls stay free)
   if(PL.bombT>0){
     const el=PL.bombMax-PL.bombT, pick=a=>a[Math.min(a.length-1,Math.floor(el/PL.bombMax*a.length))];
     if(PL.air&&g.jthrow) return [Array.isArray(g.jthrow)?pick(g.jthrow):g.jthrow,flip];   /* 1.3.0.90: multi-frame air throw */
@@ -1423,7 +1425,7 @@ function gunPose(c){
   if(PL.crouch) return [firing&&g.cfire&&alt?g.cfire:g.crouch,flip];
   if(PL.pickT>0&&g.pick&&!PL.walking&&!PL.air){ const n=g.pick.length, mx=PL.pickMax||44; return [g.pick[Math.min(n-1,Math.floor((mx-PL.pickT)/(mx/n)))],flip]; }
   if(PL.reloadT>0&&g.reload&&!PL.walking) return [g.reload[Math.min(2,Math.floor((36-PL.reloadT)/12))],flip];
-  if(PL.landT>0&&PL.paraLand&&g.paraLand){ const L=Array.isArray(g.paraLand)?g.paraLand:[g.paraLand]; return [L[Math.min(L.length-1,Math.floor((34-PL.landT)/(34/L.length)))],flip]; }
+  if(PL.landT>0&&PL.paraLand&&g.paraLand&&!PL.walking){   /* 1.3.0.98: walking away right after touchdown no longer slides in the landing pose */ const L=Array.isArray(g.paraLand)?g.paraLand:[g.paraLand]; return [L[Math.min(L.length-1,Math.floor((34-PL.landT)/(34/L.length)))],flip]; }
   if(PL.landT>0&&g.land&&!PL.walking&&!firing) return [g.land,flip];
   if(PL.walking&&firing&&g.wfire&&PL.fireAnim>16) return [g.wfire,flip];
   if(PL.walking&&PL.back&&g.back) return [g.back[Math.floor(PL.t/6)%g.back.length],flip];   // stepping backwards, gun still on target
@@ -1569,7 +1571,7 @@ function meleeReach(){const c=CHARS[ST.char];return c.melee&&c.melee.reach||c.re
 function meleeTarget(){
   if(PL.air) return null;
   for(const e of enemies){
-    if(e.hp<=0||e.type===2) continue;
+    if(e.hp<=0||airborne(e)) continue;
     const near=PL.dir>0?e.x-PL.x:PL.x-(e.x+e.w);
     if(near>-20&&near<meleeReach()) return e;
   }
@@ -1586,7 +1588,7 @@ function meleeImpact(){
   const spin=PL.meleeKind==='spin', R=meleeReach()+28, reachX=spin?[PL.x-R*1.3,PL.x+R*1.3]:PL.dir>0?[PL.x,PL.x+R]:[PL.x-R,PL.x];   // spin kick hits both sides
   let hit=false;
   for(const e of enemies){
-    if(e.hp<=0||e.type===2) continue;
+    if(e.hp<=0||airborne(e)) continue;
     if(e.x+e.w>reachX[0]&&e.x<reachX[1]){
       e.hp-=Math.round((MELEE[PL.meleeKind].dmg||4)*(CHARS[ST.char].pow||1)*(e.type===5?.55:1)*(ST.powT>0?1.5:1)); /* fists vs armour: tanks take about half; power-up x1.5 */ e.flash=8;e.x+=PL.dir*(e.type===5?0:e.type===6?4:e.type===7?8:10);if(e.type===7&&e.hp>0)dogSet(e,'hurt');if(e.type===5)e.hitT=9;if(e.type===6)gendFlinch(e);hit=true;
       const hx=PL.dir>0?e.x+4:e.x+e.w-4, hy=GROUND-(PL.meleeKind==='lpunch'?60:PL.meleeKind==='kick'?80:92);
@@ -1763,7 +1765,7 @@ const LEG=12;
 //  ENEMY DAMAGE — energy points each attack will remove once GOD MODE
 //  can be switched off. Today hurtPlayer() only plays the hit reaction.
 // ═══════════════════════════════════════════════════════════════
-const ENEMY_DMG={drop:1,foam:1,big:2,lob:2,tankshot:3,twister:2,ram:3,  // bottles & tanks
+const ENEMY_DMG={drop:1,foam:1,big:2,lob:2,tankshot:3,twister:2,ram:3,cork:2,dive:2,  // bottles & tanks
                  gaxe:4,gdown:5,gleap:4,ggren:3,kami:3,civram:2,civboom:3,                    // Gendarmerie: heavier than bottles
                  dogbite:1};                                        // Genova dog: barely scratches
 const PL_MAXHP=20, START_LIVES=3;
@@ -1989,7 +1991,7 @@ function updateSalvo(){
   for(const mk of ST.marks) if(--mk.t===0){ eshots.push({x:mk.x,y:GROUND-420,vx:0,vy:4,g:.32,life:220,k:'lob',spr:'tankE_shot_up'}); sfx('fall'); }
   ST.marks=ST.marks.filter(mk=>mk.t>-20);
 }
-function drawMarks(){ for(const mk of ST.marks||[]) if(mk.t>0&&Math.floor(mk.t/4)%2===0){ G.strokeStyle=SET.cb?'#ffd23a':'#ff3a2a';G.lineWidth=SET.cb?3:2;G.beginPath();G.ellipse(mk.x,GROUND-2,18,5,0,0,Math.PI*2);G.stroke();if(SET.cb){G.strokeStyle='#1a4aff';G.lineWidth=1;G.beginPath();G.ellipse(mk.x,GROUND-2,12,3,0,0,Math.PI*2);G.stroke();}G.lineWidth=1; } }
+function drawMarks(){ for(const mk of (ST.marks||[]).concat(ST.amarks||[])) if(mk.t>0&&Math.floor(mk.t/4)%2===0){ G.strokeStyle=SET.cb?'#ffd23a':'#ff3a2a';G.lineWidth=SET.cb?3:2;G.beginPath();G.ellipse(mk.x,GROUND-2,18,5,0,0,Math.PI*2);G.stroke();if(SET.cb){G.strokeStyle='#1a4aff';G.lineWidth=1;G.beginPath();G.ellipse(mk.x,GROUND-2,12,3,0,0,Math.PI*2);G.stroke();}G.lineWidth=1; } }
 function wavePlanFor(){ const P={1:[.2,.72],2:[.26,.66],4:[.22,.6,.84],3:ST.part===1?[.18,.76]:[.3,.56,.82]}; return (P[ST.stage]||[]).slice(); }
 function startWave(){
   const n=5+diff()+(skill()===0?-1:skill()===2?1:0)+(fin2()?1:0); ST.wave={q:n,t:0,list:[]}; ST.lockCam=true; flash('ONDATA IN ARRIVO!'); sfx('alarm');
@@ -2430,12 +2432,89 @@ const GEN_LEVELS={1:'PORTO ANTICO',2:'CORSO ITALIA',3:'STAZIONE PRINCIPE'};
 const multiLevel=()=>ST.stage===2;                    // Genova levels each end with their own tank and summary
 const fin2=()=>ST.stage===3&&ST.part===2;   // Marsiglia, second part: the finale pushes harder (1.3.0.61)
 const diff=()=>clamp(stagePos(ST.stage)-1+(ST.part===2?1:0)+(skill()-1),0,3);
+// ═══════════════════════════════════════════════════════════════
+//  ENEMIES FROM ABOVE (1.3.0.98) — all with the sprites already in the game.
+//   • flying bottle: now and then flies over the player and drops a cork bomb (ground ring first);
+//     when it is down to its last hit it dives at the spot where the player was
+//   • paratrooper: a walking bottle that comes down under a canopy; shot in the air it is worth more,
+//     once it lands it is a normal walker
+//   • flock: three flyers cross the top of the screen, each drops one bomb on its ring
+//  Air kills are counted (ST.airK) for the summary and for the CONTRAEREA medal.
+// ═══════════════════════════════════════════════════════════════
+const airborne=e=>e.type===2||!!e.para;
+function airMark(x,t){ (ST.amarks=ST.amarks||[]).push({x,t}); }
+function dropCork(e){
+  const cx=e.x+e.w/2; eshots.push({x:cx,y:e.y+e.h-4,vx:0,vy:.6,g:.15,life:220,k:'cork',rot:0}); sfx('fall');
+}
+function updateFlyer(e,cx,dx){
+  if(e.fly){                                            // flock member: straight run, one bomb on the marked spot
+    e.x+=e.fvx; e.y+=(e.hoverY+Math.sin(e.t*.09)*6-e.y)*.08;
+    if(!e.marked&&onScreen(cx,-20)&&Math.abs(cx-e.dropX)<150){ e.marked=true; airMark(e.dropX,Math.round(Math.abs(cx-e.dropX)/Math.abs(e.fvx))+30); }
+    if(!e.dropped&&(cx-e.dropX)*Math.sign(e.fvx)>=0){ e.dropped=true; if(onScreen(cx)) dropCork(e); }
+    return true;
+  }
+  if(e.dive){ const v=e.dive; v.t++;
+    if(v.t<26){ e.x+=Math.sin(v.t*1.7)*1.4; e.flash=Math.max(e.flash,2); return true; }        // shakes: here it comes
+    const tx=v.tx-e.w/2, ty=GROUND-e.h, d=Math.hypot(tx-e.x,ty-e.y)||1, sp=5.2;
+    e.x+=(tx-e.x)/d*sp; e.y+=(ty-e.y)/d*sp; if(v.t%3===0) P({t:'smoke',x:cx,y:e.y+4,vx:0,vy:-.3,life:18,size:5});
+    if(d<=sp+1){ boom(v.tx,GROUND-12,30); shatter(v.tx,GROUND-10,0); sfx('boom');
+      if(Math.abs(PL.x-v.tx)<42&&PL.jy>-56) hurtPlayer('dive',PL.x,GROUND-50);
+      e.hp=0; e.crashed=true; }
+    return true;
+  }
+  if(e.hp<=1&&e.max>=2&&!e.dove&&onScreen(cx,10)&&!ST.tut){ e.dove=true; e.dive={t:0,tx:clamp(PL.x,ST.scrollX+20,ST.scrollX+W-20)}; airMark(e.dive.tx,62); sfx('alarm'); return true; }
+  // bombing run: for the last second before the drop it flies over the player instead of keeping its distance
+  if(e.dropT===undefined) e.dropT=ri(150,260);
+  e.dropT--;
+  const run=e.dropT<70, tx=run?PL.x:PL.x-e.dir*140;
+  e.x+=clamp((tx-cx)*(run?.05:.02),run?-2.4:-1.6,run?2.4:1.6); e.y+=(e.hoverY+Math.sin(e.t*.05)*18-e.y)*.04;
+  if(e.dropT<=0){ if(Math.abs(dx)<46&&onScreen(cx,10)){ airMark(cx,34); dropCork(e); e.dropT=ri(200,300); e.shootT=Math.max(e.shootT,70); } else if(e.dropT<-90) e.dropT=ri(120,200); }
+  return false;
+}
+function updatePara(e){
+  e.y+=1.15; e.x+=Math.sin(e.t*.045)*.55; e.vx=0;
+  if(e.y>=GROUND-e.h){ e.y=GROUND-e.h; e.para=false; e.landT=18; e.shootT=ri(60,110); sfx('land');
+    for(let i=0;i<5;i++) P({t:'dust',x:e.x+e.w/2+rnd(-10,10),y:GROUND-3,vx:rnd(-1.2,1.2),vy:-rnd(.1,.5),life:20,size:5}); }
+}
+function spawnPara(){
+  const beer=Math.random()<.35, key=beer?'beer':'bottle', s=S[key], h=s.h+LEG, hb=(diff()>=2?1:0)+(fin2()?1:0);
+  const x=clamp(PL.x+rnd(90,300),ST.scrollX+60,ST.scrollX+W-50);
+  enemies.push({type:beer?3:0,key,x:x-s.w/2,y:-h-46,w:s.w,h,hp:(beer?4:3)+hb,max:(beer?4:3)+hb,wave:false,para:true,
+    dir:-1,vx:0,t:ri(0,60),shootT:9999,flash:0,keep:rnd(130,200),hoverY:0});
+}
+function spawnFlock(){
+  const s=S.bottle_s, right=PL.x<ST.scrollX+W*.7, v=right?-2.5:2.5;
+  for(let i=0;i<3;i++){ const y=GROUND-292-i*16;
+    enemies.push({type:2,key:'bottle_s',x:right?ST.scrollX+W+26+i*52:ST.scrollX-60-i*52,y,w:s.w,h:s.h,hp:1,max:1,wave:false,fly:true,fvx:v,
+      dropX:clamp(PL.x+(i-1)*78+rnd(-14,14),ST.scrollX+24,ST.scrollX+W-24),dir:right?-1:1,vx:0,t:i*9,shootT:9999,flash:0,keep:0,hoverY:y}); }
+  if(!ST.flockSeen){ ST.flockSeen=true; flash('STORMO IN ARRIVO! OCCHIO AI CERCHI'); } sfx('alarm');
+}
+const harbor=()=>(ST.stage===2&&ST.part===1)||ST.stage===3;        // Genova's old port and Marseille: more flocks
+function updateAir(){
+  for(const mk of ST.amarks||[]) mk.t--; if(ST.amarks) ST.amarks=ST.amarks.filter(mk=>mk.t>-4);
+  if(ST.mode!=='playing'||ST.tut||ST.rush||ST.bossIn||ST.partT||ST.lvlEnd||ST.trevFight||TRV||PL.chute) return;
+  if(spawnEnemy!==spawnEnemy0) return;                    // spawner switched off (tests, debug): no flocks either
+  if(ST.flockT===undefined) ST.flockT=harbor()?ri(520,760):ri(900,1300);
+  if(--ST.flockT<=0){ ST.flockT=Math.round((harbor()?ri(1000,1400):ri(1800,2400))*[1.25,1,.85][skill()]);
+    if(!ST.wave&&enemies.filter(e=>e.type===2&&e.hp>0).length<2) spawnFlock(); else ST.flockT=240; }
+}
+let spawnEnemy0=null;
+function drawCanopy(e,bx,by,s){
+  const cx=bx+s.w/2, top=by-44, w=s.w*.95+10, sway=Math.sin(e.t*.045)*3;
+  G.strokeStyle='rgba(20,24,12,.85)'; G.lineWidth=1; G.beginPath();
+  for(const k of [-1,-.35,.35,1]){ G.moveTo(cx+k*w+sway,top+16); G.lineTo(cx+k*5,by+8); } G.stroke();
+  G.fillStyle=OUT; G.beginPath(); G.ellipse(cx+sway,top+17,w+2,19,0,Math.PI,0); G.closePath(); G.fill();
+  G.fillStyle='#5f6f2e'; G.beginPath(); G.ellipse(cx+sway,top+17,w,17,0,Math.PI,0); G.closePath(); G.fill();
+  G.fillStyle='#7d8f3c'; for(const k of [-.62,0,.62]){ G.beginPath(); G.ellipse(cx+sway+k*w*.62,top+17,w*.2,15,0,Math.PI,0); G.closePath(); G.fill(); }
+  G.fillStyle='#46531f'; G.fillRect(Math.round(cx+sway-w),top+15,Math.round(w*2),2);
+}
 function spawnEnemy(side){
   const wave=side!==undefined;
   if(enemies.filter(e=>e.type!==1).length>=(wave?7:4+Math.min(2,diff())+(fin2()?1:0))) return false;
   // Gendarmerie: Lione only, at most one every ~8–11 s, never more than 1 (2 in the second half)
   if(!wave&&ST.stage===1&&ST.frame>=(ST.gendNext||0)&&enemies.filter(e=>e.type===6&&e.hp>0).length<(ST.scrollX>ST.maxScroll*.5?2:1)&&Math.random()<.3){
     spawnGend(); ST.gendNext=ST.frame+ri(600,820); return; }   /* 1.3.0.61: Lione was the hardest city, gendarmes a bit rarer */
+  if(!wave&&!ST.tut&&!ST.rush&&Math.random()<.13+.02*diff()&&enemies.filter(e=>e.para).length<2){ spawnPara(); return; }   // 1.3.0.98
   const r=Math.random(), type=(!wave&&r<.18)?2:r<.48?3:0;     // waves: walkers only, so every character can clear them
   const key=type===3?'beer':type===2?'bottle_s':'bottle', s=S[key];
   const fromRight=wave?side>0:Math.random()<.78, hb=(diff()>=2?1:0)+(fin2()?1:0);   // later cities: bottles take one more hit
@@ -2445,6 +2524,7 @@ function spawnEnemy(side){
     dir:fromRight?-1:1,vx:0,t:ri(0,60),shootT:ri(60,120),flash:0,keep:rnd(130,200),hoverY:rnd(GROUND-270,GROUND-200)});
   maybeElite(enemies[enemies.length-1],wave);
 }
+spawnEnemy0=spawnEnemy;
 // ═══════════════════════════════════════════════════════════════
 //  STAGE 1 BOSS — CARRO CHARTREUSE (sprite sheet). Enters from the LEFT,
 //  behind the player, so its labels read correctly and the cannon faces right.
@@ -2585,20 +2665,22 @@ function updateEnemies(){
     if(e.type===6){ updateGend(e); continue; }
     if(e.type===5){ updateTank(e); continue; }
     if(e.elite==='kami'&&eliteKami(e)) continue;
-    e.dir=dx<0?-1:1;
+    if(e.para){ updatePara(e); continue; }
+    if(e.landT>0){ e.landT--; continue; }
+    e.dir=e.fly?Math.sign(e.fvx):dx<0?-1:1;
     if(e.type===2){
-      const tx=PL.x-e.dir*140; e.x+=clamp((tx-cx)*.02,-1.6,1.6); e.y+=(e.hoverY+Math.sin(e.t*.05)*18-e.y)*.04;
+      if(updateFlyer(e,cx,dx)) continue;
     }else{
       const dist=Math.abs(dx);
       e.vx= dist>e.keep+20 ? e.dir*(e.type===3?.8:1.05) : dist<e.keep-40 ? -e.dir*.6 : 0;
       e.x+=e.vx;
     }
     if(--e.shootT<=0&&Math.abs(dx)<420&&onScreen(cx,24)){
-      e.shootT=e.type===3?ri(90,140):ri(70,120);
+      e.shootT=e.type===3?ri(90,140):e.type===2?ri(100,160):ri(70,120);   // flyers shoot a bit less now that they also bomb
       eShoot(e,PL.x,GROUND-108,e.type===3?3.2:3.8,e.type===3?'foam':'drop');
     }
   }
-  enemies=enemies.filter(e=>(e.hp>0||(e.dying&&e.dieT>0))&&e.x>ST.scrollX-300&&e.x<ST.scrollX+W+400);
+  enemies=enemies.filter(e=>(e.hp>0||(e.dying&&e.dieT>0))&&e.x>ST.scrollX-(e.fly?90:300)&&e.x<ST.scrollX+W+(e.fly?240:400));
 }
 function killEnemy(e){
   streakKill(e);
@@ -2632,12 +2714,13 @@ function killEnemy0(e){
   if(e.type===7){e.dying=true;e.dieT=40;e.jy=0;e.flash=0;addScore(800);popText(cx,e.y-8,'+800');return;}
   if(e.type===6){e.dying=true;e.dieT=42;e.jy=0;e.flash=0;addScore(1500);popText(cx,e.y-10,'+1500');for(let i=0;i<6;i++)P({t:'spark',x:cx,y:e.y+40,vx:rnd(-3,3),vy:rnd(-3,0),g:.2,life:14,col:'#c8ccd4'});return;}
   if(e.type===5){ST.bossTime=(ST.frame-(ST.bossF||0))/60;PROG.st.tanks++;ST.hitStop=8;ST.slowT=96;e.dying=true;e.dieT=96;ST.bossX=cx;ST.bossDead=true;ST.bossT=110;addScore(12000);popText(cx,e.y+30,'+12000');document.getElementById('bossbar').classList.remove('on');boom(cx,GROUND-100,60);return;}
+  const air=airborne(e); if(air){ ST.airK=(ST.airK||0)+1; PROG.air=(PROG.air||0)+1; if(PROG.air>=25) award('air'); }
   ST.killN++; if(ST.killN%20===0||Math.random()<.025) dropItem(cx,cy,'bombs'); else if(ST.killN%14===0||Math.random()<.06*(1+.5*Math.min(2,ST.cityDeaths||0))) dropItem(cx,cy,false);   /* struggling? a bit more food */
-  addScore(e.type===3?600:e.type===2?700:500); popText(cx,e.y-6,'+'+(e.type===3?600:e.type===2?700:500));
+  const pts=(e.type===3?600:e.type===2?700:500)+(e.para?400:0)+(e.fly?100:0); addScore(pts); popText(cx,e.y-6,(e.para?'AL VOLO! +':'+')+pts);
   shatter(cx,cy,e.type); light(cx,cy,60,e.type===3?'255,170,60':'170,255,80',10);
   if(ST.push){ const d=ST.push; ST.shake=Math.max(ST.shake,4);        // blown away by the shotgun
     for(let i=0;i<14;i++) P({t:'shard',x:cx,y:cy+rnd(-15,10),vx:d*rnd(3,9),vy:rnd(-5,-1),g:.35,life:ri(40,70),size:ri(2,4),col:e.type===3?'#e0922a':'#8fd23a',bounce:.35,vr:rnd(-.4,.4)}); }
-  if(e.type!==2&&!e.sc) corpses.push({x:cx,key:e.type===3?'fallen_beer':'fallen',dir:ST.push?-ST.push:e.dir,life:260,vx:ST.push*8});
+  if(!air&&!e.sc) corpses.push({x:cx,key:e.type===3?'fallen_beer':'fallen',dir:ST.push?-ST.push:e.dir,life:260,vx:ST.push*8});
   else boom(cx,cy,22);
 }
 function drawEnemy(e){
@@ -2646,10 +2729,11 @@ function drawEnemy(e){
   if(e.type===5) return drawTank(e);
   if(e.sc){ const s0=S[e.key]; G.save(); G.translate(e.x,GROUND); G.scale(e.sc,e.sc); G.translate(-e.x,-GROUND); drawEnemy(Object.assign({},e,{sc:0,w:s0.w,h:s0.h+LEG,y:GROUND-(s0.h+LEG)})); G.restore(); return; }   // split minis: same art, smaller
   const s=S[e.key], bx=Math.round(e.x), by=Math.round(e.y);
-  const fl=e.flash>0?.8:0, walking=Math.abs(e.vx)>.1;
+  const fl=e.flash>0?.8:0, walking=Math.abs(e.vx)>.1&&!e.para;
+  if(e.para) drawCanopy(e,bx,by,s);
   if(e.type!==2){
-    G.fillStyle='rgba(0,0,0,.33)';G.beginPath();G.ellipse(bx+s.w/2,GROUND+2,s.w*.6,4,0,0,Math.PI*2);G.fill();
-    const p=walking?Math.sin(e.t*.32):0, fy=by+e.h, col=e.type===3?['#4a2008','#8a4a14']:['#1c3a08','#4a7a18'];
+    if(!e.para){G.fillStyle='rgba(0,0,0,.33)';G.beginPath();G.ellipse(bx+s.w/2,GROUND+2,s.w*.6,4,0,0,Math.PI*2);G.fill();}
+    const p=walking?Math.sin(e.t*.32):e.para?Math.sin(e.t*.12)*.5:0, fy=by+e.h, col=e.type===3?['#4a2008','#8a4a14']:['#1c3a08','#4a7a18'];
     for(const side of[-1,1]){
       const lift=Math.max(0,Math.round(p*side*3)), lx=bx+s.w/2+side*6-2+Math.round(p*side*2);
       G.fillStyle=OUT;G.fillRect(lx-1,fy-LEG-1-lift,6,LEG-2);
@@ -2963,6 +3047,7 @@ function updateShots(){
   for(const b of eshots){
     b.x+=b.vx;b.y+=b.vy;if(b.g)b.vy+=b.g;b.life--;
     if(b.k==='lob'&&b.y>=GROUND-4){b.life=0;boom(b.x,GROUND-10,b.spr?36:30);if(b.spr)shatter(b.x,GROUND-6,0);continue;}
+    if(b.k==='cork'){ b.rot+=.22; if(b.y>=GROUND-5){ b.life=0; boom(b.x,GROUND-10,22); if(Math.abs(PL.x-b.x)<30&&PL.jy>-40) hurtPlayer('cork',PL.x,GROUND-40); continue; } }
     if(b.k==='ggren'){ b.rot+=.3*Math.sign(b.vx||1); if(b.y>=GROUND-6){ b.life=0; boom(b.x,GROUND-12,34); if(Math.abs(PL.x-b.x)<48&&PL.jy>-60) hurtPlayer('ggren',PL.x,GROUND-50); continue; } }
     if(b.k==='twister'){b.t++;b.y=GROUND-30+Math.sin(b.t*.3)*2;if(b.t%3===0)P({t:'drop',x:b.x+rnd(-10,10),y:GROUND-rnd(20,60),vx:rnd(-1,1),vy:rnd(-2,0),g:.2,life:30,size:2,col:'#9ee84a'});}
     if(b.x>PL.x-PL_W/2&&b.x<PL.x+PL_W/2&&b.y>top&&b.y<pf){
@@ -2993,6 +3078,7 @@ function drawShots(){
     else if(b.k==='big'){G.fillStyle=OUT;G.beginPath();G.arc(b.x,b.y,7,0,Math.PI*2);G.fill();G.fillStyle='#ffb020';G.beginPath();G.arc(b.x,b.y,5,0,Math.PI*2);G.fill();G.fillStyle='#fff6c0';G.fillRect(b.x-2,b.y-2,3,3);}
     else if(b.k==='tankshot'){const s=S[b.spr]||S.tank_shot_trail;G.drawImage(s.n,Math.round(b.x-s.w*.7),Math.round(b.y-s.h/2));}
     else if(b.k==='twister'){const s=S[b.spr]||S.tank_twister,sq=1+Math.sin(b.t*.5)*.08;G.save();G.translate(b.x,GROUND);G.scale(Math.sin(b.t*.25)>0?1:-1,1);G.drawImage(s.n,-s.w/2*sq,-s.h,s.w*sq,s.h);G.restore();}
+    else if(b.k==='cork'){G.save();G.translate(b.x,b.y);G.rotate(b.rot);G.fillStyle=OUT;G.fillRect(-5,-7,10,14);G.fillStyle='#c89a5a';G.fillRect(-4,-6,8,12);G.fillStyle='#e8c88a';G.fillRect(-4,-6,3,12);G.fillStyle='#8a5a2a';G.fillRect(-4,1,8,2);G.fillStyle='#ff5a2a';G.fillRect(-1,-9,2,3);G.restore();}
     else if(b.k==='lob'){const s=S[b.spr||'bottle_s'];G.save();G.translate(b.x,b.y);G.rotate(b.life*.2);G.drawImage(s.n,-s.w/2,-s.h/2);G.restore();}
   }
 }
@@ -3124,7 +3210,7 @@ const ELITE={armor:{col:'#7fd0ff',tip:'BOTTIGLIA CORAZZATA: I PROIETTILI LA SCAL
   split:{col:'#c070ff',tip:'BOTTIGLIA DOPPIA: SE LA ROMPI, SI DIVIDE IN DUE'}};
 const ELITE_SEEN={};
 function maybeElite(e,wave){
-  if(!e||ST.rush||ST.tut||e.type===2||e.sc) return;
+  if(!e||ST.rush||ST.tut||airborne(e)||e.sc) return;
   if(ST.stage===2&&ST.scrollX<ST.maxScroll*.15) return;
   if(Math.random()>[.05,.09,.13,.17][diff()]) return;
   const k=['armor','kami','split'][ri(0,2)]; e.elite=k;
@@ -3590,7 +3676,7 @@ function update(){
       else spawnBoss();
     }
   }
-  updateDialog(); updateTut(); updateEnemies(); updateCars(); updateCivs(); updateScn(); updateTraffic(); updateStunt(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
+  updateDialog(); updateTut(); updateAir(); updateEnemies(); updateCars(); updateCivs(); updateScn(); updateTraffic(); updateStunt(); updateTrevor(); trevFightCheck(); updateShots(); updateItems(); updateFalls(); updateFX(); updateAmbience(); updateVariety(); updPortrait();
   for(const o of obs) if(o.flash>0) o.flash--;     /* hit flash ticks with the game, not with the screen refresh */
   for(const c of corpses){ c.life--; if(c.vx){ c.x+=c.vx; c.vx*=.86; if(Math.abs(c.vx)<.2) c.vx=0; } } corpses=corpses.filter(c=>c.life>0);
   const boss=enemies.find(e=>e.type===5&&e.hp>0);
@@ -3815,9 +3901,9 @@ function resetRun(part){
   ST.maxScroll=7200+ST.stage*1100; if(ST.stage===3&&ST.part===1) ST.maxScroll=Math.round(ST.maxScroll*.8);   // 1.3.0.80: Marseille part 1 a fifth shorter
   Object.assign(PL,{x:140,dir:1,vx:0,crouch:false,shootCd:0,fireAnim:0,t:0,walking:false,hitT:0,flashT:0,melee:0,meleeMax:0,meleeLow:false,meleeKind:'punch',meleeN:0,hurtT:0,jy:0,vy:0,air:false,throwT:0,landT:0,bombT:0,bombMax:16,stunT:0,slideT:0,slideCd:0,dPrev:false,lastHurt:'',apT:0,pickT:0,slam:false,slamLand:0,catchT:0,heavyT:0});
   jumpQ=false; PL.hp=PL_MAXHP; PL.dead=false; PL.deadT=0; PL.inv=60; ST.stageScore=ST.score;
-  items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
+  items=[];ST.chuteT=0;ST.chuteN=0;ST.chuteFirst=false;ST.killN=0;enemies=[];shots=[];eshots=[];parts=[];lights=[];corpses=[];spawnT=90;ST.amarks=[];ST.flockT=undefined;ST.gendNext=300;cars=[];decals=[];ST.carN=0;ST.goT=0;
   const lvl=ST.part===1||multiLevel()||ST.freshPart, city=ST.part===1||ST.freshPart; ST.freshPart=false;
-  if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
+  if(lvl){ ST.cityDeaths=city?0:ST.cityDeaths; PL.hasUzi=false; ST.bestStreak=0; ST.shotsF=0; ST.shotsH=0; ST.stageMedals=[]; ST.dmgTaken=0; ST.kills=0; ST.airK=0; ST.flockSeen=false; ST.itemsGot=0; ST.playT=0; ST.bombs=CHARS[ST.char].bombs||10; if(city){ ST.cityStart=ST.score; ST.bombsUsed=0; ST.eliteK=0; ST.gendK=0; ST.bestCombo=0; } ST.bossTime=undefined; } updBombs();
   ST.cp=null; ST.combo=0; ST.comboT=0; falls=[]; ST.dropT=ri(420,600); initAmbience(); initVariety(ST.part); initCivs(); initScn(); initStunt(); traffic=[]; ST.trafT=ri(120,300);
   ST.carPlan=ST.stage===1?[{at:.28,side:-1},{at:.60,side:-1}]:[];   // Lyon only: both cars come from behind and overtake (Marseille: Vespa + Trevor, sprites to come)
   ST.wavePlan=wavePlanFor(); ST.salvoPlan=salvoPlanFor(); ST.wave=null; BUB.length=0; hideDialog();
@@ -3861,10 +3947,11 @@ function stageSummary(){
   const k=ST.kills||0, it=ST.itemsGot||0, dmg=ST.dmgTaken||0, t=Math.round((ST.playT||0)/60);
   const bs=CHARS[ST.char].sg?(ST.bestStreak||0):0, bb=bs*250;
   const sf=ST.shotsF||0, acc=sf?Math.min(100,Math.round((ST.shotsH||0)/sf*100)):0, ba=acc*30;
-  const bk=k*100, bi=it*200, bd=ST.god?0:(dmg===0?5000:Math.max(0,2500-dmg*100)), tot=bk+bi+bd+bb+ba;
+  const ho=ST.hostN||0, hoT=ST.hostTot||0, bh=ho*500+(hoT&&ho===hoT?1000:0), ak=ST.airK||0, bair=ak*150;   // 1.3.0.98: hostages (all freed = +1000) and air kills
+  const bk=k*100, bi=it*200, bd=ST.god?0:(dmg===0?5000:Math.max(0,2500-dmg*100)), tot=bk+bi+bd+bb+ba+bh+bair;
   const meds=(ST.stageMedals||[]).map(id=>(MEDALS.find(m=>m[0]===id)||[0,id])[1]);
   const row=(a,b,c)=>`<div><span>${a}</span><span>${b}</span><b>+${c}</b></div>`;
-  document.getElementById('winstats').innerHTML=row('NEMICI',k,bk)+row('OGGETTI',it,bi)+(ST.god?row('DANNI CHE AVRESTI SUBITO',dmg,0):row(dmg===0?'NESSUN DANNO!':'DANNI SUBITI',dmg,bd))+(sf?row('PRECISIONE',acc+'%',ba):'')+(bs?row('SERIE MIGLIORE',bs,bb):'')+(meds.length?`<div><span>MEDAGLIE</span><span style="color:var(--gold)">${meds.join(', ')}</span><b></b></div>`:'')+
+  document.getElementById('winstats').innerHTML=row('NEMICI',k,bk)+row('OGGETTI',it,bi)+(ST.god?row('DANNI CHE AVRESTI SUBITO',dmg,0):row(dmg===0?'NESSUN DANNO!':'DANNI SUBITI',dmg,bd))+(sf?row('PRECISIONE',acc+'%',ba):'')+(hoT?row(ho===hoT?'OSTAGGI: TUTTI LIBERI!':'OSTAGGI LIBERATI',ho+'/'+hoT,bh):'')+(ak?row('ABBATTUTI IN VOLO',ak,bair):'')+(bs?row('SERIE MIGLIORE',bs,bb):'')+(meds.length?`<div><span>MEDAGLIE</span><span style="color:var(--gold)">${meds.join(', ')}</span><b></b></div>`:'')+
     `<div><span>TEMPO</span><span>${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}</span><b></b></div><div class="tot"><span>BONUS</span><span></span><b>+${tot}</b></div>`;
   addScore(tot);
 }

@@ -16,7 +16,7 @@ with sync_playwright() as p:
           for(let i=0;i<90;i++){ const e=enemies[0]; e.x=PL.x+dx; e.y=GROUND+dy; const h0=e.hp; update(); const p=gunPose(CHARS[0]); if(p) poses.add(p[0]); if(e.hp<h0) hit++; if(i===20){ const m=muzzle(); mz=[Math.round(m[0]-PL.x),Math.round(m[1]-GROUND)]; render(); } }
           K.r=0; K.s=0; return {poses:[...poses].filter(k=>k.includes('rup')||k.includes('rdiag')), hit, mz, walking:PL.walking}; }""",[dx,dy])
         print(name,r); want='rup' if name=='up' else 'rdiag'; ok&= sum(want in k for k in r['poses'])>=4 and r['hit']>0
-        pg.screenshot(path=SP+'_a.png',clip={'x':0,'y':oy+180,'width':480,'height':320}); ims.append(Image.open(SP+'_a.png').copy())
+        pg.screenshot(path=SP+'_a_%d.png'%__import__('os').getpid(),clip={'x':0,'y':oy+180,'width':480,'height':320}); ims.append(Image.open(SP+'_a_%d.png'%__import__('os').getpid()).copy())
     o=Image.new('RGB',(960,320)); o.paste(ims[0],(0,0)); o.paste(ims[1],(480,0)); o.save(SP+'albi95.png')
     # other characters unchanged (Alecio: no running aim-up sheet yet -> old single frame)
     ci=pg.evaluate("CHARS.findIndex(c=>c.name==='ALECIO')"); pg.evaluate(START,[ci,2])

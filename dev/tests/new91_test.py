@@ -16,7 +16,7 @@ with sync_playwright() as p:
     for nm,js in STATES.items():
         k=pg.evaluate("()=>{ "+RST+" ST.bossDead=false; "+js+" const p=gunPose(CHARS[0]); const m=muzzle(); render(); return [p&&p[0],Math.round(m[0]-PL.x),Math.round(m[1]-(GROUND+PL.jy))]; }")
         good=bool(k[0]) and k[0].startswith(EXP[nm]); ok&=good; print(nm,k,'OK' if good else 'FAIL')
-        pg.screenshot(path=SP+'_a.png',clip={'x':0,'y':oy+180,'width':300,'height':320}); ims.append(Image.open(SP+'_a.png').copy())
+        pg.screenshot(path=SP+'_a_%d.png'%__import__('os').getpid(),clip={'x':0,'y':oy+180,'width':300,'height':320}); ims.append(Image.open(SP+'_a_%d.png'%__import__('os').getpid()).copy())
     o=Image.new('RGB',(300*4,640))
     for i,im in enumerate(ims): o.paste(im,((i%4)*300,(i//4)*320))
     o.save(SP+'albi91.png')

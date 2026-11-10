@@ -15,7 +15,8 @@ Ordine consigliato:
 2. paracadute;
 3. corpo a corpo;
 4. raccolta;
-5. bruciato e attesa lunga.
+5. bruciato e attesa lunga;
+6. accovacciato vero (aggiunto nella 1.3.0.98).
 
 ---
 
@@ -119,4 +120,22 @@ STYLE: crisp hard-edged pixels, no anti-aliasing, limited palette, dark 1-2 px o
 BACKGROUND: one solid flat magenta color #FF00FF. No floor, no shadow, no gradient, no grid lines.
 
 Avoid: text, letters, captions, labels, smoke clouds, sparks, front view, three-quarter view, different scale between frames, overlapping frames, blur.
+```
+
+## 6. Accovacciato con l'AK (4 fotogrammi)
+Oggi da accovacciato Alecio usa la camminata a ginocchia piegate, che è alta quasi come in piedi (119 px contro 130). L'area colpibile è già bassa come per gli altri, ma a vista sembra che i colpi gli passino attraverso la testa. Serve una posa davvero bassa, come quella di Albi (circa l'80% dell'altezza in piedi).
+```
+Create a pixel art character sprite sheet for a 16-bit side-scrolling run-and-gun arcade game in the style of the classic Metal Slug series. Match the attached reference sheets exactly: same character, same outfit, same proportions, same size: same head size and same body proportions as the attached idle frames.
+
+SUBJECT: ALECIO: man in his thirties, tanned skin, black hair in a tall slicked-back quiff with short faded sides, thick full black beard, black hooded puffer jacket worn open with a small orange "H" patch, grey t-shirt, dark brown cargo trousers, black boots, no backpack, an assault rifle with wooden stock and handguard.
+
+LAYOUT: one row of 4 frames, all in a LOW crouch: one knee on the ground, back bent forward, the top of the head at about 75% of his standing height. (1) crouched, rifle level pointing right; (2) crouched firing, small recoil, NO muzzle flash; (3) crouched, pulling a round black hand grenade from the belt with the free hand; (4) crouched, arm extended forward after throwing the grenade (grenade not drawn).
+
+CONSISTENCY: strict side view facing right, same scale in every frame, the knee and the front foot on the same baseline, evenly spaced frames with WIDE empty gaps so the rifle never touches the next frame.
+
+STYLE: crisp hard-edged pixels, no anti-aliasing, limited palette, dark 1-2 px outline, light from the upper left.
+
+BACKGROUND: one solid flat magenta color #FF00FF. No floor, no shadow, no gradient, no grid lines.
+
+Avoid: text, letters, captions, labels, muzzle flash, smoke, ejected casings, front view, three-quarter view, different scale between frames, overlapping frames, blur.
 ```
